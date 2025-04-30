@@ -79,17 +79,17 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: #22C55E;
+  color: #9A0404;
   font-weight: 500;
 }
 
 .rating-star {
-  color: #22C55E;
+  color: #9A0404;
 }
 
 .product-price {
   margin: 0;
   font-weight: 600;
-  color: #FF0000;
+  color: #9A0404;
 }
 </style>
