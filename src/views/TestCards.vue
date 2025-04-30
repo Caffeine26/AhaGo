@@ -68,6 +68,24 @@
         :avatar="review.avatar"
       />
     </div>
+
+    <!-- New Receipts Section -->
+    <h2 class="test-title">Receipts</h2>
+    <div class="receipts-grid">
+      <ReceiptCard
+        v-for="(receipt, index) in receipts"
+        :key="index"
+        :date="receipt.date"
+        :time="receipt.time"
+        :customer-name="receipt.customerName"
+        :order-number="receipt.orderNumber"
+        :status="receipt.status"
+        :dining-type="receipt.diningType"
+        :table-number="receipt.tableNumber"
+        :items="receipt.items"
+        :total="receipt.total"
+      />
+    </div>
   </div>
 </template>
 
@@ -76,7 +94,8 @@ import CategoryCard from '@/components/product_cards/CategoryCard.vue'
 import ProductCard from '@/components/product_cards/ProductCard.vue'
 import LineGraph from '@/components/charts/LineGraph.vue'
 import MessageItem from '@/components/chat/MessageItem.vue'
-import ReviewCard from '@/components/review/ReviewComponent.vue' // Make sure to save the previous ReviewCard.vue in this path
+import ReviewCard from '@/components/review/ReviewComponent.vue'
+import ReceiptCard from '@/components/receipt/ReceiptCard.vue' // Import the new ReceiptCard component
 
 export default {
   name: 'TestCards',
@@ -85,7 +104,8 @@ export default {
     ProductCard,
     LineGraph,
     MessageItem,
-    ReviewCard // Register the new component
+    ReviewCard,
+    ReceiptCard // Register the new component
   },
   data() {
     return {
@@ -107,19 +127,19 @@ export default {
         {
           title: 'Nom Ahkor',
           image: require('@/assets/products/product1.png'),
-          price: 5,
-          rating: 4.5
+          price: 0.75,
+          rating: 5
         },
         {
-          title: 'Nom Ahkor Special',
+          title: 'Chek Katis',
           image: require('@/assets/products/product2.png'),
-          price: 5,
+          price: 1.5,
           rating: 4.5
         },
         {
-          title: 'Nom Ahkor Special',
+          title: 'Nom Chak Kachan',
           image: require('@/assets/products/product3.png'),
-          price: 5,
+          price: 0.5,
           rating: 4.5
         }
       ],
@@ -153,6 +173,32 @@ export default {
           rating: 5,
           review: 'Best meal I have had in a while! Highly recommend.',
           avatar: require('@/assets/avatars/avatar3.png')
+        }
+      ],
+      receipts: [
+        {
+          date: 'Sat, October 20, 2024',
+          time: '02:47 PM',
+          customerName: 'Sonita Yakorn',
+          orderNumber: '#ORD1025',
+          status: 'Completed',
+          diningType: 'Dine-In',
+          tableNumber: 'Table 12',
+          items: [
+            {
+              image: require('@/assets/products/product1.png'),
+              name: 'Nom Ahkor',
+              quantity: 1,
+              price: 0.75
+            },
+            {
+              image: require('@/assets/products/product2.png'),
+              name: 'Chek Katis',
+              quantity: 1,
+              price: 1.5
+            }
+          ],
+          total: 2.25
         }
       ]
     }
@@ -200,6 +246,12 @@ export default {
 }
 
 .reviews-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.receipts-grid {
   display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;

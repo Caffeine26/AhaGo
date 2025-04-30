@@ -63,10 +63,10 @@
 
 .message-role {
   padding: 0.25rem 0.75rem;
-  background: #F9E4B7;
+  background: #e6b2b2;
   border-radius: 1rem;
   font-size: 0.875rem;
-  color: #92400E;
+  color: #9A0404;
 }
 
 .message-time {
