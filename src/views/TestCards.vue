@@ -39,6 +39,35 @@
         :rating="product.rating"
       />
     </div>
+
+    <!-- Messages Section -->
+    <h2 class="test-title">Messages</h2>
+    <div class="messages-grid">
+      <MessageItem
+        v-for="(message, index) in messages"
+        :key="index"
+        :name="message.name"
+        :role="message.role"
+        :time="message.time"
+        :avatar="message.avatar"
+      >
+        {{ message.content }}
+      </MessageItem>
+    </div>
+
+    <!-- New Reviews Section -->
+    <h2 class="test-title">Reviews</h2>
+    <div class="reviews-grid">
+      <ReviewCard
+        v-for="(review, index) in reviews"
+        :key="index"
+        :name="review.name"
+        :date="review.date"
+        :rating="review.rating"
+        :review="review.review"
+        :avatar="review.avatar"
+      />
+    </div>
   </div>
 </template>
 
@@ -46,13 +75,17 @@
 import CategoryCard from '@/components/product_cards/CategoryCard.vue'
 import ProductCard from '@/components/product_cards/ProductCard.vue'
 import LineGraph from '@/components/charts/LineGraph.vue'
+import MessageItem from '@/components/chat/MessageItem.vue'
+import ReviewCard from '@/components/review/ReviewComponent.vue' // Make sure to save the previous ReviewCard.vue in this path
 
 export default {
   name: 'TestCards',
   components: {
     CategoryCard,
     ProductCard,
-    LineGraph
+    LineGraph,
+    MessageItem,
+    ReviewCard // Register the new component
   },
   data() {
     return {
@@ -89,6 +122,38 @@ export default {
           price: 5,
           rating: 4.5
         }
+      ],
+      messages: [
+        {
+          name: 'Sonita Yakorn',
+          role: 'Customer',
+          time: '10:30 AM',
+          avatar: require('@/assets/avatars/avatar2.png'),
+          content: 'Absolutelty! We will reserve a window table for dinner tonight..'
+        },
+        {
+          name: 'Bob Smith',
+          role: 'Support',
+          time: '10:35 AM',
+          avatar: require('@/assets/avatars/avatar3.png'),
+          content: 'Thanks you so much for your helping !'
+        }
+      ],
+      reviews: [
+        {
+          name: 'Sonita Yakorn',
+          date: '26-01-2025',
+          rating: 4,
+          review: 'Absolutely delicious! This burger and cheese combine together well, perfect balancing.',
+          avatar: require('@/assets/avatars/avatar2.png')
+        },
+        {
+          name: 'Bob Smith',
+          date: '28-01-2025',
+          rating: 5,
+          review: 'Best meal I have had in a while! Highly recommend.',
+          avatar: require('@/assets/avatars/avatar3.png')
+        }
       ]
     }
   }
@@ -124,6 +189,18 @@ export default {
 .graphs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.messages-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.reviews-grid {
+  display: grid;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
