@@ -1,9 +1,10 @@
 <template>
     <div class="app"> 
       <Header title='<span style="color: #bf0000;">AhaGo</span> Delivery' />
-        <Header2 title="Deliver" it1="eeee" it2="hokme" it3="dis" it4="nat" it5="ee"/>
+        <Header2 title="Deliver" it1="Overview" it2="Delivery basics" it3="Earnings" it4="Safety" it5="Support"/>
       <Banner/>
       <div class="containerApp">
+        <Article/>
         <div class="rowApp">
           <Button name="My Button" imageSrc="../src/assets/delivery/image.png"/>
           <Button name="My Button" imageSrc="../src/assets/delivery/image.png"/>
@@ -40,6 +41,7 @@ import MapFrame from '@/components/delivery/mapFrame.vue';
 import Text from '@/components/delivery/text.vue';
 import Timeline from '@/components/delivery/timeline.vue';
 import Title from '@/components/delivery/title.vue';
+import Article from '@/components/delivery/article.vue';
 import DOMPurify from 'dompurify';
   export default {
     components: {
@@ -54,7 +56,8 @@ import DOMPurify from 'dompurify';
       RateStar,
       PieChart,
       Timeline,
-      MapFrame
+      MapFrame,
+      Article
     },
     data() {
       return {

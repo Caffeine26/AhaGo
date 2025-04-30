@@ -1,5 +1,5 @@
 <template>
-    <div class="title"> {{ title }} </div>
+<div class="title" v-html="title"></div>
 </template>
 <script>
 export default {
