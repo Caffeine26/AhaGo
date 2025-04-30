@@ -23,6 +23,11 @@ const routes = [
     name: 'ForgotPassword',
     component: AuthPanel,
     props: { defaultPanel: 'forgot' }
+  },
+  {
+    path: '/test-cards',
+    name: 'TestCards',
+    component: () => import('@/views/TestCards.vue')
   }
 ]
 
