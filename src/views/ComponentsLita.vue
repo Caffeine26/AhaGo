@@ -1,67 +1,90 @@
 <template>
-    <div class="app"> 
-      <Header title='<span style="color: #bf0000;">AhaGo</span> Delivery' />
-        <Header2 title="Deliver" it1="Overview" it2="Delivery basics" it3="Earnings" it4="Safety" it5="Support"/>
-      <Banner/>
-      <div class="containerApp">
-        <Article/>
-        <div class="rowApp">
-          <Button name="My Button" imageSrc="../src/assets/delivery/image.png"/>
-          <Button name="My Button" imageSrc="../src/assets/delivery/image.png"/>
-        </div>
-        <Title title="Get paid to deliver"></Title>
-        <div class="rowApp">
-          <Description :svg="cleanSvg" :SectionTitle="'Your Own Vehicle'" :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'" />
-          <Description :svg="cleanSvg" :SectionTitle="'Your Own Vehicle'" :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'" />
-          <Description :svg="cleanSvg" :SectionTitle="'Your Own Vehicle'" :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'" />
-        </div>
-        <Title title="How food delivery driving works"/>
-        <Text text="wejffjjjffjfcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccf"/>
-        <InputText label="Name" placeholder="Enter your name"  />
-        <RateStar v-model="userRating" :totalStars="5" />
-        <PieChart :data="chartData" :options="chartOptions" />
-        <Timeline/>
-        <MapFrame/>
+  <div class="app">
+    <Header title='<span style="color: #9A0404;">AhaGo</span> Delivery' />
+    <Header2
+      title="Deliver"
+      it1="Overview"
+      it2="Delivery basics"
+      it3="Earnings"
+      it4="Safety"
+      it5="Support"
+    />
+    <Banner imgSrc="../src/assets/delivery/image3.png" />
+    <div class="containerApp">
+      <Article />
+      <div class="rowApp">
+        <Button
+          name="Start Delivering"
+          imageSrc="../src/assets/delivery/image.png"
+        />
+        <Button name="My Button" imageSrc="../src/assets/delivery/image.png" />
       </div>
-  
-  
+      <Title title="Get paid to deliver"></Title>
+      <div class="rowApp">
+        <Description
+          :svg="cleanSvg"
+          :SectionTitle="'Your Own Vehicle'"
+          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
+        />
+        <Description
+          :svg="cleanSvg"
+          :SectionTitle="'Your Own Vehicle'"
+          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
+        />
+        <Description
+          :svg="cleanSvg"
+          :SectionTitle="'Your Own Vehicle'"
+          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
+        />
+      </div>
+      <Title title="How food delivery driving works" />
+      <Text
+        text="wejffjjjffjfcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccf"
+      />
+      <InputText label="Name" placeholder="Enter your name" />
+      <RateStar v-model="userRating" :totalStars="5" />
+      <PieChart :data="chartData" :options="chartOptions" />
+      <Timeline />
+      <MapFrame />
     </div>
-  </template>
-  
-  <script>
-  import Banner from '@/components/all/banner.vue';
-import Header from '@/components/all/header.vue';
-import InputText from '@/components/all/inputText.vue';
-import PieChart from '@/components/admin/pieChart.vue';
-import RateStar from '@/components/all/rateStar.vue';
-import Button from '@/components/delivery/button.vue';
-import Description from '@/components/delivery/description.vue';
-import Header2 from '@/components/delivery/header2.vue';
-import MapFrame from '@/components/delivery/mapFrame.vue';
-import Text from '@/components/delivery/text.vue';
-import Timeline from '@/components/delivery/timeline.vue';
-import Title from '@/components/delivery/title.vue';
-import Article from '@/components/delivery/article.vue';
-import DOMPurify from 'dompurify';
-  export default {
-    components: {
-      Header,
-      Header2,
-      Banner,
-      Button,
-      Description,
-      Title,
-      Text,
-      InputText,
-      RateStar,
-      PieChart,
-      Timeline,
-      MapFrame,
-      Article
-    },
-    data() {
-      return {
-        cleanSvg: DOMPurify.sanitize(`<svg width="78" height="78" viewBox="0 0 78 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+  </div>
+</template>
+
+<script>
+import PieChart from "@/components/admin/pieChart.vue";
+import Banner from "@/components/all/banner.vue";
+import Header from "@/components/all/header.vue";
+import InputText from "@/components/all/inputText.vue";
+import RateStar from "@/components/all/rateStar.vue";
+import Article from "@/components/delivery/article.vue";
+import Button from "@/components/delivery/button.vue";
+import Description from "@/components/delivery/description.vue";
+import Header2 from "@/components/delivery/header2.vue";
+import MapFrame from "@/components/delivery/mapFrame.vue";
+import Text from "@/components/delivery/text.vue";
+import Timeline from "@/components/delivery/timeline.vue";
+import Title from "@/components/delivery/title.vue";
+import DOMPurify from "dompurify";
+export default {
+  components: {
+    Header,
+    Header2,
+    Banner,
+    Button,
+    Description,
+    Title,
+    Text,
+    InputText,
+    RateStar,
+    PieChart,
+    Timeline,
+    MapFrame,
+    Article,
+  },
+  data() {
+    return {
+      cleanSvg:
+        DOMPurify.sanitize(`<svg width="78" height="78" viewBox="0 0 78 78" fill="none" xmlns="http://www.w3.org/2000/svg">
   <g clip-path="url(#clip0_83_1153)">
   <path d="M7.87955 17.6598L4.90541 20.6341L3.62512 19.3538C1.41105 17.1397 1.41105 13.537 3.62512 11.3227L11.3217 3.62611C12.3943 2.55361 13.8203 1.96289 15.3371 1.96289C16.8539 1.96289 18.2799 2.55353 19.3525 3.62611L20.6328 4.9064L17.6586 7.88062L16.3783 6.60033C16.1001 6.32222 15.7304 6.16903 15.337 6.16903C14.9436 6.16903 14.5738 6.32222 14.2957 6.60033L6.59926 14.2968C6.02511 14.8709 6.02511 15.8053 6.59926 16.3795L7.87955 17.6598Z" fill="#9A0404" stroke="#9A0404" stroke-width="0.862815"/>
   <path d="M73.2594 62.1046C76.3396 65.1847 79.8968 73.7358 76.8166 76.816C74.4538 79.1788 68.872 77.6359 65.0097 75.3986C64.7302 75.2365 64.4861 74.8436 64.4692 74.521C64.3375 72.0067 64.0098 68.2265 64.0098 68.2265C64.0087 68.1003 63.9344 68.026 63.8082 68.0249L57.0276 67.8762C56.854 67.8725 56.7141 67.7325 56.7105 67.5588L56.5686 60.7851C56.5675 60.6589 56.4932 60.5846 56.3669 60.5835C56.3669 60.5835 51.9363 60.5444 50.1258 60.5281C49.7077 60.5243 49.1289 60.2815 48.8333 59.986C47.4139 58.5669 43.4071 54.5604 39.6658 50.8193L50.82 39.665L73.2594 62.1046Z" fill="#9A0404" stroke="#9A0404" stroke-width="0.862815"/>
@@ -75,39 +98,39 @@ import DOMPurify from 'dompurify';
   </defs>
   </svg>
   `),
-      };
-    }
-  }
-  </script>
-  
-  <style>
-  body {
-    margin: 0;
-  }
-  @font-face {
-    font-family: 'Raleway';
-    src: url('@/assets/font/Raleway-VariableFont_wght.ttf') format('truetype');
-  }
-  
-  @font-face {
-    font-family: 'Raleway-Italic';
-    src: url('@/assets/font/Raleway-Italic-VariableFont_wght.ttf') format('truetype');
-    font-style: italic;
-  }
-  .app {
-    font-family: Raleway;
-  }
-  .containerApp {
-    padding: 80px 50px;
-    gap: 20px;
-    display: flex;
-    flex-direction: column;
-    /* background-color: #292929; */
-  }
-  .rowApp {
-    display: flex;
-    flex-direction: row;
-    gap : 60px;
-  }
-  </style>
-  
+    };
+  },
+};
+</script>
+
+<style>
+body {
+  margin: 0;
+}
+@font-face {
+  font-family: "Raleway";
+  src: url("@/assets/font/Raleway-VariableFont_wght.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Raleway-Italic";
+  src: url("@/assets/font/Raleway-Italic-VariableFont_wght.ttf")
+    format("truetype");
+  font-style: italic;
+}
+.app {
+  font-family: Raleway;
+}
+.containerApp {
+  padding: 80px 50px;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  /* background-color: #292929; */
+}
+.rowApp {
+  display: flex;
+  flex-direction: row;
+  gap: 60px;
+}
+</style>

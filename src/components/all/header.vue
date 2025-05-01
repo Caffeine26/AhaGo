@@ -15,11 +15,7 @@
         <ul v-if="!userLoggedIn" class="sign" @click="toggleLogin">
           Sign Up
         </ul>
-        <ul
-          v-if="userLoggedIn"
-          @click="goToAccount"
-          class="account"
-        >
+        <ul v-if="userLoggedIn" @click="goToAccount" class="account">
           <img src="@/assets/delivery/image.png" alt="Account" />
         </ul>
       </div>
@@ -27,32 +23,31 @@
   </div>
 </template>
 
-
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 
 export default {
-  name: 'Header',
+  name: "Header",
   setup() {
-    const userLoggedIn = ref(false)
+    const userLoggedIn = ref(false);
 
     const toggleLogin = () => {
-      userLoggedIn.value = true
-    }
+      userLoggedIn.value = true;
+    };
 
     const goToAccount = () => {
-      alert('Redirecting to Account Page!')
-    }
+      alert("redirecting to Account Page!");
+    };
 
-    return { userLoggedIn, toggleLogin, goToAccount }
+    return { userLoggedIn, toggleLogin, goToAccount };
   },
   props: {
     title: {
       type: String,
-      default: '',
+      default: "",
     },
   },
-}
+};
 </script>
 
 <style scoped>
@@ -64,16 +59,15 @@ export default {
   color: white;
 }
 .Logo {
-    gap: 10px;
-    display: flex;
-    align-items: center;
+  gap: 10px;
+  display: flex;
+  align-items: center;
 }
 .logo {
   height: 60px;
 }
 .title {
-    
-    font-size: 32px;
+  font-size: 32px;
 }
 .sign {
   padding: 10px;
@@ -91,7 +85,7 @@ export default {
   cursor: pointer;
   font-size: 20px;
 }
-.account img{
+.account img {
   border-radius: 20px;
   height: 40px;
   width: 40px;

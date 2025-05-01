@@ -1,24 +1,22 @@
 <template>
-    <div class="text"> 
-        <p>{{ text }}</p>
-    </div>
-
+  <div class="text">
+    <p>{{ text }}</p>
+  </div>
 </template>
 <script>
 export default {
-    name: 'Text',
-    props: {
-        text: String
-    }
-}
+  name: "Text",
+  props: {
+    text: String,
+  },
+};
 </script>
 <style scoped>
 .text {
-    max-width: 90vw; 
-    font-size: 24px;
-    color: #464646;
-    word-break: break-word; /* break long words if needed */
-    overflow-wrap: break-word; /* wrap the text nicely */
+  max-width: 90vw;
+  font-size: 24px;
+  color: #464646;
+  word-break: break-word; /* break long words if needed */
+  overflow-wrap: break-word; /* wrap the text nicely */
 }
-
 </style>
