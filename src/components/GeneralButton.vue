@@ -37,5 +37,6 @@ export default {
     align-items: center;
     font-family: 'Raleway';
     font-weight: 500;
+    margin: 10px;
 }
 </style>

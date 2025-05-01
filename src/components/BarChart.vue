@@ -94,5 +94,6 @@ computed: {
     background-color: #D9D9D9;
     padding: 24px;
     border-radius: 20px;
+    width: 1000px;
 }
 </style>

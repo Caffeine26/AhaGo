@@ -33,8 +33,11 @@
 
         </div>
 
-        <div class="profile">
+        <div v-if="imgUrl" class="profile">
             <img id="imgUrl" v-bind:src="imgUrl" alt="User">
+        </div>
+        <div v-else class="profile">
+            <img id="imgUrl" v-bind:src="defaultImg" alt="User">
         </div>
     </div>
 </template>
@@ -48,6 +51,11 @@ export default {
         },
         name: String,
         imgUrl: String,
+    },
+    data() {
+        return {
+            defaultImg: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg"
+        }
     }
 }
 </script>
@@ -61,13 +69,14 @@ export default {
     justify-content: center;
     align-items: flex-start;
     margin-left: 16px;
+    margin-top: 12px;
 }
 
 .username {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 8px;
+    margin-top: 20px;
 
 }
 
