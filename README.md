@@ -1,4 +1,4 @@
-# aha-go
+# nhameii-project
 
 ## Project setup
 ```
