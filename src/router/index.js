@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import AppVue from "@/App.vue";
 import DeliveryLayout from "@/views/delivery/deliveryLayout.vue"; 
 import LandingPage from "@/views/delivery/landingPage.vue";
 import ProfilePage from "@/views/delivery/profile/profile.vue";
@@ -34,11 +33,6 @@ const router = createRouter({
       path: '/test-cards',
       name: 'TestCards',
       component: () => import('@/views/TestCards.vue')
-    },
-    {
-      path: "/",
-      name: "home",
-      component: AppVue,
     },
     {
       path: "/delivery",

@@ -5,7 +5,8 @@
 </template>
 <script>
 export default {
-    name: 'Box',
+    // eslint-disable-next-line vue/multi-word-component-names
+    name: 'Boxbox',
 }
 </script>
 <style scoped>
