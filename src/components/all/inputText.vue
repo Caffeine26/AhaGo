@@ -61,6 +61,7 @@ watch(
 }
 
 .input-text input {
+  width: 100%;
   padding: 10px 20px;
   font-size: 18px;
   border: 1px solid #ccc;

@@ -1,4 +1,4 @@
 <template>
-  <div class="App"></div>
+  <router-view />
 </template>
 <script></script>

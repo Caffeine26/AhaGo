@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <div class="svg" v-html="svg"></div>
+    <div class="svg">
+      <img :src="svg" alt="Description Icon" />
+    </div>
     <SectionTitle :SectionTitle="SectionTitle" />
     <Text :text="text" />
   </div>
@@ -9,10 +11,11 @@
 <script>
 import SectionTitle from "./section_title.vue";
 import Text from "./text.vue";
+
 export default {
   name: "Description",
   props: {
-    svg: String,
+    svg: String, // This should now be a path to a file
     SectionTitle: String,
     text: String,
   },

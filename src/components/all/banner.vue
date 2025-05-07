@@ -2,6 +2,10 @@
   <div class="container">
     <img :src="imgSrc" alt="Banner Image" />
     <div class="overlay"></div>
+    <div class="content">
+      <slot></slot>
+      <!-- Allows injecting custom content -->
+    </div>
   </div>
 </template>
 
@@ -16,6 +20,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .container {
   position: relative;
@@ -37,7 +42,19 @@ img {
   left: 0;
   width: 100vw;
   height: 500px;
-  background-color: rgba(0, 0, 0, 0.6); /* 60% dark overlay */
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 2;
+}
+
+.content {
+  width: 60%;
+  padding: 50px;
+  position: absolute;
+  top: -10%;
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  z-index: 3;
+  /* color: white; */
+  font-weight: 700;
 }
 </style>
