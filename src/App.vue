@@ -8,7 +8,7 @@
 
     <!-- <AppFooter></AppFooter> -->
 
-    <ProfileUser
+    <!-- <ProfileUser
     name="kittiecattie"
     img-url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQK5CqiQQDLVEVd_mEtfKpqF8MTZj0SqiEEWg&s"
     user-id=1
@@ -27,12 +27,12 @@
     name="kittiecattie"
     img-url=""
     user-id=0
-    ></ProfileUser>
+    ></ProfileUser> -->
 
     <!-- <CategoryCard></CategoryCard> -->
      <!-- <ProductCard></ProductCard> -->
 
-    <!-- <OrderCard></OrderCard> -->
+    <OrderCard></OrderCard>
 
      <!-- <StatusAction :status-id="3"></StatusAction> -->
 
@@ -65,11 +65,11 @@
 // import AppFooter from './components/AppFooter.vue';
 // import ProductCard from './components/ProductCard.vue';
 // import CategoryCard from './components/CategoryCard.vue';
-// import OrderCard from './components/OrderCard.vue';
+import OrderCard from './components/OrderCard.vue';
 // import StatusAction from './components/StatusAction.vue';
 // import GeneralButton from './components/GeneralButton.vue';
 // import ProductCard from './components/ProductCard.vue';
-import ProfileUser from './components/ProfileUser.vue';
+// import ProfileUser from './components/ProfileUser.vue';
 // import BarChart from './components/BarChart.vue';
 
 
@@ -78,10 +78,10 @@ export default {
   components: {
     // AppFooter,
     // CategoryCard,
-    // OrderCard,
+    OrderCard,
     // StatusAction,
     // GeneralButton,
-    ProfileUser,
+    // ProfileUser,
     // BarChart,
     // ProductCard,
 
