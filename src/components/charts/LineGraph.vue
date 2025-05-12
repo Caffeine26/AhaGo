@@ -13,61 +13,28 @@
     <div class="graph-container">
       <svg :width="width" :height="height + 30" class="line-graph">
         <!-- Y-Axis Labels -->
-        <text
-          v-for="(line, index) in gridLines"
-          :key="'label-' + index"
-          :x="padding - 10"
-          :y="line"
-          text-anchor="end"
-          alignment-baseline="middle"
-          class="axis-label"
-        >
+        <text v-for="(line, index) in gridLines" :key="'label-' + index" :x="padding - 10" :y="line" text-anchor="end"
+          alignment-baseline="middle" class="axis-label">
           {{ formatYAxisLabel(index) }}
         </text>
 
         <!-- X-Axis Labels -->
-        <text
-          v-for="(month, index) in months"
-          :key="'month-' + index"
-          :x="padding + (index * (width - padding * 2) / (months.length - 1))"
-          :y="height - 10"
-          text-anchor="middle"
-          class="axis-label"
-        >
+        <text v-for="(month, index) in months" :key="'month-' + index"
+          :x="padding + (index * (width - padding * 2) / (months.length - 1))" :y="height - 10" text-anchor="middle"
+          class="axis-label">
           {{ month }}
         </text>
 
         <!-- Grid Lines -->
-        <line
-          v-for="(line, index) in gridLines"
-          :key="'grid-' + index"
-          :x1="padding"
-          :x2="width - padding"
-          :y1="line"
-          :y2="line"
-          stroke="#E5E7EB"
-          stroke-width="1"
-        />
-        
+        <line v-for="(line, index) in gridLines" :key="'grid-' + index" :x1="padding" :x2="width - padding" :y1="line"
+          :y2="line" stroke="#E5E7EB" stroke-width="1" />
+
         <!-- Line Path -->
-        <path
-          :d="pathData"
-          fill="none"
-          stroke="#FF0000"
-          stroke-width="2"
-        />
-        
+        <path :d="pathData" fill="none" stroke="#FF0000" stroke-width="2" />
+
         <!-- Data Points -->
-        <circle
-          v-for="(point, index) in dataPoints"
-          :key="'point-' + index"
-          :cx="point.x"
-          :cy="point.y"
-          r="4"
-          fill="white"
-          stroke="#FF0000"
-          stroke-width="2"
-        />
+        <circle v-for="(point, index) in dataPoints" :key="'point-' + index" :cx="point.x" :cy="point.y" r="4"
+          fill="white" stroke="#FF0000" stroke-width="2" />
       </svg>
     </div>
   </div>
@@ -122,6 +89,9 @@ export default {
       return lines
     },
     dataPoints() {
+      if (!this.data || !this.months || this.data.length !== this.months.length) {
+        return [];
+      }
       const xStep = (this.width - this.padding * 2) / (this.data.length - 1)
       return this.data.map((value, index) => ({
         x: this.padding + xStep * index,
@@ -129,6 +99,9 @@ export default {
       }))
     },
     pathData() {
+      if (!this.dataPoints.length) {
+        return '';
+      }
       return this.dataPoints.reduce((path, point, index) => {
         return path + (index === 0 ? `M ${point.x},${point.y}` : ` L ${point.x},${point.y}`)
       }, '')
