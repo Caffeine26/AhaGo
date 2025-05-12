@@ -6,7 +6,7 @@
       <LineGraph
         title="Supply Overview"
         value="1678"
-        :data="[50, 150, 180, 320, 180, 350, 400, 320]"
+        :data="[50, 150, 180, 320, 180, 350, 400]"
         :months="['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug']"
       />
       <LineGraph
