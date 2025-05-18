@@ -3,13 +3,19 @@ import DeliveryLayout from "@/views/delivery/deliveryLayout.vue";
 import LandingPage from "@/views/delivery/landingPage.vue";
 import ProfilePage from "@/views/delivery/profile/profile.vue";
 import AuthPanel from '@/components/AuthPanel.vue'
+import HomePage from '@/views/client/HomePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/signin'
+      redirect: '/splash'
+    },
+    {
+      path: '/splash',
+      name: 'Splash',
+      component: HomePage
     },
     {
       path: '/signin',
@@ -33,6 +39,11 @@ const router = createRouter({
       path: '/test-cards',
       name: 'TestCards',
       component: () => import('@/views/TestCards.vue')
+    },
+    {
+      path: '/client',
+      name: 'ClientLanding',
+      component: () => import('@/views/client/LandingPage.vue')
     },
     {
       path: "/delivery",

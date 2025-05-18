@@ -12,7 +12,7 @@
         <ul v-if="!userLoggedIn" @click="toggleLogin">
           Login
         </ul>
-        <ul v-if="!userLoggedIn" class="sign" @click="toggleLogin">
+        <ul v-if="!userLoggedIn" class="sign" @click="goToSignUp">
           Sign Up
         </ul>
         <ul v-if="userLoggedIn" @click="goToAccount" class="account">
@@ -26,6 +26,7 @@
 <script setup>
 // Importing 'ref' from Vue
 import { ref } from "vue";
+import { useRouter } from 'vue-router';
 
 // Accept props
 import { defineProps } from "vue";
@@ -39,9 +40,14 @@ const props = defineProps({
 });
 
 const userLoggedIn = ref(false); // This line initializes the reactive ref
+const router = useRouter();
 
 const toggleLogin = () => {
   userLoggedIn.value = true;
+};
+
+const goToSignUp = () => {
+  router.push('/signup');
 };
 </script>
 

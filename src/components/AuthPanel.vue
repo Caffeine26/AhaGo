@@ -1,7 +1,8 @@
 <template>
-  <div class="auth-container">
-    <div class="auth-panel">
-      <!-- <transition-group name="fade" mode="out-in"> -->
+    <Header2 title="AHA GO" it1="Sign In" it2="Sign Up" it3="Forgot Password" />
+    <div class="auth-container">
+      <div class="auth-panel">
+        <!-- <transition-group name="fade" mode="out-in"> -->
         <!-- Login Panel -->
         <div v-if="activePanel === 'login'" class="login-panel" key="login">
           <div class="panel-content">
@@ -14,22 +15,16 @@
                 <span class="switch-link" @click="navigateToSignUp">Register</span>
               </div>
               <form @submit.prevent="handleLogin">
-                <div class="form-group">
-                  <input 
-                    type="tel" 
-                    v-model="loginForm.phone" 
-                    required
-                    placeholder="Phone number"
-                  >
-                </div>
-                <div class="form-group">
-                  <input 
-                    type="password" 
-                    v-model="loginForm.password" 
-                    required
-                    placeholder="Enter password"
-                  >
-                </div>
+                <InputText
+                  v-model="loginForm.phone"
+                  placeholder="Phone number"
+                  type="tel"
+                />
+                <InputText
+                  v-model="loginForm.password"
+                  placeholder="Enter password"
+                  type="password"
+                />
                 <div class="forgot-password">
                   <a href="#" @click.prevent="navigateToForgotPassword">Forgot password?</a>
                 </div>
@@ -56,34 +51,25 @@
           <div class="panel-content">
             <div class="form-section">
               <div class="panel-header">
-                <h2>SignUp</h2>
+                <h2>Register</h2>
                 <span class="switch-link" @click="navigateToSignIn">SignIn</span>
               </div>
               <form @submit.prevent="handleSignup">
-                <div class="form-group">
-                  <input 
-                    type="tel" 
-                    v-model="signupForm.phone" 
-                    required
-                    placeholder="Phone number"
-                  >
-                </div>
-                <div class="form-group">
-                  <input 
-                    type="password" 
-                    v-model="signupForm.password" 
-                    required
-                    placeholder="Enter password"
-                  >
-                </div>
-                <div class="form-group">
-                  <input 
-                    type="password" 
-                    v-model="signupForm.confirmPassword" 
-                    required
-                    placeholder="Confirm password"
-                  >
-                </div>
+                <InputText
+                  v-model="signupForm.phone"
+                  placeholder="Phone number"
+                  type="tel"
+                />
+                <InputText
+                  v-model="signupForm.password"
+                  placeholder="Enter password"
+                  type="password"
+                />
+                <InputText
+                  v-model="signupForm.confirmPassword"
+                  placeholder="Confirm password"
+                  type="password"
+                />
                 <button type="submit" class="submit-btn">SignUp</button>
                 <div class="signin-text">
                   Already have an account? <span class="signin-link" @click="navigateToSignIn">SignIn</span>
@@ -111,25 +97,28 @@
             <div class="image-section">
               <img src="@/assets/forgot.png" alt="Forgot Password" class="panel-image" />
             </div>
-            <div class="form-section">
-              <div class="panel-header">
-                <h2>Verify Code</h2>
-                <button class="back-btn" @click="navigateToSignIn">
-                  <span>&times;</span>
-                </button>
+            <div class="form-section forgot-form-section">
+              <button class="back-btn" @click="navigateToSignIn">
+                <svg width="32" height="32" fill="none" stroke="#9A0404" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <h2 class="forgot-title">Verify Code</h2>
+              <p class="forgot-instructions">
+                Please enter code we just sent to your email<br>
+                <span class="forgot-email">example@gmail.com</span>
+              </p>
+              <div class="code-inputs">
+                <input type="text" maxlength="1" v-for="(digit, index) in 4" :key="index"
+                       v-model="verificationCode[index]"
+                       @input="handleCodeInput($event, index)"
+                       ref="codeInputs">
               </div>
-              <div class="verify-content">
-                <p>Please enter code we just sent to your email</p>
-                <p class="email">example@gmail.com</p>
-                <div class="code-inputs">
-                  <input type="text" maxlength="1" v-for="(digit, index) in 4" :key="index" 
-                         v-model="verificationCode[index]" 
-                         @input="handleCodeInput($event, index)"
-                         ref="codeInputs">
-                </div>
-                <p class="resend">Resend code</p>
-                <button class="verify-btn" @click="handleVerification">Verify</button>
+              <div class="forgot-resend-row">
+                <span class="forgot-otp-label">Didn't receive OTP?</span>
+                <span class="resend" @click="handleResendCode">Resend code</span>
               </div>
+              <button class="verify-btn" @click="handleVerification">Verify</button>
             </div>
           </div>
         </div>
@@ -199,11 +188,11 @@
 .panel-header h2 {
   font-size: 24px;
   font-weight: 600;
-  color: #000;
+  color: #9A0404;
 }
 
 .switch-link {
-  color: #999;
+  color: #9A0404;
   font-weight: 500;
   cursor: pointer;
 }
@@ -239,13 +228,19 @@ input::placeholder {
 .submit-btn {
   width: 100%;
   padding: 1rem;
-  background-color: #FF0000;
+  background-color: #9A0404;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
   margin-bottom: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover {
+  background: #b91c1c;
 }
 
 .signup-text {
@@ -254,10 +249,11 @@ input::placeholder {
   margin-bottom: 1.5rem;
 }
 
-.signup-link {
-  color: #FF0000;
+.signup-link,
+.signin-link {
+  color: #9A0404;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .divider {
@@ -282,7 +278,7 @@ input::placeholder {
   width: 100%;
   padding: 1rem;
   background: white;
-  border: 1px solid #E8E8E8;
+  border: 1.5px solid #9A0404;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -290,6 +286,7 @@ input::placeholder {
   gap: 0.5rem;
   cursor: pointer;
   font-weight: 500;
+  color: #9A0404;
 }
 
 .google-btn img {
@@ -376,11 +373,115 @@ input::placeholder {
   width: 100%;
   height: 100%;
 }
+
+.forgot-form-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  width: 100%;
+}
+
+.back-btn {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgot-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.forgot-instructions {
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.forgot-email {
+  color: #9A0404;
+  font-weight: 600;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.code-inputs {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin: 2rem 0 1.5rem 0;
+}
+
+.code-inputs input {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e5e5;
+  background: #f8f8f8;
+  font-size: 2rem;
+  text-align: center;
+  transition: border 0.2s;
+}
+
+.code-inputs input:focus {
+  border: 2px solid #9A0404;
+  outline: none;
+}
+
+.forgot-resend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.forgot-otp-label {
+  color: #aaa;
+  font-size: 1rem;
+}
+
+.resend {
+  color: #111;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.verify-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #9A0404;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s;
+}
+
+.verify-btn:hover {
+  background: #b91c1c;
+}
 </style>
 
 <script>
+import Header2 from '@/components/delivery/header2.vue'
+import InputText from '@/components/all/inputText.vue'
 export default {
   name: 'AuthPanel',
+  components: { Header2, InputText },
   props: {
     defaultPanel: {
       type: String,
@@ -429,6 +530,10 @@ export default {
     handleVerification() {
       const code = this.verificationCode.join('')
       this.$emit('verify-code', code)
+    },
+    handleResendCode() {
+      // TODO: Implement resend logic here
+      alert('Resend code clicked!');
     },
     // Navigation methods
     navigateToSignIn() {
