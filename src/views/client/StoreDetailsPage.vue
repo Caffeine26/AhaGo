@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <Header :title="'AHA GO'" />
-    <div class="store-details-page">
+  <div class="page-container">
+    <div :class="{'blur-content': isCartOpen}">
+      <Header :title="'AHA GO'" />
+      <div class="store-details-page">
       <!-- Breadcrumb -->
       <nav class="breadcrumb">
         <span>Home</span> /
@@ -77,7 +78,7 @@
                 <div class="menu-sold">{{ item.sold }} sold</div>
                 <div class="menu-desc">{{ item.desc }}</div>
               </div>
-              <button class="add-btn">+</button>
+              <button class="add-btn" @click="addToCart(item)">+</button>
             </div>
           </div>
         </div>
@@ -116,6 +117,36 @@
             </div>
           </div>
         </div>
+      </div>
+      </div>
+    </div>
+    <!-- Cart Component -->
+    <div class="cart-container" :class="{'cart-open': isCartOpen}">
+
+      <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button class="close-cart" @click="isCartOpen = false">✕</button>
+      </div>
+      <div class="cart-items">
+        <div v-for="item in cartItems" :key="item.id" class="cart-item">
+          <img :src="item.image" class="cart-item-img" />
+          <div class="cart-item-info">
+            <div class="cart-item-title">{{ item.title }}</div>
+            <div class="cart-item-price">${{ item.price }}</div>
+          </div>
+          <div class="cart-item-quantity">
+            <button @click="decreaseQuantity(item)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button @click="increaseQuantity(item)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span>${{ cartTotal }}</span>
+        </div>
+        <button class="checkout-btn">Proceed to Checkout</button>
       </div>
     </div>
     <AppFooter />
@@ -240,6 +271,35 @@ export default {
     AppFooter
   },
   setup() {
+    const isCartOpen = ref(false)
+    const cartItems = ref([])
+    
+    const cartTotal = computed(() => {
+      return cartItems.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+    })
+
+    const addToCart = (item) => {
+      const existingItem = cartItems.value.find(i => i.id === item.id)
+      if (existingItem) {
+        existingItem.quantity++
+      } else {
+        cartItems.value.push({ ...item, quantity: 1 })
+      }
+      isCartOpen.value = true
+    }
+
+    const increaseQuantity = (item) => {
+      item.quantity++
+    }
+
+    const decreaseQuantity = (item) => {
+      if (item.quantity > 1) {
+        item.quantity--
+      } else {
+        cartItems.value = cartItems.value.filter(i => i.id !== item.id)
+      }
+    }
+
     const route = useRoute();
     const activeTab = ref('order')
     const search = ref('')
@@ -255,7 +315,13 @@ export default {
       cover1,
       cover2,
       cover3,
-      reviewData
+      reviewData,
+      isCartOpen,
+      cartItems,
+      cartTotal,
+      addToCart,
+      increaseQuantity,
+      decreaseQuantity
     }
   }
 }
@@ -584,6 +650,136 @@ export default {
 .action-link:hover {
   color: #b91c1c;
 }
+
+.page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+.blur-content {
+  filter: blur(4px);
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+.cart-container {
+  position: fixed;
+  bottom: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+  transition: bottom 0.3s ease;
+  z-index: 2000;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.cart-open {
+  bottom: 0;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-cart {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.cart-item-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.cart-item-price {
+  color: #b91c1c;
+  font-weight: 500;
+}
+
+.cart-item-quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cart-item-quantity button {
+  background: #f3f3f3;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.cart-footer {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #b91c1c;
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.checkout-btn:hover {
+  background: #991818;
+}
+
 @media (max-width: 900px) {
   .store-details-page {
     padding: 1rem;
