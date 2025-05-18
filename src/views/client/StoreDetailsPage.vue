@@ -146,7 +146,7 @@
           <span>Total:</span>
           <span>${{ cartTotal }}</span>
         </div>
-        <button class="checkout-btn">Proceed to Checkout</button>
+        <button class="checkout-btn" @click="goToCheckout">Proceed to Checkout</button>
       </div>
     </div>
     <AppFooter />
@@ -156,7 +156,7 @@
 <script>
 import Header from '@/components/all/header.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import avatar1 from '@/assets/avatars/avatar1.png'
 import avatar2 from '@/assets/avatars/avatar2.png'
@@ -271,12 +271,27 @@ export default {
     AppFooter
   },
   setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const brandName = computed(() => route.params.brandName)
     const isCartOpen = ref(false)
     const cartItems = ref([])
-    
+    const search = ref('')
+    const activeTab = ref('order')
+
     const cartTotal = computed(() => {
       return cartItems.value.reduce((total, item) => total + (item.price * item.quantity), 0)
     })
+
+    const goToCheckout = () => {
+      router.push({
+        name: 'checkout',
+        params: {
+          brandName: brandName.value,
+          cartItems: JSON.stringify(cartItems.value)
+        }
+      })
+    }
 
     const addToCart = (item) => {
       const existingItem = cartItems.value.find(i => i.id === item.id)
@@ -300,15 +315,12 @@ export default {
       }
     }
 
-    const route = useRoute();
-    const activeTab = ref('order')
-    const search = ref('')
     const filteredMenu = computed(() => {
       if (!search.value) return menuData
       return menuData.filter(item => item.title.toLowerCase().includes(search.value.toLowerCase()))
     })
     return {
-      brandName: route.params.brandName,
+      brandName,
       activeTab,
       search,
       filteredMenu,
@@ -319,6 +331,7 @@ export default {
       isCartOpen,
       cartItems,
       cartTotal,
+      goToCheckout,
       addToCart,
       increaseQuantity,
       decreaseQuantity
