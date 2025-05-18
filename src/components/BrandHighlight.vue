@@ -1,5 +1,5 @@
 <template>
-    <div class="brand-item">
+    <div class="brand-item" @click="$emit('click', name)">
       <img :src="logo" :alt="name" class="brand-logo" />
       <div class="brand-name">{{ name }}</div>
     </div>

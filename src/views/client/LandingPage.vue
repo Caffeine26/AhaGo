@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!-- <div class="brand-highlights-section">
+      <div class="brand-highlights-section">
         <h2>Brand Highlights</h2>
         <div class="brand-grid">
           <BrandHighlight
@@ -54,9 +54,10 @@
             :key="brand.name"
             :name="brand.name"
             :logo="brand.logo"
+            @click="goToStoreDetails(brand.name)"
           />
         </div>
-      </div> -->
+      </div>
     </div>
     <AppFooter />
   </div>
@@ -131,15 +132,16 @@ export default {
       ],
       brands: [
         { name: 'KFC', logo: '/src/assets/client/kfc.png' },
-        { name: 'Cafe Amazon', logo: '/src/assets/client/amazon.png' },
-        { name: 'The Pizza Company', logo: '/src/assets/client/pizza.png' },
-        { name: "Gerbie's Salad & Sandwich", logo: '/src/assets/client/gerbies.png' },
-        { name: 'Starbucks', logo: '/src/assets/client/starbucks.png' },
-        { name: 'KOI', logo: '/src/assets/client/koi.png' },
-        { name: 'Mexicano', logo: '/src/assets/client/mexicano.png' },
-        { name: 'Brown', logo: '/src/assets/client/brown.png' },
-        { name: 'Tube Coffee', logo: '/src/assets/client/tube.png' },
-        { name: 'Lotteria', logo: '/src/assets/client/lotteria.png' }
+        { name: 'Mhub Khmer', logo: '/src/assets/client/kfc.png' },
+        // { name: 'Cafe Amazon', logo: '/src/assets/client/amazon.png' },
+        // { name: 'The Pizza Company', logo: '/src/assets/client/pizza.png' },
+        // { name: "Gerbie's Salad & Sandwich", logo: '/src/assets/client/gerbies.png' },
+        // { name: 'Starbucks', logo: '/src/assets/client/starbucks.png' },
+        // { name: 'KOI', logo: '/src/assets/client/koi.png' },
+        // { name: 'Mexicano', logo: '/src/assets/client/mexicano.png' },
+        // { name: 'Brown', logo: '/src/assets/client/brown.png' },
+        // { name: 'Tube Coffee', logo: '/src/assets/client/tube.png' },
+        // { name: 'Lotteria', logo: '/src/assets/client/lotteria.png' }
       ]
     }
   },
@@ -151,6 +153,9 @@ export default {
   methods: {
     selectCategory(category) {
       this.selectedCategory = category;
+    },
+    goToStoreDetails(brandName) {
+      this.$router.push({ name: 'StoreDetails', params: { brandName } });
     }
   }
 }

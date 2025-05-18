@@ -46,6 +46,11 @@ const router = createRouter({
       component: () => import('@/views/client/LandingPage.vue')
     },
     {
+      path: '/store/:brandName',
+      name: 'StoreDetails',
+      component: () => import('@/views/client/StoreDetailsPage.vue')
+    },
+    {
       path: "/delivery",
       component: DeliveryLayout, 
       children: [
