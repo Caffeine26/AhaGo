@@ -10,6 +10,9 @@
           <p class="contact">Ms.Lyly  +885963024312</p>
         </div>
       </div>
+      <button class="add-location-btn" @click="goToAddLocation">
+        + Add Location
+      </button>
       <hr />
       <!-- Delivery Info -->
       <div class="info-list">
@@ -99,7 +102,7 @@
 <script>
 import Header from '@/components/all/header.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, computed } from 'vue'
 import cover1 from '@/assets/store_details/house.png'
 
@@ -111,6 +114,7 @@ export default {
   },
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const brandName = route.params.brandName
     const cartItems = ref(JSON.parse(route.params.cartItems || '[]'))
     const remarks = ref('')
@@ -132,6 +136,10 @@ export default {
       })
     }
 
+    const goToAddLocation = () => {
+      router.push({ name: 'AddLocation' })
+    }
+
     return {
       brandName,
       cartItems,
@@ -139,7 +147,8 @@ export default {
       cartTotal,
       finalTotal,
       placeOrder,
-      cover1
+      cover1,
+      goToAddLocation
     }
   }
 }
@@ -328,6 +337,20 @@ textarea {
   background: #f3f3f3;
 }
 .order-btn:hover {
+  background: #991818;
+}
+.add-location-btn {
+  background: #b91c1c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.add-location-btn:hover {
   background: #991818;
 }
 @media (max-width: 600px) {

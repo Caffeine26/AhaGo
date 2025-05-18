@@ -57,6 +57,11 @@ const router = createRouter({
       props: true
     },
     {
+      path: '/add-location',
+      name: 'AddLocation',
+      component: () => import('@/views/client/AddLocationPage.vue')
+    },
+    {
       path: "/delivery",
       component: DeliveryLayout, 
       children: [
