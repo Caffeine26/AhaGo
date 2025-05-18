@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div style="padding: 40px;">
     <h1>AhaGo Testing Components</h1>
 
@@ -67,4 +67,5 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-</style>
+</style> -->
+<template><router-view></router-view></template>
