@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="svg">
+    <div class="svg" v-if="svg">
       <img :src="svg" alt="Description Icon" />
     </div>
     <SectionTitle :SectionTitle="SectionTitle" />
@@ -15,7 +15,7 @@ import Text from "./text.vue";
 export default {
   name: "Description",
   props: {
-    svg: String, // This should now be a path to a file
+    svg: String, // Resolved image path
     SectionTitle: String,
     text: String,
   },

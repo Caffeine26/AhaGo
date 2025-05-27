@@ -1,35 +1,30 @@
 <template>
-  <li :class="['sidebar-item', { active }]" @click="$emit('click')">
-    <img
-      v-if="!isEmoji"
-      :src="icon"
-      class="icon"
-      alt="icon"
-      :class="{ activeIcon: active }"
-    />
+  <RouterLink :to="to" class="sidebar-item" :class="{ active }">
+    <img :src="icon" class="icon" :class="{ activeIcon: active }" />
     <span class="label">{{ label }}</span>
-  </li>
+  </RouterLink>
 </template>
 
 <script setup>
-import { computed } from "vue";
-
 const props = defineProps({
-  icon: [String, Object], // icon can now be a component
+  icon: String,
   label: String,
   active: Boolean,
+  to: String,
 });
 </script>
 
 <style scoped>
 .sidebar-item {
-  width: 100%;
+  width: 280px;
   display: flex;
   align-items: center;
   padding: 15px;
   cursor: pointer;
   color: white;
-  transition: all 0.3s ease-out;
+  text-decoration: none;
+  border-radius: 30px 0 0 30px;
+  background-color: #9a0404;
 }
 
 .sidebar-item.active {
@@ -39,24 +34,19 @@ const props = defineProps({
   width: 110%;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
-  transform: translateY(5px);
 }
-
+.sidebar-item:hover {
+  transform: scale(1.1);
+}
 .icon {
   margin-right: 10px;
   width: 24px;
   height: 24px;
-  filter: brightness(0) invert(1); /* makes icon white */
-  transition: filter 0.3s ease;
+  filter: brightness(0) invert(1);
 }
 
 .activeIcon {
-  filter: none; /* show original red color when active */
-}
-
-/* Optional: keep emojis red when active */
-.sidebar-item.active .icon {
-  color: #9a0404;
+  filter: none;
 }
 
 .label {

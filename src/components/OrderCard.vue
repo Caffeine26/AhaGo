@@ -76,7 +76,7 @@ export default{
     font-size: 20px;
 }
 .card{
-    width: 1250px;
+    /* width: 1250px; */
     border: 1px solid;
     display: flex;
     justify-content: space-around;

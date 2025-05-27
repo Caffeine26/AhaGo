@@ -9,10 +9,17 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^1.9.0",
     "chart.js": "^4.4.9",
     "core-js": "^3.8.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "leaflet": "^1.9.4",
+    "leaflet-routing-machine": "^3.2.12",
+    "open-location-code": "^1.0.3",
     "pinia": "^3.0.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.5",
     "vite-plugin-vue": "^0.0.1",
     "vue": "^3.2.13",
@@ -27,6 +34,7 @@
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-service": "~5.0.8",
     "autoprefixer": "^10.4.21",
+    "pug": "^3.0.3",
     "vite": "^6.3.5",
     "vite-plugin-vue-devtools": "^7.7.6"
   },
@@ -49,5 +57,18 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "description": "<<<<<<< HEAD",
+  "main": "babel.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Caffeine26/AhaGo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Caffeine26/AhaGo/issues"
+  },
+  "homepage": "https://github.com/Caffeine26/AhaGo#readme"
 }

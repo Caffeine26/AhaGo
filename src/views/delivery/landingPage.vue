@@ -1,11 +1,15 @@
 <template>
   <div class="app">
-    <Banner imgSrc="../src/assets/delivery/images/image2.png">
+    <Banner class="banner" imgSrc="../src/assets/delivery/images/image2.png">
       <div class="top">
         <p class="ban">
           Sign up to deliver with <span style="color: #9a0404">AhaGo</span>
         </p>
         <p class="ital">Own your time</p>
+      </div>
+      <div class="bottom">
+        <button type="button" class="button">Get Started</button>
+        <button type="button" class="link">Access your account</button>
       </div>
     </Banner>
     <div class="containerApp">
@@ -61,7 +65,6 @@
 <script>
 import Banner from "@/components/all/banner.vue";
 import Article from "@/components/delivery/article.vue";
-import Button from "@/components/delivery/button.vue";
 import Description from "@/components/delivery/description.vue";
 import MapFrame from "@/components/delivery/mapFrame.vue";
 import Text from "@/components/delivery/text.vue";
@@ -73,11 +76,9 @@ import app from "@/assets/delivery/icons/app.svg";
 import rickshaw from "@/assets/delivery/icons/rickshaw.svg";
 import tuktuk from "@/assets/delivery/icons/tuktuk.svg";
 import motor from "@/assets/delivery/icons/motor.svg";
-
 export default {
   components: {
     Banner,
-    Button,
     Description,
     Title,
     Text,
@@ -98,7 +99,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 body {
   margin: 0;
 }
@@ -125,20 +126,46 @@ body {
 .top {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  padding: 0px 20px;
 }
 .ban {
   color: white;
   font-size: 64px;
+  margin-bottom: 0px;
 }
 .ital {
   font-style: italic;
   color: white;
   font-size: 32px;
+  font-weight: 200;
 }
 .rowApp {
   display: flex;
   flex-direction: row;
   gap: 60px;
+}
+.button {
+  background-color: #9a0404;
+  color: white;
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+.link {
+  color: white;
+  background-color: transparent;
+  text-decoration: underline;
+  cursor: pointer;
+  font-style: italic;
+  border: none;
+  font-size: 20px;
+}
+.bottom {
+  margin-top: 60px;
+  display: flex;
+  gap: 20px;
+  padding: 0px 20px;
 }
 </style>

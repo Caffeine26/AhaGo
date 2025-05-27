@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <div class="Logo">
+    <div class="Logo" @click="goToOverview" style="cursor: pointer">
       <img class="logo" src="@/assets/main/logo.png" alt="Logo" />
       <div class="title" v-html="title"></div>
     </div>
+
     <div class="nav">
       <ul>
         Help
@@ -24,10 +25,8 @@
 </template>
 
 <script setup>
-// Importing 'ref' from Vue
 import { ref } from "vue";
-
-// Accept props
+import { useRouter } from "vue-router"; // Add this line
 import { defineProps } from "vue";
 
 const props = defineProps({
@@ -35,18 +34,26 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  goToAccount: Function, // Accept the goToAccount method as a prop
+  goToAccount: Function,
 });
 
-const userLoggedIn = ref(false); // This line initializes the reactive ref
+const router = useRouter(); // Get the router instance
+
+const userLoggedIn = ref(false);
 
 const toggleLogin = () => {
   userLoggedIn.value = true;
+};
+
+// Navigate to overview page when logo/title is clicked
+const goToOverview = () => {
+  router.push("/delivery/overview");
 };
 </script>
 
 <style scoped>
 .container {
+  width: 93.3%;
   background-color: #292929;
   padding: 0px 50px;
   display: flex;
