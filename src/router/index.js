@@ -1,20 +1,23 @@
-import { createRouter, createWebHistory } from "vue-router";
+import AuthPanel from "@/components/AuthPanel.vue";
+import AboutUs from "@/views/delivery/AboutUs.vue";
+import BasicsPage from "@/views/delivery/basics/basicsPage.vue";
+import SectionDetail from "@/views/delivery/basics/SectionDetail.vue";
+import sectionPage from "@/views/delivery/basics/sectionPage.vue";
+import ContactUs from "@/views/delivery/ContactUs.vue";
 import DeliveryLayout from "@/views/delivery/deliveryLayout.vue";
 import LandingPage from "@/views/delivery/landingPage.vue";
-import BasicsPage from "@/views/delivery/basics/basicsPage.vue";
-import ProfilePage from "@/views/delivery/settings/profile.vue";
-import AuthPanel from "@/components/AuthPanel.vue";
-import NotificationPage from "@/views/delivery/settings/notificationProfile.vue";
-import earningsProfile from "@/views/delivery/settings/earningsProfile.vue";
-import ratingsProfile from "@/views/delivery/settings/ratingsProfile.vue";
-import incomingDelivery from "@/views/delivery/settings/incomingDelivery.vue";
-import deliveryHistory from "@/views/delivery/settings/deliveryHistory.vue";
+import LogIn from "@/views/delivery/authentication/LogIn.vue";
 import mapOrder from "@/views/delivery/mapOrder.vue";
-import sectionPage from "@/views/delivery/basics/sectionPage.vue";
+import deliveryHistory from "@/views/delivery/settings/deliveryHistory.vue";
+import earningsProfile from "@/views/delivery/settings/earningsProfile.vue";
+import incomingDelivery from "@/views/delivery/settings/incomingDelivery.vue";
+import NotificationPage from "@/views/delivery/settings/notificationProfile.vue";
+import ProfilePage from "@/views/delivery/settings/profile.vue";
+import ratingsProfile from "@/views/delivery/settings/ratingsProfile.vue";
 import settingsLayout from "@/views/delivery/settings/settingsLayout.vue";
-import SectionDetail from '@/views/delivery/basics/SectionDetail.vue'; 
-import AboutUs from "@/views/delivery/AboutUs.vue";
-import ContactUs from "@/views/delivery/ContactUs.vue";
+import SignUp from "@/views/delivery/authentication/SignUp.vue";
+import deliverLayout from "@/views/delivery/authentication/deliverLayout.vue";
+import { createRouter, createWebHistory } from "vue-router";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -63,13 +66,13 @@ const router = createRouter({
           path: "basics/:section/:buttonLink",
           name: "SectionDetail",
           component: SectionDetail,
-          props: true
+          props: true,
         },
         {
           path: "basics/:section",
           name: "sectionPage",
           component: sectionPage,
-        },             
+        },
         {
           path: "settings",
           name: "settingsPage",
@@ -105,7 +108,7 @@ const router = createRouter({
               name: "deliveryHistory",
               component: deliveryHistory,
             },
-          ]
+          ],
         },
         {
           path: "mapOrder",
@@ -124,6 +127,22 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/deliver",
+      component: deliverLayout,
+      children: [
+        {
+          path: "login",
+          name: "login",
+          component: LogIn,
+        },
+        {
+          path: "signup",
+          name: "signup",
+          component: SignUp,
+        },
+      ]
+    }
   ],
 });
 

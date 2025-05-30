@@ -10,23 +10,23 @@
         Help
       </ul>
       <div class="acc">
-        <ul v-if="!userLoggedIn" @click="toggleLogin">
-          Login
-        </ul>
-        <ul v-if="!userLoggedIn" class="sign" @click="toggleLogin">
-          Sign Up
-        </ul>
-        <ul v-if="userLoggedIn" @click="goToAccount" class="account">
-          <img src="@/assets/delivery/images/image.png" alt="Account" />
-        </ul>
-      </div>
+  <ul v-if="!userLoggedIn" @click="goToLogin">
+    Login
+  </ul>
+  <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
+    Sign Up
+  </ul>
+  <ul v-if="userLoggedIn" @click="goToAccount" class="account">
+    <img src="@/assets/delivery/images/image1.png" alt="Account" />
+  </ul>
+</div>
+
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router"; // Add this line
+import { useRouter } from "vue-router";
 import { defineProps } from "vue";
 
 const props = defineProps({
@@ -35,21 +35,27 @@ const props = defineProps({
     default: "",
   },
   goToAccount: Function,
+  userLoggedIn: {
+    type: Boolean,
+    required: true,
+  },
 });
 
-const router = useRouter(); // Get the router instance
+const router = useRouter();
 
-const userLoggedIn = ref(false);
-
-const toggleLogin = () => {
-  userLoggedIn.value = true;
+const goToLogin = () => {
+  router.push("/deliver/login");
 };
 
-// Navigate to overview page when logo/title is clicked
+const goToSignup = () => {
+  router.push("/deliver/signup");
+};
+
 const goToOverview = () => {
   router.push("/delivery/overview");
 };
 </script>
+
 
 <style scoped>
 .container {

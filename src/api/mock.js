@@ -1,5 +1,3 @@
-// src/mocks/mock.js
-// import cloud from "@/assets/delivery/icons/cloud.svg"
 
  const drivers = [
   {

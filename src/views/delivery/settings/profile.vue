@@ -1,15 +1,10 @@
 <template>
   <div class="profile">
-    <!-- <SideBar :defaultActive="'Edit Profile'" /> -->
     <div class="contain">
       <Title class="title" title="Edit Profile" />
       <div class="content">
         <div class="image">
-          <img
-            class="pic"
-            :src="user.photo || defaultPhoto"
-            alt="Profile photo"
-          />
+          <img class="pic" :src="user.photo || defaultPhoto" alt="Profile photo" />
           <GeneralButton
             title="Upload a new photo"
             btnColor="#9A0404"
@@ -32,12 +27,7 @@
             <p>or</p>
             <label class="upload-label">
               Click to browse
-              <input
-                type="file"
-                accept="image/*"
-                @change="handleFileSelect"
-                hidden
-              />
+              <input type="file" accept="image/*" @change="handleFileSelect" hidden />
             </label>
           </div>
         </div>
@@ -53,149 +43,158 @@
               @click="toggleEdit"
             />
           </div>
+
           <div class="input">
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              :label="'First Name'"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.firstname,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.firstname = $event),
-                      placeholder: 'Enter your first name',
-                    }
-                  : { value: user.firstname }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Last Name"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.lastname,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.lastname = $event),
-                      placeholder: 'Enter your last name',
-                    }
-                  : { value: user.lastname }
-              "
-            />
+            <!-- First Name -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="First Name"
+                :modelValue="user.firstname"
+                @update:modelValue="(val) => user.firstname = val"
+                placeholder="Enter your first name"
+              />
+              <Information
+                v-else
+                label="First Name"
+                :value="user.firstname"
+              />
+            </div>
+
+            <!-- Last Name -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Last Name"
+                :modelValue="user.lastname"
+                @update:modelValue="(val) => user.lastname = val"
+                placeholder="Enter your last name"
+              />
+              <Information
+                v-else
+                label="Last Name"
+                :value="user.lastname"
+              />
+            </div>
           </div>
 
           <div class="input">
-            <component
-              class="email"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Email Address"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.email,
-                      'onUpdate:modelValue': ($event) => (user.email = $event),
-                      placeholder: 'Enter your email address',
-                    }
-                  : { value: user.email }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Phone Number"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.phone,
-                      'onUpdate:modelValue': ($event) => (user.phone = $event),
-                      placeholder: 'Enter your phone number',
-                    }
-                  : { value: user.phone }
-              "
-            />
+            <!-- Email -->
+            <div class="email">
+              <InputText
+                v-if="isEditing"
+                label="Email Address"
+                :modelValue="user.email"
+                @update:modelValue="(val) => user.email = val"
+                placeholder="Enter your email address"
+              />
+              <Information
+                v-else
+                label="Email Address"
+                :value="user.email"
+              />
+            </div>
+
+            <!-- Phone -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Phone Number"
+                :modelValue="user.phone"
+                @update:modelValue="(val) => user.phone = val"
+                placeholder="Enter your phone number"
+              />
+              <Information
+                v-else
+                label="Phone Number"
+                :value="user.phone"
+              />
+            </div>
           </div>
 
+          <!-- Address -->
           <div class="address">
-            <component
-              :is="isEditing ? 'InputText' : 'Information'"
+            <InputText
+            id="address"
+              v-if="isEditing"
               label="Address"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.address,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.address = $event),
-                      placeholder: 'Enter your address',
-                    }
-                  : { value: user.address }
-              "
+              :modelValue="user.address"
+              @update:modelValue="(val) => user.address = val"
+              placeholder="Enter your address"
+            />
+            <Information
+              v-else
+              label="Address"
+              :value="user.address"
             />
           </div>
 
           <div class="input">
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Country"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.country,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.country = $event),
-                      placeholder: 'Enter your country',
-                    }
-                  : { value: user.country }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="City/Province"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.city,
-                      'onUpdate:modelValue': ($event) => (user.city = $event),
-                      placeholder: 'Enter your city',
-                    }
-                  : { value: user.city }
-              "
-            />
+            <!-- Country -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Country"
+                :modelValue="user.country"
+                @update:modelValue="(val) => user.country = val"
+                placeholder="Enter your country"
+              />
+              <Information
+                v-else
+                label="Country"
+                :value="user.country"
+              />
+            </div>
+
+            <!-- City -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="City/Province"
+                :modelValue="user.city"
+                @update:modelValue="(val) => user.city = val"
+                placeholder="Enter your city"
+              />
+              <Information
+                v-else
+                label="City/Province"
+                :value="user.city"
+              />
+            </div>
           </div>
 
           <div class="input">
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="National ID card"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.idCard,
-                      'onUpdate:modelValue': ($event) => (user.idCard = $event),
-                      placeholder: 'Enter your id',
-                    }
-                  : { value: user.idCard }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Passport Number"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.passport,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.passport = $event),
-                      placeholder: 'Enter your passport',
-                    }
-                  : { value: user.passport }
-              "
-            />
+            <!-- ID Card -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="National ID card"
+                :modelValue="user.idCard"
+                @update:modelValue="(val) => user.idCard = val"
+                placeholder="Enter your id"
+              />
+              <Information
+                v-else
+                label="National ID card"
+                :value="user.idCard"
+              />
+            </div>
+
+            <!-- Passport -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Passport Number"
+                :modelValue="user.passport"
+                @update:modelValue="(val) => user.passport = val"
+                placeholder="Enter your passport"
+              />
+              <Information
+                v-else
+                label="Passport Number"
+                :value="user.passport"
+              />
+            </div>
           </div>
         </Box>
 
@@ -204,69 +203,73 @@
           <div class="personal">
             <Text class="head" text="Vehicle Information" />
           </div>
+
           <div class="input">
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Type of Vehicle"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.vehicleType,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.vehicleType = $event),
-                      placeholder: 'Enter your vehicle\'s type',
-                    }
-                  : { value: user.vehicleType }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Vehicle Name"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.vehicleName,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.vehicleName = $event),
-                      placeholder: 'Enter your vehicle\'s name',
-                    }
-                  : { value: user.vehicleName }
-              "
-            />
+            <!-- Vehicle Type -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Type of Vehicle"
+                :modelValue="user.vehicleType"
+                @update:modelValue="(val) => user.vehicleType = val"
+                placeholder="Enter your vehicle's type"
+              />
+              <Information
+                v-else
+                label="Type of Vehicle"
+                :value="user.vehicleType"
+              />
+            </div>
+
+            <!-- Vehicle Name -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Vehicle Name"
+                :modelValue="user.vehicleName"
+                @update:modelValue="(val) => user.vehicleName = val"
+                placeholder="Enter your vehicle's name"
+              />
+              <Information
+                v-else
+                label="Vehicle Name"
+                :value="user.vehicleName"
+              />
+            </div>
           </div>
+
           <div class="input">
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Vehicle Color"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.vehicleColor,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.vehicleColor = $event),
-                      placeholder: 'Enter your vehicle\'s color',
-                    }
-                  : { value: user.vehicleColor }
-              "
-            />
-            <component
-              class="text"
-              :is="isEditing ? 'InputText' : 'Information'"
-              label="Vehicle's License Plate"
-              v-bind="
-                isEditing
-                  ? {
-                      modelValue: user.licensePlate,
-                      'onUpdate:modelValue': ($event) =>
-                        (user.licensePlate = $event),
-                      placeholder: 'Enter your license plate',
-                    }
-                  : { value: user.licensePlate }
-              "
-            />
+            <!-- Vehicle Color -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Vehicle Color"
+                :modelValue="user.vehicleColor"
+                @update:modelValue="(val) => user.vehicleColor = val"
+                placeholder="Enter your vehicle's color"
+              />
+              <Information
+                v-else
+                label="Vehicle Color"
+                :value="user.vehicleColor"
+              />
+            </div>
+
+            <!-- License Plate -->
+            <div class="text">
+              <InputText
+                v-if="isEditing"
+                label="Vehicle's License Plate"
+                :modelValue="user.licensePlate"
+                @update:modelValue="(val) => user.licensePlate = val"
+                placeholder="Enter your license plate"
+              />
+              <Information
+                v-else
+                label="Vehicle's License Plate"
+                :value="user.licensePlate"
+              />
+            </div>
           </div>
         </Box>
       </div>
@@ -439,10 +442,13 @@ export default {
   gap: 30px;
 }
 .box {
-  width: 100%;
+  width: 120%;
+  max-width: 850px;
+  margin: 0 auto; /* Centers the box */
 }
+
 .input {
-  width: 88%;
+  width: 90%;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -453,7 +459,7 @@ export default {
 }
 .address {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(845px, 845px));
+  grid-template-columns: repeat(auto-fit, minmax(765px, 765px));
 }
 .personal {
   display: flex;
