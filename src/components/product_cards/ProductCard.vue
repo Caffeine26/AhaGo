@@ -5,11 +5,14 @@
       <div class="product-header">
         <h3 class="product-title">{{ title }}</h3>
         <div class="product-rating">
-          {{ rating }}
-          <span class="rating-star">★</span>
+          <span class="rating-star">⭐</span> {{ rating }}
         </div>
       </div>
-      <p class="product-price">${{ price }}</p>
+      <p class="product-price">${{ price.toFixed(2) }} &bull; {{ category }}</p>
+      <div class="product-delivery-info">
+        <span class="delivery-time">🕒 {{ deliveryTime }}</span>
+        <span class="delivery-price">🏍️ ${{ deliveryPrice.toFixed(2) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -27,6 +30,18 @@ export default {
       required: true
     },
     price: {
+      type: Number,
+      required: true
+    },
+    category: {
+      type: String,
+      required: true
+    },
+    deliveryTime: {
+      type: String,
+      required: true
+    },
+    deliveryPrice: {
       type: Number,
       required: true
     },
@@ -54,12 +69,13 @@ export default {
 
 .product-image {
   width: 100%;
-  height: 180px;
+  height: 250px;
   object-fit: cover;
 }
 
 .product-info {
   padding: 1rem;
+  position: relative;
 }
 
 .product-header {
@@ -72,24 +88,44 @@ export default {
 .product-title {
   margin: 0;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .product-rating {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  color: #9A0404;
-  font-weight: 500;
+  font-size: 0.9rem;
+  color: #6b7280; /* Gray 500 */
 }
 
 .rating-star {
-  color: #9A0404;
+  color: #ffc107; /* Amber color for the star */
 }
 
 .product-price {
-  margin: 0;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: #6b7280; /* Gray 500 */
+  margin: 0.25rem 0;
+}
+
+.product-delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #6b7280; /* Gray 500 */
+}
+
+.delivery-time,
+.delivery-price {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #9A0404;
+}
+
+.delivery-star {
   color: #9A0404;
 }
 </style>

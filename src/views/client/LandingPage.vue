@@ -41,7 +41,9 @@
             :title="product.title"
             :image="product.image"
             :price="product.price"
-            :rating="product.rating"
+            :category="product.category"
+            :delivery-time="product.deliveryTime"
+            :delivery-price="product.deliveryPrice"
           />
         </div>
       </div>
@@ -89,46 +91,46 @@ export default {
       ],
       products: [
         // Food (12)
-        { id: 1, title: 'Fish Amok', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 2, title: 'Somlar Korko', image: '/src/assets/client/somlar-korko.png', price: 5, rating: 4.2, category: 'Food' },
-        { id: 3, title: 'Steamed Eggs', image: '/src/assets/client/steamed-eggs.png', price: 5, rating: 4.4, category: 'Food' },
-        { id: 4, title: 'Smlor Broher', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.4, category: 'Food' },
-        { id: 5, title: 'Fried Pork', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 6, title: 'Fried Fish', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 7, title: 'Lok Lak', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 8, title: 'Steamed Chicken', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 9, title: 'Salty Fermented Fish', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 10, title: 'Fried Octopus with Rice', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 11, title: 'Fish Amok', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
-        { id: 12, title: 'Fried Noodle with Duck', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food' },
+        { id: 1, title: 'Yellow Cab', image: '/src/assets/client/yellow_cab.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 1.05 },
+        { id: 2, title: 'KFC', image: '/src/assets/client/kfc1.png', price: 5, rating: 4.2, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.75 },
+        { id: 3, title: 'Yellow Cab', image: '/src/assets/client/steamed-eggs.png', price: 5, rating: 4.4, category: 'Food', deliveryTime: '25-40 min', deliveryPrice: 1.10 },
+        { id: 4, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.4, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 0.95 },
+        { id: 5, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
+        { id: 6, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '25-35 min', deliveryPrice: 0.80 },
+        { id: 7, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-40 min', deliveryPrice: 1.00 },
+        { id: 8, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.70 },
+        { id: 9, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '35-50 min', deliveryPrice: 1.20 },
+        { id: 10, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '25-40 min', deliveryPrice: 0.85 },
+        { id: 11, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 1.05 },
+        { id: 12, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-30 min', deliveryPrice: 0.60 },
 
         // Dessert (12)
-        { id: 13, title: 'Nom Ahkor', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert' },
-        { id: 14, title: 'Mango Sticky Rice', image: '/src/assets/client/dessert.png', price: 4, rating: 4.7, category: 'Dessert' },
-        { id: 15, title: 'Pumpkin Custard', image: '/src/assets/client/dessert.png', price: 3.5, rating: 4.6, category: 'Dessert' },
-        { id: 16, title: 'Banana in Coconut Milk', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert' },
-        { id: 17, title: 'Sweet Rice Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert' },
-        { id: 18, title: 'Coconut Jelly', image: '/src/assets/client/dessert.png', price: 3, rating: 4.3, category: 'Dessert' },
-        { id: 19, title: 'Taro Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.2, category: 'Dessert' },
-        { id: 20, title: 'Palm Sugar Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.6, category: 'Dessert' },
-        { id: 21, title: 'Layer Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.7, category: 'Dessert' },
-        { id: 22, title: 'Sesame Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert' },
-        { id: 23, title: 'Coconut Pudding', image: '/src/assets/client/dessert.png', price: 3, rating: 4.8, category: 'Dessert' },
-        { id: 24, title: 'Banana Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert' },
+        { id: 13, title: 'Nom Ahkor', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
+        { id: 14, title: 'Mango Sticky Rice', image: '/src/assets/client/dessert.png', price: 4, rating: 4.7, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.60 },
+        { id: 15, title: 'Pumpkin Custard', image: '/src/assets/client/dessert.png', price: 3.5, rating: 4.6, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.55 },
+        { id: 16, title: 'Banana in Coconut Milk', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.70 },
+        { id: 17, title: 'Sweet Rice Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-35 min', deliveryPrice: 0.50 },
+        { id: 18, title: 'Coconut Jelly', image: '/src/assets/client/dessert.png', price: 3, rating: 4.3, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.65 },
+        { id: 19, title: 'Taro Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.2, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.70 },
+        { id: 20, title: 'Palm Sugar Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.6, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
+        { id: 21, title: 'Layer Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.7, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.60 },
+        { id: 22, title: 'Sesame Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
+        { id: 23, title: 'Coconut Pudding', image: '/src/assets/client/dessert.png', price: 3, rating: 4.8, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.70 },
+        { id: 24, title: 'Banana Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.80 },
 
         // Drink (12)
-        { id: 25, title: 'Mango Smoothie', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.6, category: 'Drink' },
-        { id: 26, title: 'Iced Coffee', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink' },
-        { id: 27, title: 'Sugarcane Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink' },
-        { id: 28, title: 'Coconut Water', image: '/src/assets/client/drink.png', price: 2, rating: 4.8, category: 'Drink' },
-        { id: 29, title: 'Lime Soda', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink' },
-        { id: 30, title: 'Milk Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink' },
-        { id: 31, title: 'Lemon Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink' },
-        { id: 32, title: 'Passion Fruit Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink' },
-        { id: 33, title: 'Avocado Shake', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.8, category: 'Drink' },
-        { id: 34, title: 'Pineapple Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink' },
-        { id: 35, title: 'Orange Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink' },
-        { id: 36, title: 'Watermelon Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink' },
+        { id: 25, title: 'Mango Smoothie', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.6, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
+        { id: 26, title: 'Iced Coffee', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.30 },
+        { id: 27, title: 'Sugarcane Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.35 },
+        { id: 28, title: 'Coconut Water', image: '/src/assets/client/drink.png', price: 2, rating: 4.8, category: 'Drink', deliveryTime: '10-15 min', deliveryPrice: 0.25 },
+        { id: 29, title: 'Lime Soda', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.30 },
+        { id: 30, title: 'Milk Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.35 },
+        { id: 31, title: 'Lemon Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.30 },
+        { id: 32, title: 'Passion Fruit Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
+        { id: 33, title: 'Avocado Shake', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.8, category: 'Drink', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
+        { id: 34, title: 'Pineapple Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.30 },
+        { id: 35, title: 'Orange Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.35 },
+        { id: 36, title: 'Watermelon Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
       ],
       brands: [
         { name: 'KFC', logo: '/src/assets/client/kfc.png' },
@@ -164,16 +166,16 @@ export default {
 <style scoped>
 .landing-page {
   padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .hero-section {
   background-image: url('@/assets/client/banner.png');
   background-size: cover;
   background-position: center;
-  padding: 4rem 2rem;
-  border-radius: 16px;
+  padding: 6rem 2rem;
+  max-width: 1700px;
+  margin: 0 auto;
+  border-radius: 0 0 16px 16px;
   color: white;
   text-align: center;
   margin-bottom: 3rem;
@@ -246,7 +248,7 @@ export default {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
