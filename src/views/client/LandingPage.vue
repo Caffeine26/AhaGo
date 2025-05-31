@@ -33,22 +33,23 @@
   
       <!-- Inspiration Section -->
       <div class="inspiration-section">
-        <h2>{{ selectedCategory ? `${selectedCategory} Products` : 'Inspiration for your first order' }}</h2>
+        <h2>{{ selectedCategory ? `${selectedCategory} Stores` : 'Popular Stores' }}</h2>
         <div class="products-grid">
           <ProductCard
-            v-for="product in filteredProducts"
-            :key="product.id"
-            :title="product.title"
-            :image="product.image"
-            :price="product.price"
-            :category="product.category"
-            :delivery-time="product.deliveryTime"
-            :delivery-price="product.deliveryPrice"
+            v-for="store in filteredStores"
+            :key="store.id"
+            :title="store.name"
+            :image="store.logo"
+            :price="store.rating"
+            :category="store.category"
+            :delivery-time="store.deliveryTime"
+            :delivery-price="store.deliveryPrice"
+            @click="goToStoreDetails(store.name)"
           />
         </div>
       </div>
 
-      <div class="brand-highlights-section">
+      <!-- <div class="brand-highlights-section">
         <h2>Brand Highlights</h2>
         <div class="brand-grid">
           <BrandHighlight
@@ -59,7 +60,7 @@
             @click="goToStoreDetails(brand.name)"
           />
         </div>
-      </div>
+      </div> -->
     </div>
     <AppFooter />
   </div>
@@ -89,67 +90,37 @@ export default {
         { id: 2, title: 'Dessert', image: '/src/assets/client/dessert.png' },
         { id: 3, title: 'Drink', image: '/src/assets/client/drink.png' }
       ],
-      products: [
-        // Food (12)
-        { id: 1, title: 'Yellow Cab', image: '/src/assets/client/yellow_cab.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 1.05 },
-        { id: 2, title: 'KFC', image: '/src/assets/client/kfc1.png', price: 5, rating: 4.2, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.75 },
-        { id: 3, title: 'Yellow Cab', image: '/src/assets/client/steamed-eggs.png', price: 5, rating: 4.4, category: 'Food', deliveryTime: '25-40 min', deliveryPrice: 1.10 },
-        { id: 4, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.4, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 0.95 },
-        { id: 5, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
-        { id: 6, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '25-35 min', deliveryPrice: 0.80 },
-        { id: 7, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-40 min', deliveryPrice: 1.00 },
-        { id: 8, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.70 },
-        { id: 9, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '35-50 min', deliveryPrice: 1.20 },
-        { id: 10, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '25-40 min', deliveryPrice: 0.85 },
-        { id: 11, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 1.05 },
-        { id: 12, title: 'Yellow Cab', image: '/src/assets/client/fish-amok.png', price: 5, rating: 4.8, category: 'Food', deliveryTime: '20-30 min', deliveryPrice: 0.60 },
-
-        // Dessert (12)
-        { id: 13, title: 'Nom Ahkor', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
-        { id: 14, title: 'Mango Sticky Rice', image: '/src/assets/client/dessert.png', price: 4, rating: 4.7, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.60 },
-        { id: 15, title: 'Pumpkin Custard', image: '/src/assets/client/dessert.png', price: 3.5, rating: 4.6, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.55 },
-        { id: 16, title: 'Banana in Coconut Milk', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.70 },
-        { id: 17, title: 'Sweet Rice Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-35 min', deliveryPrice: 0.50 },
-        { id: 18, title: 'Coconut Jelly', image: '/src/assets/client/dessert.png', price: 3, rating: 4.3, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.65 },
-        { id: 19, title: 'Taro Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.2, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.70 },
-        { id: 20, title: 'Palm Sugar Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.6, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
-        { id: 21, title: 'Layer Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.7, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.60 },
-        { id: 22, title: 'Sesame Balls', image: '/src/assets/client/dessert.png', price: 3, rating: 4.5, category: 'Dessert', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
-        { id: 23, title: 'Coconut Pudding', image: '/src/assets/client/dessert.png', price: 3, rating: 4.8, category: 'Dessert', deliveryTime: '25-35 min', deliveryPrice: 0.70 },
-        { id: 24, title: 'Banana Cake', image: '/src/assets/client/dessert.png', price: 3, rating: 4.4, category: 'Dessert', deliveryTime: '30-40 min', deliveryPrice: 0.80 },
-
-        // Drink (12)
-        { id: 25, title: 'Mango Smoothie', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.6, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
-        { id: 26, title: 'Iced Coffee', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.30 },
-        { id: 27, title: 'Sugarcane Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.35 },
-        { id: 28, title: 'Coconut Water', image: '/src/assets/client/drink.png', price: 2, rating: 4.8, category: 'Drink', deliveryTime: '10-15 min', deliveryPrice: 0.25 },
-        { id: 29, title: 'Lime Soda', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.30 },
-        { id: 30, title: 'Milk Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.35 },
-        { id: 31, title: 'Lemon Tea', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.30 },
-        { id: 32, title: 'Passion Fruit Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.7, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
-        { id: 33, title: 'Avocado Shake', image: '/src/assets/client/drink.png', price: 2.5, rating: 4.8, category: 'Drink', deliveryTime: '20-30 min', deliveryPrice: 0.50 },
-        { id: 34, title: 'Pineapple Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.4, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.30 },
-        { id: 35, title: 'Orange Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.6, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.35 },
-        { id: 36, title: 'Watermelon Juice', image: '/src/assets/client/drink.png', price: 2, rating: 4.5, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.40 },
+      stores: [
+        { id: 1, name: 'KFC', logo: '/src/assets/client/kfc1.png', rating: 4.5, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.75 },
+        { id: 2, name: 'Mhub Khmer', logo: '/src/assets/client/steamed-eggs.png', rating: 4.2, category: 'Food', deliveryTime: '25-40 min', deliveryPrice: 0.85 },
+        { id: 3, name: 'Cafe Amazon', logo: '/src/assets/client/fish-amok.png', rating: 4.4, category: 'Drink', deliveryTime: '15-25 min', deliveryPrice: 0.50 },
+        { id: 4, name: 'The Pizza Company', logo: '/src/assets/client/yellow_cab.png', rating: 4.6, category: 'Food', deliveryTime: '30-45 min', deliveryPrice: 1.00 },
+        { id: 5, name: "Gerbie's Salad & Sandwich", logo: '/src/assets/client/fish-amok.png', rating: 4.3, category: 'Food', deliveryTime: '20-30 min', deliveryPrice: 0.60 },
+        { id: 6, name: 'Starbucks', logo: '/src/assets/client/dessert.png', rating: 4.7, category: 'Drink', deliveryTime: '15-20 min', deliveryPrice: 0.45 },
+        { id: 7, name: 'KOI', logo: '/src/assets/client/drink.png', rating: 4.5, category: 'Drink', deliveryTime: '20-30 min', deliveryPrice: 0.55 },
+        { id: 8, name: 'Mexicano', logo: '/src/assets/client/fish-amok.png', rating: 4.4, category: 'Food', deliveryTime: '25-35 min', deliveryPrice: 0.80 },
+        { id: 9, name: 'Brown', logo: '/src/assets/client/dessert.png', rating: 4.6, category: 'Dessert', deliveryTime: '15-25 min', deliveryPrice: 0.50 },
+        { id: 10, name: 'Tube Coffee', logo: '/src/assets/client/drink.png', rating: 4.3, category: 'Drink', deliveryTime: '10-20 min', deliveryPrice: 0.40 },
+        { id: 11, name: 'Lotteria', logo: '/src/assets/client/fish-amok.png', rating: 4.5, category: 'Food', deliveryTime: '20-35 min', deliveryPrice: 0.75 }
       ],
       brands: [
         { name: 'KFC', logo: '/src/assets/client/kfc.png' },
         { name: 'Mhub Khmer', logo: '/src/assets/client/kfc.png' },
-        // { name: 'Cafe Amazon', logo: '/src/assets/client/amazon.png' },
-        // { name: 'The Pizza Company', logo: '/src/assets/client/pizza.png' },
-        // { name: "Gerbie's Salad & Sandwich", logo: '/src/assets/client/gerbies.png' },
-        // { name: 'Starbucks', logo: '/src/assets/client/starbucks.png' },
-        // { name: 'KOI', logo: '/src/assets/client/koi.png' },
-        // { name: 'Mexicano', logo: '/src/assets/client/mexicano.png' },
-        // { name: 'Brown', logo: '/src/assets/client/brown.png' },
-        // { name: 'Tube Coffee', logo: '/src/assets/client/tube.png' },
-        // { name: 'Lotteria', logo: '/src/assets/client/lotteria.png' }
+        { name: 'Cafe Amazon', logo: '/src/assets/client/amazon.png' },
+        { name: 'The Pizza Company', logo: '/src/assets/client/pizza.png' },
+        { name: "Gerbie's Salad & Sandwich", logo: '/src/assets/client/gerbies.png' },
+        { name: 'Starbucks', logo: '/src/assets/client/starbucks.png' },
+        { name: 'KOI', logo: '/src/assets/client/koi.png' },
+        { name: 'Mexicano', logo: '/src/assets/client/mexicano.png' },
+        { name: 'Brown', logo: '/src/assets/client/brown.png' },
+        { name: 'Tube Coffee', logo: '/src/assets/client/tube.png' },
+        { name: 'Lotteria', logo: '/src/assets/client/lotteria.png' }
       ]
     }
   },
   computed: {
-    filteredProducts() {
-      return this.products.filter(product => product.category === this.selectedCategory);
+    filteredStores() {
+      return this.stores.filter(store => store.category === this.selectedCategory);
     }
   },
   methods: {

@@ -54,10 +54,13 @@ const goToSignUp = () => {
 <style scoped>
 .container {
   background-color: #292929;
-  padding: 0px 50px;
+  padding: 0px 2rem;
   display: flex;
   justify-content: space-between;
-  color: white;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 .Logo {
   gap: 10px;
@@ -66,9 +69,11 @@ const goToSignUp = () => {
 }
 .logo {
   height: 60px;
+  width: auto;
 }
 .title {
   font-size: 32px;
+  white-space: nowrap;
 }
 .sign {
   padding: 10px;
@@ -76,6 +81,7 @@ const goToSignUp = () => {
   border-radius: 20px;
   color: #292929;
   cursor: pointer;
+  white-space: nowrap;
 }
 .nav,
 .acc {
@@ -91,5 +97,22 @@ const goToSignUp = () => {
   height: 40px;
   width: 40px;
   object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0px 1rem;
+  }
+  .title {
+    font-size: 24px;
+  }
+  .nav,
+  .acc {
+    font-size: 16px;
+    gap: 10px;
+  }
+  .logo {
+    height: 40px;
+  }
 }
 </style>
