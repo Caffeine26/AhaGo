@@ -3,218 +3,119 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, onBeforeUnmount } from "vue";
-import L from "leaflet";
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
 
 const props = defineProps({
-  // Initial center coords, default Phnom Penh
-  center: {
-    type: Array,
-    default: () => [11.5564, 104.9282],
-  },
-  // Initial zoom level
-  zoom: {
-    type: Number,
-    default: 13,
-  },
-  // Driver's current position marker [lat, lng]
-  markerPosition: {
-    type: Array,
-    default: () => null,
-  },
-  // Driver profile picture URL for custom marker icon
-  driverProfilePicUrl: {
-    type: String,
-    default: null,
-  },
-  // Enable geolocation tracking or not
-  useGeolocation: {
-    type: Boolean,
-    default: false,
-  },
-  // Restaurant coordinates { lat, lng }
-  restaurantCoords: {
-    type: Object,
-    default: () => null,
-  },
-  // Client coordinates { lat, lng }
-  clientCoords: {
-    type: Object,
-    default: () => null,
-  },
+  driverProfilePicUrl: String,
+  useGeolocation: Boolean,
+  routePoints: Array, // [{lat, lng}, {lat, lng}, ...]
 });
+
+const emit = defineEmits(["location-updated"]);
 
 const mapElement = ref(null);
 let map = null;
 let driverMarker = null;
+let routeRenderer = null;
 let geoWatchId = null;
 
-onMounted(() => {
-  map = L.map(mapElement.value).setView(props.center, props.zoom);
+const fallbackCoords = { lat: 11.5587, lng: 104.9174 };
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+function loadGoogleMaps() {
+  return new Promise((resolve, reject) => {
+    if (window.google?.maps) return resolve(window.google);
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA68FNc7213c8aFqrpOVjtDYW1Y_0Olpvw`;
+    script.async = true;
+    script.onload = () => resolve(window.google);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
 
-  // Restaurant marker
-  if (props.restaurantCoords) {
-    L.marker([props.restaurantCoords.lat, props.restaurantCoords.lng])
-      .addTo(map)
-      .bindPopup("Restaurant");
+function drawRoute(google, points) {
+  if (!points || points.length < 2) return;
+
+  const service = new google.maps.DirectionsService();
+  if (!routeRenderer) {
+    routeRenderer = new google.maps.DirectionsRenderer({ map });
   }
 
-  // Client marker
-  if (props.clientCoords) {
-    L.marker([props.clientCoords.lat, props.clientCoords.lng])
-      .addTo(map)
-      .bindPopup("Customer");
-  }
-
-  // Driver marker with custom icon if profile pic URL is provided
-  if (props.markerPosition) {
-    const icon = props.driverProfilePicUrl
-      ? L.icon({
-          iconUrl: props.driverProfilePicUrl,
-          iconSize: [40, 40], // size of the icon
-          iconAnchor: [20, 40], // point of the icon which will correspond to marker's location (bottom center)
-          popupAnchor: [0, -40], // point from which the popup should open relative to the iconAnchor
-          className: "driver-marker-icon",
-        })
-      : null;
-
-    driverMarker = icon
-      ? L.marker(props.markerPosition, { icon })
-      : L.marker(props.markerPosition);
-
-    driverMarker.addTo(map);
-  }
-
-  // Geolocation: track driver if enabled
-  if (props.useGeolocation && "geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-
-        if (!driverMarker) {
-          const icon = props.driverProfilePicUrl
-            ? L.icon({
-                iconUrl: props.driverProfilePicUrl,
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-                popupAnchor: [0, -40],
-                className: "driver-marker-icon",
-              })
-            : null;
-
-          driverMarker = icon
-            ? L.marker([lat, lng], { icon })
-            : L.marker([lat, lng]);
-
-          driverMarker.addTo(map);
-        } else {
-          driverMarker.setLatLng([lat, lng]);
-        }
-
-        map.setView([lat, lng], 16);
-      },
-      (err) => {
-        console.error("Geolocation initial position error:", err.message);
+  service.route(
+    {
+      origin: points[0],
+      destination: points[points.length - 1],
+      waypoints: points.slice(1, -1).map(loc => ({ location: loc })),
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    (result, status) => {
+      if (status === "OK") {
+        routeRenderer.setDirections(result);
+      } else {
+        console.warn("Directions request failed:", status);
       }
-    );
+    }
+  );
+}
 
-    geoWatchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+function initMap(google, coords) {
+  map = new google.maps.Map(mapElement.value, {
+    center: coords,
+    zoom: 16,
+  });
 
-        if (!driverMarker) {
-          const icon = props.driverProfilePicUrl
-            ? L.icon({
-                iconUrl: props.driverProfilePicUrl,
-                iconSize: [40, 40],
-                iconAnchor: [20, 40],
-                popupAnchor: [0, -40],
-                className: "driver-marker-icon",
-              })
-            : null;
-
-          driverMarker = icon
-            ? L.marker([lat, lng], { icon })
-            : L.marker([lat, lng]);
-
-          driverMarker.addTo(map);
-        } else {
-          driverMarker.setLatLng([lat, lng]);
-        }
-
-        map.setView([lat, lng], 16);
-      },
-      (error) => {
-        console.error("Geolocation watchPosition error:", error.message);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000,
-      }
-    );
-  } else if (props.useGeolocation) {
-    console.warn("Geolocation is not supported by this browser.");
-  }
+driverMarker = new google.maps.Marker({
+  position: coords,
+  map,
+  icon: {
+    url: props.driverProfilePicUrl || "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+    scaledSize: new google.maps.Size(40, 40), // Resize
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(20, 20),
+  },
 });
 
-// Watch for changes to markerPosition prop to update driver marker location
-watch(
-  () => props.markerPosition,
-  (newPos) => {
-    if (!newPos) return;
+}
 
-    if (!driverMarker) {
-      const icon = props.driverProfilePicUrl
-        ? L.icon({
-            iconUrl: props.driverProfilePicUrl,
-            iconSize: [40, 40],
-            iconAnchor: [20, 40],
-            popupAnchor: [0, -40],
-            className: "driver-marker-icon",
-          })
-        : null;
+function updateDriverLocation(position) {
+  const coords = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+  };
 
-      driverMarker = icon ? L.marker(newPos, { icon }) : L.marker(newPos);
+  if (driverMarker) driverMarker.setPosition(coords);
+  if (map) map.panTo(coords);
+emit("update:driver-location", coords);
+}
 
-      driverMarker.addTo(map);
-    } else {
-      driverMarker.setLatLng(newPos);
-    }
+onMounted(async () => {
+  const google = await loadGoogleMaps();
+  initMap(google, fallbackCoords);
 
-    map.setView(newPos, map.getZoom());
+  if (props.useGeolocation && navigator.geolocation) {
+    geoWatchId = navigator.geolocation.watchPosition(updateDriverLocation);
   }
-);
+
+  if (props.routePoints?.length >= 2) {
+    drawRoute(google, props.routePoints);
+  }
+});
 
 onBeforeUnmount(() => {
-  if (geoWatchId !== null) {
-    navigator.geolocation.clearWatch(geoWatchId);
-  }
-  if (map) {
-    map.remove();
-  }
+  if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
 });
+
+watch(() => props.routePoints, (newVal) => {
+  if (window.google && newVal?.length >= 2) {
+    console.log("Route points updated:", newVal);
+    drawRoute(window.google, newVal);
+  }
+}, { deep: true });
 </script>
 
 <style scoped>
 .map-container {
   width: 100%;
   height: 400px;
-  border: 1px solid #ccc;
-  z-index: 0;
-}
-
-/* Make the driver profile picture marker circular with border and shadow */
-.driver-marker-icon img {
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 </style>

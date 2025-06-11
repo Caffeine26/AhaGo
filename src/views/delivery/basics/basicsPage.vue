@@ -18,11 +18,12 @@
         </button>
       </div>
     </Banner>
+
     <div class="contain" v-for="(section, index) in sections" :key="index">
       <div class="content">
         <Title :title="section.title" />
         <Text :text="section.text" />
-        <Link :text="section.linkText" :to="section.linkTo" />
+        <Link :text="section.title + ' overview'" :to="section.linkTo" />
         <div class="buttons">
           <Button
             v-for="(btn, idx) in section.buttons.slice(0, 2)"
@@ -39,38 +40,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
+import { useDriverStore } from '@/stores/driverStore'
 import Banner from "@/components/all/banner.vue";
 import Title from "@/components/delivery/title.vue";
 import Text from "@/components/delivery/text.vue";
 import Link from "@/components/delivery/link.vue";
 import Button from "@/components/delivery/button.vue";
 
-const sections = ref([]);
+const driverStore = useDriverStore()
+const { sections } = driverStore
 
-const fetchSections = async () => {
-  try {
-    const response = await fetch("http://localhost:4000/api/sections");
-    const data = await response.json();
-
-    console.log("Fetched sections:", data); // <-- Check if linkTo exists here
-
-    sections.value = data.map((section) => ({
-      ...section,
-      linkTo: section.linkTo
-        ? section.linkTo.replace(/^\/+/, "")
-        : section.title
-        ? section.title.toLowerCase().replace(/\s+/g, "-")
-        : "default-section",
-    }));
-
-    console.log("Processed sections:", sections.value);
-  } catch (error) {
-    console.error("Error fetching sections:", error);
-  }
-};
-
-onMounted(fetchSections);
+onMounted(() => {
+  driverStore.fetchSections()
+})
 </script>
 
 <style scoped>

@@ -18,24 +18,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import Title from "@/components/delivery/title.vue";
-import Text from "@/components/delivery/text.vue";
-import Button from "@/components/delivery/button.vue";
-const route = useRoute();
-const section = ref(null);
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useDriverStore } from '@/stores/driverStore' // adjust path if needed
+
+import Title from '@/components/delivery/title.vue'
+import Text from '@/components/delivery/text.vue'
+import Button from '@/components/delivery/button.vue'
+
+const route = useRoute()
+const section = ref(null)
+
+const driverStore = useDriverStore()
 
 onMounted(async () => {
-  const res = await fetch("http://localhost:4000/api/sections");
-  const data = await res.json();
-  // find section by route param `section`
-  section.value = data.find((s) => {
-    const parts = s.linkTo?.split("/") || [];
-    return parts[parts.length - 1] === route.params.section;
-  });
-});
+  if (!driverStore.sections.length) {
+    await driverStore.fetchSections()
+  }
+
+  section.value = driverStore.sections.find((s) => {
+    const parts = s.linkTo?.split('/') || []
+    return parts[parts.length - 1] === route.params.section
+  })
+})
 </script>
+
 <style scoped>
 .contain {
   display: flex;
