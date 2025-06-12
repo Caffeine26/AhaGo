@@ -13,6 +13,12 @@
           to="/delivery/settings/profile"
         />
         <SidebarItem
+          :icon="id"
+          label="My Documents"
+          :active="activeItem === 'My Documents'"
+          to="/delivery/settings/document"
+        />
+        <SidebarItem
           :icon="bell"
           label="Notifications"
           :active="activeItem === 'Notifications'"
@@ -39,6 +45,8 @@
         />
       </ul>
     </div>
+
+    <!-- Deliveries Section -->
     <div class="section">
       <h3 class="section-title">Deliveries</h3>
       <ul class="nav">
@@ -56,10 +64,26 @@
         />
       </ul>
     </div>
+
+    <!-- Logout -->
+    <div class="logout-wrapper">
+      <SidebarItem
+        :icon="exit"
+        label="Log Out"
+        :active="false"
+        @click="logout"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { defineProps } from "vue";
+
+import SidebarItem from "@/components/delivery/sideBarItem.vue";
+
 import bell from "@/assets/delivery/icons/bell.svg";
 import box from "@/assets/delivery/icons/box.svg";
 import money from "@/assets/delivery/icons/money.svg";
@@ -67,16 +91,15 @@ import polygon2 from "@/assets/delivery/icons/Polygon 2.svg";
 import profile from "@/assets/delivery/icons/profile.svg";
 import star from "@/assets/delivery/icons/star.svg";
 import order from "@/assets/delivery/icons/order.svg";
-import SidebarItem from "@/components/delivery/sideBarItem.vue";
-import { computed } from "vue";
-import { useRoute } from "vue-router";
-import { defineProps } from "vue";
+import id from "@/assets/delivery/icons/id.svg";
+import exit from "@/assets/delivery/icons/exit.svg";
 
 const props = defineProps({
   defaultActive: { type: String, default: "" },
 });
 
 const route = useRoute();
+const router = useRouter();
 
 const activeItem = computed(() => {
   const path = route.path;
@@ -84,6 +107,8 @@ const activeItem = computed(() => {
   switch (path) {
     case "/delivery/settings/profile":
       return props.defaultActive || "Edit Profile";
+    case "/delivery/settings/document":
+      return "My Documents";
     case "/delivery/settings/notification":
       return "Notifications";
     case "/delivery/settings/earnings":
@@ -98,6 +123,10 @@ const activeItem = computed(() => {
       return "";
   }
 });
+
+const logout = () => {
+  router.push("/deliver/login"); // Redirect to login page
+};
 </script>
 
 <style scoped>
@@ -109,6 +138,9 @@ const activeItem = computed(() => {
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
   border-bottom-right-radius: 60px;
   position: relative;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .polygon-image {
@@ -136,5 +168,11 @@ const activeItem = computed(() => {
   gap: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.logout-wrapper {
+  /* display: flex;
+  align-items: end;
+  justify-content: end; */
 }
 </style>

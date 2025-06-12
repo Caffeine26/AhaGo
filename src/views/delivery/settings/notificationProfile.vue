@@ -30,7 +30,6 @@
           <p class="text">{{ notification.message }}</p>
 
           <div v-if="notification.status === 'pending'" class="bottom">
-            <p class="map">Check Map</p>
             <div class="buttons">
               <GeneralButton
                 title="Accept"
@@ -55,10 +54,14 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router"; 
+
 import ButtonFilter from "@/components/ButtonFilter.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
+
+const router = useRouter(); 
 
 const selectedFilter = ref("Today");
 
@@ -89,15 +92,33 @@ const updateNotificationStatus = async (id, status) => {
     await axios.patch(`http://localhost:4000/api/notifications/${id}`, {
       status,
     });
-    fetchNotifications();
+
+    const notification = notifications.value.find((n) => n.id === id);
+
+    if (status === "accepted") {
+      router.push({
+        name: "mapOrder",
+        query: {
+          orderId: notification.id,
+          restaurantLat: notification.details.restaurantLocation.lat,
+          restaurantLng: notification.details.restaurantLocation.lng,
+          clientLat: notification.details.clientLocation.lat,
+          clientLng: notification.details.clientLocation.lng,
+        },
+      });
+    } else {
+      fetchNotifications();
+    }
   } catch (error) {
     console.error("Failed to update notification:", error);
+    alert("Something went wrong. Please try again.");
   }
 };
 
 watch(selectedFilter, fetchNotifications);
 onMounted(fetchNotifications);
 </script>
+
 
 <style scoped>
 .notification {
@@ -125,8 +146,7 @@ onMounted(fetchNotifications);
 .text {
   font-size: 18px;
 }
-.link,
-.map {
+.link {
   color: #9a0404;
   font-style: italic;
 }
@@ -138,8 +158,8 @@ onMounted(fetchNotifications);
 }
 .bottom {
   display: flex;
+  justify-content:end;
   align-items: center;
-  justify-content: space-between;
 }
 .buttons {
   display: flex;

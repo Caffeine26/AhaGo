@@ -1,5 +1,5 @@
 
- const drivers = [
+const drivers = [
   {
     id: 1,
     firstname: "John",
@@ -15,6 +15,11 @@
     vehicleName: "Yamaha",
     vehicleColor: "Red",
     licensePlate: "XYZ 1234",
+    documents: {
+      idCardImage: null, // e.g. URL or base64 string
+      drivingLicenseImage: null,
+      vehicleRegistrationImage: null,
+    }
   },
 ];
 

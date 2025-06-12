@@ -375,7 +375,6 @@ export default {
 
     const handleDrop = (event) => {
       event.preventDefault();
-      hideDropzone();
       const file = event.dataTransfer.files[0];
       if (file) previewAndSetPhoto(file);
     };
@@ -389,6 +388,7 @@ export default {
       const reader = new FileReader();
       reader.onload = (e) => {
         user.value.photo = e.target.result;
+        hideDropzone(); 
       };
       reader.readAsDataURL(file);
     };

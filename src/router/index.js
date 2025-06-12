@@ -13,6 +13,7 @@ import earningsProfile from "@/views/delivery/settings/earningsProfile.vue";
 import incomingDelivery from "@/views/delivery/settings/incomingDelivery.vue";
 import NotificationPage from "@/views/delivery/settings/notificationProfile.vue";
 import ProfilePage from "@/views/delivery/settings/profile.vue";
+import documentPage from "@/views/delivery/settings/documentPage.vue";
 import ratingsProfile from "@/views/delivery/settings/ratingsProfile.vue";
 import settingsLayout from "@/views/delivery/settings/settingsLayout.vue";
 import SignUp from "@/views/delivery/authentication/SignUp.vue";
@@ -82,6 +83,11 @@ const router = createRouter({
               path: "profile",
               name: "profilePage",
               component: ProfilePage,
+            },
+            {
+              path: "document",
+              name: "documentPage",
+              component: documentPage,
             },
             {
               path: "notification",

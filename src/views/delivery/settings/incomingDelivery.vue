@@ -22,7 +22,6 @@
           <p class="text">{{ order.message }}</p>
 
           <div v-if="order.status === 'pending'" class="bottom">
-            <p class="map">Check Map</p>
             <div class="buttons">
               <StatusAction
                 :statusId="0"
@@ -40,11 +39,11 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router"; // <-- import useRouter
+import { useRouter } from "vue-router"; 
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import StatusAction from "@/components/StatusAction.vue";
-const router = useRouter(); // <-- initialize router
+const router = useRouter(); 
 
 const incomingOrders = ref([]);
 
@@ -140,8 +139,7 @@ onMounted(fetchIncomingOrders);
 .text {
   font-size: 18px;
 }
-.link,
-.map {
+.link {
   color: #9a0404;
   font-style: italic;
 }
@@ -154,7 +152,7 @@ onMounted(fetchIncomingOrders);
 .bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: end;
 }
 .buttons {
   display: flex;

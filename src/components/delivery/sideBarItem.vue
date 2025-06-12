@@ -1,8 +1,26 @@
 <template>
-  <RouterLink :to="to" class="sidebar-item" :class="{ active }">
+  <RouterLink
+    v-if="to"
+    :to="to"
+    class="sidebar-item"
+    :class="{ active }"
+  >
     <img :src="icon" class="icon" :class="{ activeIcon: active }" />
     <span class="label">{{ label }}</span>
   </RouterLink>
+
+  <div
+    v-else
+    class="sidebar-item"
+    :class="{ active }"
+    @click="$emit('click')"
+    role="button"
+    tabindex="0"
+    @keydown.enter="$emit('click')"
+  >
+    <img :src="icon" class="icon" :class="{ activeIcon: active }" />
+    <span class="label">{{ label }}</span>
+  </div>
 </template>
 
 <script setup>
@@ -12,6 +30,7 @@ const props = defineProps({
   active: Boolean,
   to: String,
 });
+const emit = defineEmits(['click']);
 </script>
 
 <style scoped>

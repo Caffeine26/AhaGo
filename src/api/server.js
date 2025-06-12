@@ -1,18 +1,32 @@
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const multer = require("multer");
+const path = require("path");
 
 const {
   drivers,
   notifications,
   incomingOrders,
   deliveryHistory,
-  sections
+  sections,
 } = require("./mock");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+// Setup multer storage (store files in /uploads folder locally)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads"); // ensure this folder exists
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + Date.now() + ext);
+  },
+});
+const upload = multer({ storage });
 
 const PORT = 4000;
 
@@ -38,6 +52,37 @@ app.put("/api/driver/profile", (req, res) => {
   res.json(driver);
 });
 
+// POST upload driver documents (idCardImage, drivingLicenseImage, vehicleRegistrationImage)
+app.post(
+  "/api/driver/documents",
+  upload.fields([
+    { name: "idCardImage", maxCount: 1 },
+    { name: "drivingLicenseImage", maxCount: 1 },
+    { name: "vehicleRegistrationImage", maxCount: 1 },
+  ]),
+  (req, res) => {
+    const driver = drivers.find((d) => d.id === req.driverId);
+    if (!driver) return res.status(404).json({ error: "Driver not found" });
+
+    if (!driver.documents) driver.documents = {};
+
+    if (req.files["idCardImage"]) {
+      driver.documents.idCardImage = req.files["idCardImage"][0].path;
+    }
+    if (req.files["drivingLicenseImage"]) {
+      driver.documents.drivingLicenseImage = req.files["drivingLicenseImage"][0].path;
+    }
+    if (req.files["vehicleRegistrationImage"]) {
+      driver.documents.vehicleRegistrationImage = req.files["vehicleRegistrationImage"][0].path;
+    }
+
+    res.json({
+      message: "Documents uploaded successfully",
+      documents: driver.documents,
+    });
+  }
+);
+
 // GET incoming orders with optional time filter
 app.get("/api/incoming-orders", (req, res) => {
   const filter = req.query.filter || "All";
@@ -58,12 +103,11 @@ app.get("/api/incoming-orders", (req, res) => {
     );
   } else if (filter === "Last Month") {
     const lastMonth = (now.getMonth() === 0) ? 11 : now.getMonth() - 1;
-const lastMonthYear = (now.getMonth() === 0) ? now.getFullYear() - 1 : now.getFullYear();
-filtered = incomingOrders.filter(order => {
-  const created = new Date(order.createdAt);
-  return created.getMonth() === lastMonth && created.getFullYear() === lastMonthYear;
-});
-
+    const lastMonthYear = (now.getMonth() === 0) ? now.getFullYear() - 1 : now.getFullYear();
+    filtered = incomingOrders.filter(order => {
+      const created = new Date(order.createdAt);
+      return created.getMonth() === lastMonth && created.getFullYear() === lastMonthYear;
+    });
   }
 
   res.json(filtered);
@@ -151,10 +195,13 @@ app.get("/api/delivery-history", (req, res) => {
   res.json(results);
 });
 
-//Get sections for basics page
+// GET sections for basics page
 app.get("/api/sections", (req, res) => {
   res.json(sections);
 });
+
+// Serve uploaded files statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const server = http.createServer(app);
 server.listen(PORT, () => {
