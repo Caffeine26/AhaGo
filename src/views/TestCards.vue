@@ -92,7 +92,7 @@
 <script>
 import CategoryCard from '@/components/product_cards/CategoryCard.vue'
 import ProductCard from '@/components/product_cards/ProductCard.vue'
-import LineGraph from '@/components/charts/LineGraph.vue'
+import LineGraph from '@/components/admin/LineGraph.vue'
 import MessageItem from '@/components/chat/MessageItem.vue'
 import ReviewCard from '@/components/review/ReviewComponent.vue'
 import ReceiptCard from '@/components/receipt/ReceiptCard.vue' // Import the new ReceiptCard component

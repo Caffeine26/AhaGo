@@ -43,11 +43,11 @@
     data() {
       return {
         products: [
-          { name: "Product A", stock: 90 },
-          { name: "Product B", stock: 30 },
+          { name: "Product A", stock: 20 },
+          { name: "Product B", stock: 90 },
           { name: "Product C", stock: 0 },
           { name: "Product D", stock: 5 },
-          { name: "Product E", stock: 60 },
+          { name: "Product E", stock: 10 },
         ],
       };
     },
@@ -97,14 +97,15 @@
     padding: 20px;
     border: 1px solid #ccc;
     background: #fff;
-    max-width: 1000px; /* Set max width for the container */
+    max-width: 800px; /* Set max width for the container */
+    height: 300px;
     margin: 20px auto;
   }
   
   .graph {
     display: flex;
     margin-bottom: 20px;
-    width: 100%; /* Full width of the container */
+    width: 70%; /* Full width of the container */
     justify-content: flex-start;
   }
   
@@ -180,7 +181,7 @@
   @media (max-width: 768px) {
     .stock-graph-container {
       padding: 10px; /* Reduced padding */
-      max-width: 100%; /* Ensure it takes full width */
+      max-width: 90%; /* Ensure it takes full width */
     }
   
     .graph {
