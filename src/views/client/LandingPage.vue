@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <Header :title="'AHA GO'" />
     <div class="landing-page">
       <!-- Hero Section -->

@@ -55,19 +55,33 @@
                 <span class="switch-link" @click="navigateToSignIn">SignIn</span>
               </div>
               <form @submit.prevent="handleSignup">
+                <div style="display: flex; gap: 40px; padding-right: 22px;">
+                  <InputText
+                    v-model="signupForm.firstName"
+                    placeholder="First Name"
+                    type="text"
+                    style="flex: 1;"
+                  />
+                  <InputText
+                    v-model="signupForm.lastName"
+                    placeholder="Last Name"
+                    type="text"
+                    style="flex: 1;"
+                  />
+                </div>
                 <InputText
-                  v-model="signupForm.phone"
-                  placeholder="Phone number"
-                  type="tel"
+                  v-model="signupForm.email"
+                  placeholder="Email Address"
+                  type="email"
                 />
                 <InputText
                   v-model="signupForm.password"
-                  placeholder="Enter password"
+                  placeholder="Password"
                   type="password"
                 />
                 <InputText
                   v-model="signupForm.confirmPassword"
-                  placeholder="Confirm password"
+                  placeholder="Confirm Password"
                   type="password"
                 />
                 <button type="submit" class="submit-btn">SignUp</button>
@@ -195,6 +209,7 @@
   color: #9A0404;
   font-weight: 500;
   cursor: pointer;
+  font-size: 24px;
 }
 
 .form-group {
@@ -286,6 +301,7 @@ input::placeholder {
   gap: 0.5rem;
   cursor: pointer;
   font-weight: 500;
+  font-size: 18px;
   color: #9A0404;
 }
 
@@ -496,6 +512,8 @@ export default {
         password: ''
       },
       signupForm: {
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: ''
