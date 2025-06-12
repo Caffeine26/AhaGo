@@ -1,7 +1,7 @@
 <template>
-    <div class="order">
+    <div class="orderCard">
         <div class="fire"></div>
-        <div id="fireId">#{{ fireId }}</div>
+        <div id="fireId">#{{ index+1 }}</div>
 
         <div class="card">
             <div class="section01">
@@ -19,7 +19,7 @@
             </div>
 
             <div class="section03">
-                <StatusAction status-id="0"></StatusAction>
+                <StatusAction :status-id="status"></StatusAction>
             </div>
         </div>
     </div>
@@ -33,31 +33,33 @@ export default{
     components: {
         StatusAction,
     },
+    props: {
+        index: Number,
+        orderId: String,
+        location: String,
+        price: Number,
+        items: Array,
+        status: Number,
+        
+    },
     data() {
         return {
-            orderId: "0001",
-            location: "Boeung Keng Korng, StXX, Phnom Penh",
-            price: 16.5,
-
-            items: [
-                "Potato Salad",
-                "Tteokbokki",
-                "Fried Chicken",
-            ],
-            fireId: '01',
+            
         }
     }
 }
 </script>
 
 <style scoped>
-.order{
+.orderCard{
     position: relative;
     font-family: 'Raleway';
+    margin-top: 30px;
+
 }
 .fire{
     position: absolute;
-    left: -16px;
+    left: 30px;
     top: -4px;
     z-index: 2;
     width: 57px;
@@ -69,7 +71,7 @@ export default{
 }
 #fireId {
     position: absolute;
-    left: -6px;
+    left:46px;
     top: 6px;
     color: white;
     z-index: 3;
@@ -77,6 +79,7 @@ export default{
 }
 .card{
     width: 1250px;
+    height: fit-content;
     border: 1px solid;
     display: flex;
     justify-content: space-around;

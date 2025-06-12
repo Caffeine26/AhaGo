@@ -47,8 +47,9 @@ const toggleLogin = () => {
 
 <style scoped>
 .container {
+  width: 100vw;
   background-color: #292929;
-  padding: 0px 50px;
+  /* padding: 0px 50px; */
   display: flex;
   justify-content: space-between;
   color: white;
