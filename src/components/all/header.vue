@@ -43,7 +43,7 @@ const userLoggedIn = ref(false); // This line initializes the reactive ref
 const router = useRouter();
 
 const toggleLogin = () => {
-  userLoggedIn.value = true;
+  router.push('/signin');
 };
 
 const goToSignUp = () => {
