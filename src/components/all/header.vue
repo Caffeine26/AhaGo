@@ -54,6 +54,10 @@ const goToSignup = () => {
 const goToOverview = () => {
   router.push("/delivery/overview");
 };
+
+const goToSignUp = () => {
+  router.push('/signup');
+};
 </script>
 
 
@@ -64,7 +68,10 @@ const goToOverview = () => {
   /* padding: 0px 50px; */
   display: flex;
   justify-content: space-between;
-  color: white;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 .Logo {
   gap: 10px;
@@ -73,9 +80,11 @@ const goToOverview = () => {
 }
 .logo {
   height: 60px;
+  width: auto;
 }
 .title {
   font-size: 32px;
+  white-space: nowrap;
 }
 .sign {
   padding: 10px;
@@ -83,6 +92,7 @@ const goToOverview = () => {
   border-radius: 20px;
   color: #292929;
   cursor: pointer;
+  white-space: nowrap;
 }
 .nav,
 .acc {
@@ -98,5 +108,22 @@ const goToOverview = () => {
   height: 40px;
   width: 40px;
   object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0px 1rem;
+  }
+  .title {
+    font-size: 24px;
+  }
+  .nav,
+  .acc {
+    font-size: 16px;
+    gap: 10px;
+  }
+  .logo {
+    height: 40px;
+  }
 }
 </style>

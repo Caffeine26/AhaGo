@@ -1,5 +1,9 @@
 <template>
-  <div class="category-card">
+  <div
+    class="category-card"
+    :class="{ selected }"
+    @click="$emit('click')"
+  >
     <img :src="image" :alt="title" class="category-image">
     <h3 class="category-title">{{ title }}</h3>
   </div>
@@ -16,8 +20,13 @@ export default {
     image: {
       type: String,
       required: true
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
-  }
+  },
+  emits: ['click']
 }
 </script>
 
@@ -27,11 +36,25 @@ export default {
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, border 0.2s, color 0.2s;
+  border: 1.5px solid transparent;
+}
+
+.category-card.selected {
+  border: 2px solid #9A0404;
+}
+
+.category-card.selected .category-title {
+  color: #9A0404;
+  font-weight: bold;
 }
 
 .category-card:hover {
   transform: scale(1.02);
+}
+
+.category-card:hover .category-title {
+  color: #9A0404;
 }
 
 .category-image {
