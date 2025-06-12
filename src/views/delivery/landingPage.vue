@@ -1,67 +1,62 @@
 <template>
   <div class="app">
-    <Banner imgSrc="../src/assets/delivery/images/image2.png">
+    <Banner class="banner" imgSrc="../src/assets/delivery/images/image2.png">
       <div class="top">
         <p class="ban">
           Sign up to deliver with <span style="color: #9a0404">AhaGo</span>
         </p>
         <p class="ital">Own your time</p>
       </div>
+      <div class="bottom">
+        <button type="button" class="button">Get Started</button>
+        <button type="button" class="link">Access your account</button>
+      </div>
     </Banner>
     <div class="containerApp">
       <Article />
-      <Title title="Get paid to deliver"></Title>
-      <div class="rowApp">
-        <Description
-          :svg="key"
-          :SectionTitle="'Your Own Vehicle'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
-        <Description
-          :svg="cash"
-          :SectionTitle="'Get Paid Quickly'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
-        <Description
-          :svg="app"
-          :SectionTitle="'Track Your Earnings'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
+        <Title :title="button13?.name" />
+      <Text v-if="button13?.text" :text="button13?.text" />
+
+      <div  v-if="button13?.descriptions?.length">
+        <div class="rowApp">
+          <Description
+            v-for="(desc, i) in button13.descriptions"
+            :key="i"
+            :svg="iconMap[desc.svg]"
+            :SectionTitle="desc.title"
+            :text="desc.text"
+          />
+      </div>
       </div>
       <Title title="How food delivery driving works" />
       <Text
-        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+        text="Accept orders via the AhaGo Driver App, pick up meals from restaurants, and deliver them to customers quickly and professionally. It's simple, and every delivery adds to your income."
       />
       <Timeline />
-      <Title
-        title='What you need to become a delivery driver for <span style="color: #9A0404;">AhaGo</span>'
-      />
-      <div class="rowApp">
-        <Description
-          :svg="rickshaw"
-          :SectionTitle="'Delivery By Rickshaw'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
-        <Description
-          :svg="tuktuk"
-          :SectionTitle="'Delivery By Tuktuk'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
-        <Description
-          :svg="motor"
-          :SectionTitle="'Delivery By Motorbike'"
-          :text="'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam'"
-        />
+       <Title :title="button14?.name" />
+      <Text v-if="button14?.text" :text="button14?.text" />
+
+      <div  v-if="button14?.descriptions?.length">
+        <div class="rowApp">
+          <Description
+            v-for="(desc, i) in button14.descriptions"
+            :key="i"
+            :svg="iconMap[desc.svg]"
+            :SectionTitle="desc.title"
+            :text="desc.text"
+          />
       </div>
+      </div>
+
       <MapFrame />
     </div>
   </div>
 </template>
 
 <script>
+import { useDriverStore } from '@/stores/driverStore'
 import Banner from "@/components/all/banner.vue";
 import Article from "@/components/delivery/article.vue";
-import Button from "@/components/delivery/button.vue";
 import Description from "@/components/delivery/description.vue";
 import MapFrame from "@/components/delivery/mapFrame.vue";
 import Text from "@/components/delivery/text.vue";
@@ -77,7 +72,6 @@ import motor from "@/assets/delivery/icons/motor.svg";
 export default {
   components: {
     Banner,
-    Button,
     Description,
     Title,
     Text,
@@ -87,6 +81,8 @@ export default {
   },
   data() {
     return {
+      button13: null, 
+      button14: null,
       key,
       cash,
       app,
@@ -95,10 +91,34 @@ export default {
       motor,
     };
   },
-};
+  computed: {
+    iconMap() {
+      return {
+        key,
+        cash,
+        app,
+        rickshaw,
+        tuktuk,
+        motor,
+      };
+    }
+  },
+  async mounted() {
+    const store = useDriverStore();
+    await store.fetchSections();
+    await store.fetchButtons();
+
+    // Find the button with driver_button id 13 from the fetched sections
+    this.button13 = store.buttons.find(button => button.id === 13);
+    this.button14 = store.buttons.find(button => button.id === 14);
+    // Set the selectedButton to the button with driver_button id 13
+    if (!this.button13) console.error('Button with ID 13 not found');
+    if (!this.button14) console.error('Button with ID 14 not found');
+  }
+}
 </script>
 
-<style>
+<style scoped>
 body {
   margin: 0;
 }
@@ -125,20 +145,46 @@ body {
 .top {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  padding: 0px 20px;
 }
 .ban {
   color: white;
   font-size: 64px;
+  margin-bottom: 0px;
 }
 .ital {
   font-style: italic;
   color: white;
   font-size: 32px;
+  font-weight: 200;
 }
 .rowApp {
   display: flex;
   flex-direction: row;
   gap: 60px;
+}
+.button {
+  background-color: #9a0404;
+  color: white;
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+.link {
+  color: white;
+  background-color: transparent;
+  text-decoration: underline;
+  cursor: pointer;
+  font-style: italic;
+  border: none;
+  font-size: 20px;
+}
+.bottom {
+  margin-top: 60px;
+  display: flex;
+  gap: 20px;
+  padding: 0px 20px;
 }
 </style>

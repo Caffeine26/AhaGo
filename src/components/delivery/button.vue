@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <router-link :to="computedLink" class="container">
     <div class="left">
       <img :src="imageSrc" alt="Image" />
       <div class="name">{{ name }}</div>
@@ -18,20 +18,31 @@
         />
       </svg>
     </div>
-  </div>
+  </router-link>
 </template>
 
-<script>
-export default {
-  name: "Button",
-  props: {
-    name: { type: String, default: "" },
-    imageSrc: { type: String, default: "" },
-  },
-};
+<script setup>
+import { computed } from "vue";
+
+const props = defineProps({
+  imageSrc: String,
+  name: String,
+  sectionLink: String,
+  buttonLink: String,
+});
+
+const computedLink = computed(() => {
+  const cleanSection =
+    props.sectionLink?.replace(/^\/+/, "") || "default-section";
+  const cleanButton = props.buttonLink?.replace(/^\/+/, "") || "default-button";
+  return `/delivery/${cleanSection}/${cleanButton}`;
+});
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
 .container {
   width: fit-content;
   display: flex;
@@ -46,7 +57,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  width: 640px;
   height: 210px;
 }
 .left {
@@ -65,7 +75,7 @@ img {
   font-size: 32px;
 }
 
-.next:hover {
-  transform: scale(1.1);
+.container:hover {
+  transform: scale(1.03);
 }
 </style>

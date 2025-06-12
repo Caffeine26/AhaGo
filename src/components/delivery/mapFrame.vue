@@ -1,7 +1,7 @@
 <template>
   <div class="frame">
     <div class="text">Check out our partners from all over the country</div>
-    <Map></Map>
+    <Map id="map" :useGeolocation="true" />
   </div>
 </template>
 <script>

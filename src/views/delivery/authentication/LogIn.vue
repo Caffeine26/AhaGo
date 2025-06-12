@@ -1,0 +1,103 @@
+<template>
+  <div class="container">
+    <div class="image-section"></div>
+    <div class="form-section">
+      <div class="form-box">
+        <h2>Log In</h2>
+
+        <InputText v-model="email" type="email" placeholder="Email Address" />
+        <InputText v-model="password" type="password" placeholder="Password" />
+
+        <div class="link small">Forgot your password?</div>
+
+        <GeneralButton
+          class="button"
+          :title="'Log In'"
+          :btnColor="'#9A0404'"
+          :titleColor="'#ffffff'"
+          @click="login"
+        />
+
+        <p class="small">
+          Don’t have an account?
+          <a href="/deliver/signup">Sign Up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import InputText from '@/components/all/inputText.vue';
+import GeneralButton from '@/components/GeneralButton.vue';
+import { ref } from 'vue';
+
+const email = ref('');
+const password = ref('');
+
+const login = () => {
+  console.log('User login:', {
+    email: email.value,
+    password: password.value,
+  });
+
+  // TODO: Replace with real authentication logic
+};
+</script>
+
+<style scoped>
+.container {
+  display: flex;
+  height: 91.6vh;
+  font-family: Arial, sans-serif;
+}
+
+.image-section {
+  flex: 1;
+  background-image: url('https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.form-box {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+h2 {
+  color: #9A0404;
+  margin-bottom: 20px;
+}
+
+.link {
+  text-align: right;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.button {
+  height: fit-content;
+  width: 100%;
+  margin-left: 5px;
+}
+
+.small {
+  font-size: 0.9em;
+}
+
+a {
+  color: #9A0404;
+  text-decoration: none;
+}
+</style>

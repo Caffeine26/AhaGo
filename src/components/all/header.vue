@@ -1,33 +1,32 @@
 <template>
   <div class="container">
-    <div class="Logo">
+    <div class="Logo" @click="goToOverview" style="cursor: pointer">
       <img class="logo" src="@/assets/main/logo.png" alt="Logo" />
       <div class="title" v-html="title"></div>
     </div>
+
     <div class="nav">
       <ul>
         Help
       </ul>
       <div class="acc">
-        <ul v-if="!userLoggedIn" @click="toggleLogin">
-          Login
-        </ul>
-        <ul v-if="!userLoggedIn" class="sign" @click="toggleLogin">
-          Sign Up
-        </ul>
-        <ul v-if="userLoggedIn" @click="goToAccount" class="account">
-          <img src="@/assets/delivery/images/image.png" alt="Account" />
-        </ul>
-      </div>
+  <ul v-if="!userLoggedIn" @click="goToLogin">
+    Login
+  </ul>
+  <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
+    Sign Up
+  </ul>
+  <ul v-if="userLoggedIn" @click="goToAccount" class="account">
+    <img src="@/assets/delivery/images/image1.png" alt="Account" />
+  </ul>
+</div>
+
     </div>
   </div>
 </template>
 
 <script setup>
-// Importing 'ref' from Vue
-import { ref } from "vue";
-
-// Accept props
+import { useRouter } from "vue-router";
 import { defineProps } from "vue";
 
 const props = defineProps({
@@ -35,15 +34,28 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  goToAccount: Function, // Accept the goToAccount method as a prop
+  goToAccount: Function,
+  userLoggedIn: {
+    type: Boolean,
+    required: true,
+  },
 });
 
-const userLoggedIn = ref(false); // This line initializes the reactive ref
+const router = useRouter();
 
-const toggleLogin = () => {
-  userLoggedIn.value = true;
+const goToLogin = () => {
+  router.push("/deliver/login");
+};
+
+const goToSignup = () => {
+  router.push("/deliver/signup");
+};
+
+const goToOverview = () => {
+  router.push("/delivery/overview");
 };
 </script>
+
 
 <style scoped>
 .container {

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="svg">
-      <img :src="svg" alt="Description Icon" />
+    <div v-if="svg">
+      <img class="svg" :src="svg" alt="Description Icon" />
     </div>
     <SectionTitle :SectionTitle="SectionTitle" />
     <Text :text="text" />
@@ -15,7 +15,7 @@ import Text from "./text.vue";
 export default {
   name: "Description",
   props: {
-    svg: String, // This should now be a path to a file
+    svg: String, // Resolved image path
     SectionTitle: String,
     text: String,
   },
@@ -33,7 +33,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
-  width: 400px;
+  width: 380px;
+}
+.svg {
+  height: 61px;
+  fill: #9A0404;
 }
 </style>

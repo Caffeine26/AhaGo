@@ -90,120 +90,122 @@
 </template>
 
 <script>
-import CategoryCard from '@/components/product_cards/CategoryCard.vue'
-import ProductCard from '@/components/product_cards/ProductCard.vue'
-import LineGraph from '@/components/charts/LineGraph.vue'
-import MessageItem from '@/components/chat/MessageItem.vue'
-import ReviewCard from '@/components/review/ReviewComponent.vue'
-import ReceiptCard from '@/components/receipt/ReceiptCard.vue' // Import the new ReceiptCard component
+import CategoryCard from "@/components/product_cards/CategoryCard.vue";
+import ProductCard from "@/components/product_cards/ProductCard.vue";
+import LineGraph from "@/components/charts/LineGraph.vue";
+import MessageItem from "@/components/chat/MessageItem.vue";
+import ReviewCard from "@/components/review/ReviewComponent.vue";
+import ReceiptCard from "@/components/receipt/ReceiptCard.vue"; // Import the new ReceiptCard component
 
 export default {
-  name: 'TestCards',
+  name: "TestCards",
   components: {
     CategoryCard,
     ProductCard,
     LineGraph,
     MessageItem,
     ReviewCard,
-    ReceiptCard // Register the new component
+    ReceiptCard, // Register the new component
   },
   data() {
     return {
       categories: [
         {
-          title: 'Food',
-          image: require('@/assets/category/category1.png')
+          title: "Food",
+          image: require("@/assets/category/category1.png"),
         },
         {
-          title: 'Dessert',
-          image: require('@/assets/category/category2.png')
+          title: "Dessert",
+          image: require("@/assets/category/category2.png"),
         },
         {
-          title: 'Drink',
-          image: require('@/assets/category/category3.png')
-        }
+          title: "Drink",
+          image: require("@/assets/category/category3.png"),
+        },
       ],
       products: [
         {
-          title: 'Nom Ahkor',
-          image: require('@/assets/products/product1.png'),
+          title: "Nom Ahkor",
+          image: require("@/assets/products/product1.png"),
           price: 0.75,
-          rating: 5
+          rating: 5,
         },
         {
-          title: 'Chek Katis',
-          image: require('@/assets/products/product2.png'),
+          title: "Chek Katis",
+          image: require("@/assets/products/product2.png"),
           price: 1.5,
-          rating: 4.5
+          rating: 4.5,
         },
         {
-          title: 'Nom Chak Kachan',
-          image: require('@/assets/products/product3.png'),
+          title: "Nom Chak Kachan",
+          image: require("@/assets/products/product3.png"),
           price: 0.5,
-          rating: 4.5
-        }
+          rating: 4.5,
+        },
       ],
       messages: [
         {
-          name: 'Sonita Yakorn',
-          role: 'Customer',
-          time: '10:30 AM',
-          avatar: require('@/assets/avatars/avatar2.png'),
-          content: 'Absolutelty! We will reserve a window table for dinner tonight..'
+          name: "Sonita Yakorn",
+          role: "Customer",
+          time: "10:30 AM",
+          avatar: require("@/assets/avatars/avatar2.png"),
+          content:
+            "Absolutelty! We will reserve a window table for dinner tonight..",
         },
         {
-          name: 'Bob Smith',
-          role: 'Support',
-          time: '10:35 AM',
-          avatar: require('@/assets/avatars/avatar3.png'),
-          content: 'Thanks you so much for your helping !'
-        }
+          name: "Bob Smith",
+          role: "Support",
+          time: "10:35 AM",
+          avatar: require("@/assets/avatars/avatar3.png"),
+          content: "Thanks you so much for your helping !",
+        },
       ],
       reviews: [
         {
-          name: 'Sonita Yakorn',
-          date: '26-01-2025',
+          name: "Sonita Yakorn",
+          date: "26-01-2025",
           rating: 4,
-          review: 'Absolutely delicious! This burger and cheese combine together well, perfect balancing.',
-          avatar: require('@/assets/avatars/avatar2.png')
+          review:
+            "Absolutely delicious! This burger and cheese combine together well, perfect balancing.",
+          avatar: require("@/assets/avatars/avatar2.png"),
         },
         {
-          name: 'Bob Smith',
-          date: '28-01-2025',
+          name: "Bob Smith",
+          date: "28-01-2025",
           rating: 5,
-          review: 'Best meal I have had in a while! Highly recommend.',
-          avatar: require('@/assets/avatars/avatar3.png')
-        }
+          review: "Best meal I have had in a while! Highly recommend.",
+          avatar: require("@/assets/avatars/avatar3.png"),
+        },
       ],
       receipts: [
         {
-          date: 'Sat, October 20, 2024',
-          time: '02:47 PM',
-          customerName: 'Sonita Yakorn',
-          orderNumber: '#ORD1025',
-          status: 'Completed',
-          diningType: 'Dine-In',
-          tableNumber: 'Table 12',
+          date: "Sat, October 20, 2024",
+          time: "02:47 PM",
+          customerName: "Sonita Yakorn",
+          orderNumber: "#ORD1025",
+          status: "Completed",
+          diningType: "Dine-In",
+          tableNumber: "Table 12",
           items: [
             {
-              image: require('@/assets/products/product1.png'),
-              name: 'Nom Ahkor',
+              image: require("@/assets/products/product1.png"),
+              name: "Nom Ahkor",
               quantity: 1,
-              price: 0.75
+              price: 0.75,
             },
             {
-              image: require('@/assets/products/product2.png'),
-              name: 'Chek Katis',
+              image: require("@/assets/products/product2.png"),
+              name: "Chek Katis",
               quantity: 1,
-              price: 1.5
-            }
+              price: 1.5,
+            },
           ],
-          total: 2.25
-        }
-      ]
-    }
-  }
-}
+          total: 2.25,
+        },
+      ],
+    };
+  },
+};
 </script>
 
 <style scoped>

@@ -6,37 +6,31 @@
       <div
         class="nav-item"
         :class="{ active: activeItem === it1 }"
-        @click="setActive(it1)"
+        @click="handleClick(it1, '/delivery/overview')"
       >
         {{ it1 }}
       </div>
       <div
         class="nav-item"
-        :class="{ active: activeItem === it2 }"
-        @click="setActive(it2)"
+        :class="{ active: isRouteActive(['/delivery/basics']) }"
+        @click="handleClick(it2, '/delivery/basics')"
       >
         {{ it2 }}
       </div>
+
       <div
         class="nav-item"
         :class="{ active: activeItem === it3 }"
-        @click="setActive(it3)"
+        @click="handleClick(it3, '/delivery/aboutus')"
       >
         {{ it3 }}
       </div>
       <div
         class="nav-item"
         :class="{ active: activeItem === it4 }"
-        @click="setActive(it4)"
+        @click="handleClick(it4, '/delivery/contactus')"
       >
         {{ it4 }}
-      </div>
-      <div
-        class="nav-item"
-        :class="{ active: activeItem === it5 }"
-        @click="setActive(it5)"
-      >
-        {{ it5 }}
       </div>
     </div>
   </div>
@@ -46,10 +40,10 @@
 
 <script>
 export default {
-  name: "Header2",
+  name: "AppHeader2",
   data() {
     return {
-      activeItem: null, // Track which item is clicked
+      activeItem: null,
     };
   },
   props: {
@@ -58,12 +52,36 @@ export default {
     it2: { type: String, default: "" },
     it3: { type: String, default: "" },
     it4: { type: String, default: "" },
-    it5: { type: String, default: "" },
   },
   methods: {
-    setActive(item) {
-      this.activeItem = item; // Set the clicked item as active
+    handleClick(label, route) {
+      this.activeItem = label;
+      this.$router.push(route);
     },
+    isRouteActive(routes) {
+      return routes.some((route) => this.$route.path.startsWith(route));
+    },
+    updateActiveFromRoute(path) {
+      if (path === "/delivery/overview") {
+        this.activeItem = this.it1;
+      } else if (path === "/delivery/basics") {
+        this.activeItem = this.it2;
+      } else if (path === "/delivery/aboutus") {
+        this.activeItem = this.it3;
+      } else if (path === "/delivery/contactus") {
+        this.activeItem = this.it4;
+      } else {
+        this.activeItem = null;
+      }
+    },
+  },
+  watch: {
+    "$route.path"(newPath) {
+      this.updateActiveFromRoute(newPath);
+    },
+  },
+  created() {
+    this.updateActiveFromRoute(this.$route.path);
   },
 };
 </script>
@@ -71,6 +89,7 @@ export default {
 <style scoped>
 
 .container {
+  width: 93%;
   background-color: white;
   padding-top: 10px;
   padding-bottom: 10px;

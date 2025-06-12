@@ -42,7 +42,7 @@ watch(
   () => props.modelValue,
   (newVal) => {
     localValue.value = newVal;
-  },
+  }
 );
 </script>
 
@@ -65,7 +65,7 @@ watch(
   padding: 10px 20px;
   font-size: 18px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 12px;
 }
 
 .input-text input:focus {
