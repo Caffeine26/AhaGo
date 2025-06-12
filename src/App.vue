@@ -1,25 +1,6 @@
 <template>
-  <div style="padding: 40px;">
-    <h1>AhaGo Testing Components</h1>
-
-    <SearchBar @search="handleSearch" />
-
-    <PaginationComponent
-      :totalPages="4"
-      :currentPage="currentPage"
-      @page-changed="handlePageChange"
-    />
-
-    <p style="margin-top: 20px;">You are on page {{ currentPage }}</p>
-    <p>Search keyword: <strong>{{ searchKeyword }}</strong></p>
-    <ProductDetailImage />
-    <ReviewSection />
-    <CheckBox />
-    <Dashboard />
-    <StockGraph />
-
-    
-  </div>
+  <RouterView></RouterView>
+   <!-- <RegisterInputBox></RegisterInputBox> -->
 </template>
 
 <script>
@@ -30,6 +11,23 @@ import ReviewSection from './components/ReviewSection.vue';
 import CheckBox from './components/CheckBox.vue';
 import Dashboard from './components/Dashboard.vue';
 import StockGraph from './components/StockGraph.vue';
+import LandingPage from './views/owner/OwnerLandingPage.vue';
+import HomePage from './views/owner/HomePage.vue';
+import OrdersPage from './views/owner/OrdersPage.vue';
+import MenuPage from './views/owner/MenuPage.vue';
+import MenuEditPage from './views/owner/MenuEditPage.vue';
+import MenuCreatePage from './views/owner/MenuCreatePage.vue';
+import ProfilePage from './views/owner/OwnerProfilePage.vue';
+import MenuNewCategory from './views/owner/MenuNewCategory.vue';
+import { RouterView } from 'vue-router';
+import OrderDetails from './components/OrderDetails.vue';
+import TransactionPage from './views/owner/TransactionPage.vue';
+import Invoice from './components/Invoice.vue';
+import InvoicePage from './views/owner/InvoicePage.vue';
+import CategoryBannerV2 from './components/CategoryBannerV2.vue';
+
+import edit from '@/assets/owner/svg/edit-white.svg'
+import RegisterInputBox from './components/RegisterInputBox.vue';
 export default {
   components: {
     PaginationComponent,
@@ -38,12 +36,30 @@ export default {
     ReviewSection,
     CheckBox,
     Dashboard,
-    StockGraph
+    StockGraph,
+    LandingPage,
+    HomePage,
+    OrdersPage,
+    MenuPage,
+    MenuEditPage,
+    MenuCreatePage,
+    MenuNewCategory,
+    ProfilePage,
+    OrderDetails,
+    TransactionPage,
+    InvoicePage,
+    CategoryBannerV2,
+    RegisterInputBox
   },
   data() {
     return {
+      edit: edit,
       currentPage: 1,
-      searchKeyword: ''
+      searchKeyword: '',
+      categs: [
+                'Profile',
+                'Trackings'
+            ],
     };
   },
   methods: {

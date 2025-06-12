@@ -1,28 +1,30 @@
 <template>
     <div class="card">
-        <img id="dishImg" v-bind:src="dish01" alt="Dish Image">
+        <img id="dishImg" :src="imageSrc" alt="Dish Image">
 
         <div class="dishInfo">
             <div class="title">
-                <span>{{ dishName }}</span>
-                <span><b>${{ dishPrice }}</b></span>
+                <span>{{ name }}</span>
+                <span><b>${{ price }}</b></span>
             </div>
             <div class="description">
-                {{ dishDesc }}
+                {{ desc }}
             </div>
 
             <div class="status">
                 <div>
-                    <StatusBox :status-id="currentStatusId"></StatusBox>
+                    <StatusBox :status-id="statusId"></StatusBox>
                 </div>
-                
 
-                <div class="edit">
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 21h16M5.666 13.187A2.28 2.28 0 0 0 5 14.797V18h3.223c.604 0 1.183-.24 1.61-.668l9.5-9.505a2.28 2.28 0 0 0 0-3.22l-.938-.94a2.277 2.277 0 0 0-3.222.001z"/></svg>
-                    </span>
-                    <span>Edit</span>
-                </div>
+                <RouterLink :to="'/owner/menu/edit/' + itemId">
+                    <div class="edit">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 21h16M5.666 13.187A2.28 2.28 0 0 0 5 14.797V18h3.223c.604 0 1.183-.24 1.61-.668l9.5-9.505a2.28 2.28 0 0 0 0-3.22l-.938-.94a2.277 2.277 0 0 0-3.222.001z"/></svg>
+                        </span>
+                        <span>Edit</span>
+                    </div>
+                </RouterLink>
+                
             </div>
         </div>
         
@@ -36,15 +38,15 @@ export default {
     components: {
         StatusBox,
     },
-    data() {
-        return {
-            dish01: 'https://malis.thalias.com.kh/wp-content/uploads/2024/08/MicrosoftTeams-image-3-scaled.jpg',
-            dishName: 'Plear Sach Ko',
-            dishPrice: '11',
-            dishDesc: 'Fine slices of tender beef marinated in a blend of prahok, lemongrass, fresh green peppercorns wo!',
-            currentStatusId: 1,
-        }
-    }
+    props: {
+        itemId: Number,
+        imageSrc: String,
+        name: String,
+        price: Number,
+        desc: String,
+        statusId: Number
+    },
+    
 }
 </script>
 
@@ -80,6 +82,7 @@ export default {
     align-items: center;
     font-weight:bold;
     font-size: 14px;
+    cursor: pointer;
 }
 .status{
     display: flex;
