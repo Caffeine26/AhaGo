@@ -11,7 +11,7 @@
       </select>
     </div>
     <div class="graph-container">
-      <svg :width="width" :height="height + 30" class="line-graph">
+      <svg :width="width" :height="height + 30" class="line-graph" >
         <!-- Y-Axis Labels -->
         <text v-for="(line, index) in gridLines" :key="'label-' + index" :x="padding - 10" :y="line" text-anchor="end"
           alignment-baseline="middle" class="axis-label">
@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     formatYAxisLabel(index) {
-      const max = Math.max(...this.data)
+      const max = this.maxValue
       const value = (max / 4) * (4 - index)
       if (value >= 1000) {
         return Math.round(value / 1000) + 'K'
@@ -80,6 +80,9 @@ export default {
     }
   },
   computed: {
+    maxValue() {
+      return this.data.length ? Math.max(...this.data) : 0
+    },
     gridLines() {
       const lines = []
       const step = (this.height - this.padding * 2) / 4
@@ -89,13 +92,12 @@ export default {
       return lines
     },
     dataPoints() {
-      if (!this.data || !this.months || this.data.length !== this.months.length) {
-        return [];
-      }
+      if (!this.data.length || this.maxValue === 0) return []
+
       const xStep = (this.width - this.padding * 2) / (this.data.length - 1)
       return this.data.map((value, index) => ({
         x: this.padding + xStep * index,
-        y: this.height - (value / Math.max(...this.data) * (this.height - this.padding * 2) + this.padding)
+        y: this.height - this.padding - (value / this.maxValue) * (this.height - this.padding * 2)
       }))
     },
     pathData() {

@@ -63,7 +63,7 @@ const legendItems = [
   padding: 20px;
   text-align: center;
   width: 300px;
-  height: 500px;
+  height: 560px;
 }
 
 .header {

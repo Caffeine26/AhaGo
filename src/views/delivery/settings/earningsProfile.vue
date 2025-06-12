@@ -65,7 +65,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import BarChart from "@/components/BarChart.vue";
+import BarChart from "@/components/admin/BarChart.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import ButtonFilter from "@/components/ButtonFilter.vue";
