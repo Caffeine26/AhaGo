@@ -1,30 +1,28 @@
 <template>
   <div class="status-box">
     <template v-if="statusId === 0">
-      <button @click="$emit('accept')" class="accept-btn">Accept</button>
-      <button @click="$emit('reject')" class="reject-btn">Reject</button>
+      <span class="status-text cancelled">Cancelled</span>
     </template>
-
+    
     <template v-else-if="statusId === 1">
       <span class="status-text pending">Pending</span>
     </template>
 
     <template v-else-if="statusId === 2">
-      <div class="status">
-        <span class="status-text completed">Completed</span>
-        <span class="status-text unpaid">Not paid</span>
-      </div>
+      <span class="status-text prepare">Prepare</span>
+      
     </template>
 
     <template v-else-if="statusId === 3">
-      <div class="status">
-        <span class="status-text completed">Completed</span>
-        <span class="status-text paid">Paid</span>
-      </div>
+      <span class="status-text ready">Ready</span>
     </template>
 
-    <template v-else>
-      <span class="status-text pending">Pending</span>
+    <template v-else-if="statusId === 4">
+      <span class="status-text otw">On the way</span>
+    </template>
+
+    <template v-else-if="statusId === 5">
+      <span class="status-text completed">Completed</span>
     </template>
   </div>
 </template>
@@ -34,62 +32,50 @@ export default {
   props: {
     statusId: {
       type: Number,
-      required: true,
-    },
-  },
+      required: true
+    }
+  }
 };
 </script>
 
 <style scoped>
-.status-box {
+/* .status-box {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-family: "Raleway";
-}
-
-.status {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.accept-btn {
-  background-color: #d90000;
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 12px;
-  font-family: "Raleway";
-  font-weight: bold;
-}
-
-.reject-btn {
-  color: #2f2d2d;
-  padding: 6px 12px;
-  background-color: white;
-  border: none;
-  font-family: "Raleway";
-  font-weight: 400;
-}
+  font-family: 'Raleway';
+} */
 
 .status-text {
   font-weight: bold;
+  font-size: small;
+  color: white;
+  font-family: 'Raleway';
+  padding: 5px 10px;
+  border: none;
+  border-radius: 20px;
+  
 }
 
-.paid {
-  color: green;
+.cancelled {
+  background-color: #292929;
 }
-
-.unpaid {
-  color: #292929;
-}
-
-.completed {
-  color: red;
-}
-
 .pending {
-  color: orange;
+  background-color: #D90000;
 }
+.prepare {
+  background-color: #FF3F00;
+}
+.ready {
+  background-color: #0C8CE9;
+}
+.otw {
+  background-color: #F8BD00;
+}
+.completed {
+  background-color: #008F39;
+}
+
+
 </style>
+  

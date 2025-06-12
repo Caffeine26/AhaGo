@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+
+    <div class="container">
     <div class="title">{{ title }}</div>
     <div class="nav">
       <div
@@ -33,6 +34,8 @@
       </div>
     </div>
   </div>
+
+  
 </template>
 
 <script>
@@ -84,22 +87,29 @@ export default {
 </script>
 
 <style scoped>
+
 .container {
   width: 93%;
   background-color: white;
-  padding: 10px 60px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   color: #292929;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100vw;
+
+  
 }
 .title {
   font-size: 28px;
   font-weight: 700;
+  padding-left: 60px;
 }
 .nav {
   display: flex;
   gap: 40px;
+  padding-right: 60px;
 }
 .nav-item:hover {
   transform: scale(1.1);

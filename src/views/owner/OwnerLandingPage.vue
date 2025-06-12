@@ -1,0 +1,243 @@
+<template>
+    <div class="landingContainer">
+        <Header></Header>
+        <div id="banner">
+            <img :src="burger" alt="burger">
+            <div>
+                <div id="bannerText">
+                    <p>Boost</p>
+                    <p>your business</p>
+                    <span>with </span>
+                    <span class="ahago">AhaGo</span>
+                </div>
+                <div id="bannerButtons">
+                    <button>Get started</button>
+                    <button>Access your account</button>
+                </div>
+            </div>
+            
+            <img :src="pasta" alt="pasta">
+        </div>
+        <div id="about">
+            <p class="title">About AhaGo</p>
+            <div id="aboutText">
+                <img :src="logo" alt="AHAGO_LOGO">
+                <p> {{ content }}</p>
+            </div>
+        </div>
+        <div class="partner01">
+            <p class="title">Why partner with AhaGo?</p>
+            <div id="containers">
+                <PicTitleBox
+                v-for="(item, index) in reasons"
+                :key="index"
+                :imageSrc="item.imageSrc"
+                :title="item.title"
+                :content="item.content"
+                ></PicTitleBox>
+            </div>
+        </div>
+        <div class="partner01">
+            <p class="title">Our Partners</p>
+            <div id="brands">
+                <img v-for="brand in brands" :src="brand" alt="BRAND" class="brand">
+            </div>
+        </div>
+        <div id="bottomBanner">
+            <div id="bottomBannerTitle">
+                <p>Partner with</p>
+                <span class="ahago">AhaGo </span>
+                <span>Today</span>
+            </div>
+
+            <div class="bottomBannerActions">
+                <ArrowText
+                v-for="action in actions"
+                :title="action"
+                ></ArrowText>
+            </div>
+            
+        </div>
+        <hr id="footerBorder">
+        <AppFooter></AppFooter>
+    </div>
+
+
+</template>
+
+<script>
+import Header from '@/components/all/header.vue';
+import PicTitleBox from '@/components/PicTitleBox.vue';
+import ArrowText from '@/components/ArrowText.vue';
+import AppFooter from '@/components/AppFooter.vue';
+
+export default {
+    components: {
+        Header,
+        PicTitleBox,
+        ArrowText,
+        AppFooter
+    },
+    data() {
+        return {
+            burger: "src/assets/owner/img/burger.png",
+            pasta: "src/assets/owner/img/pasta.png",
+            logo: "src/assets/owner/img/ahago-logo-2.png",
+            market: "src/assets/owner/img/market.png",
+            brands : [
+                "src/assets/owner/img/tasty.png",
+                "src/assets/owner/img/pano.png",
+                "src/assets/owner/img/burgerking.png",
+                "src/assets/owner/img/yellowcab.png",
+                "src/assets/owner/img/dq.png",
+                "src/assets/owner/img/tasty.png",
+                "src/assets/owner/img/pano.png",
+            ],
+            actions: [
+                "View our Terms and Policy",
+                "Register with Us",
+                "Got questions? Contact Us"
+            ],
+            isOpen: false,
+            reasons: [
+                {
+                    imageSrc: "src/assets/owner/img/market.png",
+                    title: "Expand Your Online Market",
+                    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+                },
+                {
+                    imageSrc: "src/assets/owner/img/plate.png",
+                    title: "Bring Your Menu Online",
+                    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+                },
+                {
+                    imageSrc: "src/assets/owner/img/online.png",
+                    title: "Manage Your Business Online",
+                    content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+                }
+            ],
+            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
+        }
+    }
+}
+</script>
+
+<style scoped>
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Raleway';
+    background-color: #292929;
+    color: white;
+}
+.landingContainer {
+    background-color: #292929;
+}
+#banner {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+#bannerText {
+    font-size: 72px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+#bannerText :nth-child(1), #bottomBannerTitle p, #bottomBannerTitle :nth-child(3) {
+    font-weight: bold;
+    font-size: 72px;
+}
+.ahago {
+    font-weight: bold;
+    color: #D90000;
+    font-size: 72px;
+}
+#bannerButtons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+#bannerButtons :nth-child(1) {
+    background-color: #D90000;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 25px 0 25px 25px;
+    border-color: #D90000;
+    font-size: 20px;
+    cursor: pointer;
+}
+#bannerButtons :nth-child(2) {
+    color: white;
+    background-color: #292929;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#about {
+    padding-left: 185px;
+    padding-right: 185px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 150px;
+}
+
+.title {
+    font-size: 56px;
+    font-weight: bold;
+}
+#aboutText {
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+}
+#aboutText img {
+    width: 376px;
+    height: 274px;
+}
+#aboutText p {
+    font-size: 18px;
+    margin-left: 40px;
+    text-align: justify;
+}
+#containers {
+    display: flex;
+}
+.partner01 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 240px;
+    padding-left: 185px;
+    padding-right: 185px;
+}
+#brands {
+    display: flex;
+    padding: 40px;
+    border: 2px solid #959595;
+    border-radius: 20px;
+    margin-top: 40px;
+}
+.brand {
+    width: 150px;
+    margin: 15px;
+}
+.bottomBannerActions {
+    display: flex;
+    flex-direction: column;
+    margin-left: 200px;
+}
+#bottomBanner {
+    display: flex;
+    align-items: center;
+    padding-left: 300px;
+    margin-top: 120px;
+    margin-bottom: 120px;
+}
+#footerBorder {
+    background-color: white;
+    width: 100vw;
+}
+</style>
