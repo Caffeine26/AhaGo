@@ -19,8 +19,6 @@ import settingsLayout from "@/views/delivery/settings/settingsLayout.vue";
 import SignUp from "@/views/delivery/authentication/SignUp.vue";
 import deliverLayout from "@/views/delivery/authentication/deliverLayout.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import ProfilePage from "@/views/delivery/profile/profile.vue";
-import AuthPanel from '@/components/AuthPanel.vue';
 import MenuPage from "@/views/owner/MenuPage.vue";
 import MenuNewCategory from "@/views/owner/MenuNewCategory.vue";
 import MenuCreatePage from "@/views/owner/MenuCreatePage.vue";
@@ -166,6 +164,8 @@ const router = createRouter({
           component: SignUp,
         },
       ],
+    },
+    {
       path: "/owner",
       component: OwnerLandingPage,
     },
