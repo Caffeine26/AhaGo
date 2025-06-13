@@ -1,7 +1,5 @@
 <template>
-  <div class="text">
-    <p>{{ text }}</p>
-  </div>
+    <div class="text" v-html="text"></div>
 </template>
 <script>
 export default {
@@ -13,6 +11,8 @@ export default {
 </script>
 <style scoped>
 .text {
+  margin-top: 16px;
+  margin-bottom: 16px;
   max-width: 90vw;
   font-size: 24px;
   color: #464646;

@@ -65,7 +65,8 @@ const goToSignUp = () => {
 .container {
   width: 100vw;
   background-color: #292929;
-  /* padding: 0px 50px; */
+  color: white;
+  padding: 0px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;

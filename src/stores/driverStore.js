@@ -6,7 +6,7 @@ export const useDriverStore = defineStore('driver', () => {
   const buttons = ref([])
   async function fetchSections() {
     try {
-      const res = await fetch('http://localhost:8100/api/driver-sections')
+      const res = await fetch('http://localhost:8300/api/driver-sections')
       if (!res.ok) throw new Error('Failed to fetch')
 
       const data = await res.json()
@@ -27,7 +27,7 @@ export const useDriverStore = defineStore('driver', () => {
 
   async function fetchButtons(){
     try {
-      const res = await fetch('http://localhost:8100/api/driver-buttons')
+      const res = await fetch('http://localhost:8300/api/driver-buttons')
       if (!res.ok) throw new Error('Failed to fetch')
         const data = await res.json()
       buttons.value = data.map(button =>({

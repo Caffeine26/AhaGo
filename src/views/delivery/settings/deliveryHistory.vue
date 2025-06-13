@@ -5,13 +5,15 @@
       <div class="booking-list">
         <Order
           class="orders"
-          v-for="order in orders"
-          :key="order.orderId + '-' + order.fireId"
-          :order-id="order.orderId"
-          :fire-id="order.fireId"
-          :location="order.location"
-          :price="order.price"
-          :items="order.items"
+           v-for="(item, index) in filteredOrders"
+    :key="index"
+    :index="index"
+    :order-id="item.orderIndex"
+    :order-index="item.orderIndex"
+    :order-status="item.orderStatus"
+    :order-items="item.orderItems"
+    :total="item.total"
+    :paid="item.paid"
         />
       </div>
     </div>
@@ -19,10 +21,15 @@
 </template>
 
 <script setup>
-import Order from "@/components/OrderCard.vue";
+import Order from "@/components/OrderCard02.vue";
 import { ref, onMounted } from "vue";
 import Title from "@/components/delivery/title.vue";
 import axios from "axios";
+import { computed } from "vue";
+
+const filteredOrders = computed(() => {
+  return orders.value; // or filter logic if needed
+});
 
 const orders = ref([]);
 
@@ -59,6 +66,7 @@ onMounted(async () => {
   height: 480px;
   overflow-y: scroll;
   padding: 20px;
+  overflow-x: hidden;
 }
 .orders {
   width: 100%;

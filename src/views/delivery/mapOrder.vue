@@ -48,11 +48,15 @@
 
       <h2>Total Orders</h2>
       <div class="orders">
-        <Order title="Chicken Laksa" amount="3" price="12.00" />
-        <Order title="Chicken Laksa" amount="3" price="12.00" />
-        <Order title="Chicken Laksa" amount="3" price="12.00" />
-        <Order title="Chicken Laksa" amount="3" price="12.00" />
-      </div>
+  <Order
+    v-for="(item, index) in orderDetails?.orderItems || []"
+    :key="index"
+    :title="item.name"
+    :amount="item.quantity"
+    :price="item.price.toFixed(2)"
+  />
+</div>
+
       <div class="button">
         <GeneralButton
           btnColor="green"
@@ -67,49 +71,58 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import axios from "axios";
 import Map from "@/components/delivery/map.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import Order from "@/components/delivery/OrderCard.vue";
 
 const route = useRoute();
+const orderId = route.params.id;
 
 const driverLocation = ref(null);
+const restaurantCoords = ref(null);
+const clientCoords = ref(null);
 const routePoints = ref([]);
-
-// const restaurantCoords = computed(() => ({
-//   lat: parseFloat(route.query.restaurantLat),
-//   lng: parseFloat(route.query.restaurantLng),
-// }));
-
-// const clientCoords = computed(() => ({
-//   lat: parseFloat(route.query.clientLat),
-//   lng: parseFloat(route.query.clientLng),
-// }));
-const restaurantCoords = ref({
-  lat: 11.5587, // Replace with actual restaurant location
-  lng: 104.9174,
-});
-
-const clientCoords = ref({
-  lat: 11.561, // Replace with actual client location
-  lng: 104.923,
-});
+const orderDetails = ref(null); // optional for displaying info
 
 function onDriverLocation(coords) {
   driverLocation.value = coords;
 }
+async function fetchOrderData() {
+  try {
+    const { data } = await axios.get(`http://localhost:4000/api/incoming-order/${orderId}`);
+    orderDetails.value = data;
+
+    const restaurantLocation = data.details?.restaurantLocation;
+    const clientLocation = data.details?.clientLocation;
+
+    restaurantCoords.value = {
+      lat: restaurantLocation.lat,
+      lng: restaurantLocation.lng
+    };
+
+    clientCoords.value = {
+      lat: clientLocation.lat,
+      lng: clientLocation.lng
+    };
+  } catch (err) {
+    console.error("Failed to fetch order data", err);
+  }
+}
 
 function startJourney() {
-  if (!driverLocation.value) return;
+  if (!driverLocation.value || !restaurantCoords.value || !clientCoords.value) return;
   routePoints.value = [
     driverLocation.value,
     restaurantCoords.value,
     clientCoords.value,
   ];
 }
+
+onMounted(fetchOrderData);
 </script>
 <style scoped>
 h2 {

@@ -3,7 +3,6 @@ const http = require("http");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-
 const {
   drivers,
   notifications,
@@ -13,197 +12,148 @@ const {
 } = require("./mock");
 
 const app = express();
-app.use(express.json());
-app.use(cors());
-
-// Setup multer storage (store files in /uploads folder locally)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads"); // ensure this folder exists
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + Date.now() + ext);
-  },
-});
-const upload = multer({ storage });
-
 const PORT = 4000;
 
-// Middleware to simulate logged-in driver
+app.use(cors());
+app.use(express.json());
+
+// Middleware to simulate driver login
 app.use((req, res, next) => {
   req.driverId = 1;
   next();
 });
 
-// GET driver profile
+// Multer config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "./uploads"),
+  filename: (req, file, cb) => cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`),
+});
+const upload = multer({ storage });
+
+// API Endpoints
 app.get("/api/driver/profile", (req, res) => {
-  const driver = drivers.find((d) => d.id === req.driverId);
+  const driver = drivers.find(d => d.id === req.driverId);
   if (!driver) return res.status(404).json({ error: "Driver not found" });
   res.json(driver);
 });
 
-// PUT update driver profile
 app.put("/api/driver/profile", (req, res) => {
-  const driver = drivers.find((d) => d.id === req.driverId);
+  const driver = drivers.find(d => d.id === req.driverId);
   if (!driver) return res.status(404).json({ error: "Driver not found" });
-
   Object.assign(driver, req.body);
   res.json(driver);
 });
 
-// POST upload driver documents (idCardImage, drivingLicenseImage, vehicleRegistrationImage)
-app.post(
-  "/api/driver/documents",
-  upload.fields([
-    { name: "idCardImage", maxCount: 1 },
-    { name: "drivingLicenseImage", maxCount: 1 },
-    { name: "vehicleRegistrationImage", maxCount: 1 },
-  ]),
-  (req, res) => {
-    const driver = drivers.find((d) => d.id === req.driverId);
-    if (!driver) return res.status(404).json({ error: "Driver not found" });
+app.post("/api/driver/documents", upload.fields([
+  { name: "idCardImage", maxCount: 1 },
+  { name: "drivingLicenseImage", maxCount: 1 },
+  { name: "vehicleRegistrationImage", maxCount: 1 },
+]), (req, res) => {
+  const driver = drivers.find(d => d.id === req.driverId);
+  if (!driver) return res.status(404).json({ error: "Driver not found" });
 
-    if (!driver.documents) driver.documents = {};
+  const docs = driver.documents || {};
+  if (req.files["idCardImage"]) docs.idCardImage = req.files["idCardImage"][0].path;
+  if (req.files["drivingLicenseImage"]) docs.drivingLicenseImage = req.files["drivingLicenseImage"][0].path;
+  if (req.files["vehicleRegistrationImage"]) docs.vehicleRegistrationImage = req.files["vehicleRegistrationImage"][0].path;
 
-    if (req.files["idCardImage"]) {
-      driver.documents.idCardImage = req.files["idCardImage"][0].path;
-    }
-    if (req.files["drivingLicenseImage"]) {
-      driver.documents.drivingLicenseImage = req.files["drivingLicenseImage"][0].path;
-    }
-    if (req.files["vehicleRegistrationImage"]) {
-      driver.documents.vehicleRegistrationImage = req.files["vehicleRegistrationImage"][0].path;
-    }
+  driver.documents = docs;
+  res.json({ message: "Documents uploaded successfully", documents: docs });
+});
 
-    res.json({
-      message: "Documents uploaded successfully",
-      documents: driver.documents,
-    });
-  }
-);
-
-// GET incoming orders with optional time filter
 app.get("/api/incoming-orders", (req, res) => {
-  const filter = req.query.filter || "All";
   const now = new Date();
-
+  const filter = req.query.filter || "All";
   let filtered = incomingOrders;
 
   if (filter === "Today") {
-    filtered = incomingOrders.filter((order) => {
-      const created = new Date(order.createdAt);
-      return created.toDateString() === now.toDateString();
-    });
+    filtered = incomingOrders.filter(o => new Date(o.createdAt).toDateString() === now.toDateString());
   } else if (filter === "This Week") {
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
-    filtered = incomingOrders.filter(
-      (order) => new Date(order.createdAt) >= startOfWeek
-    );
+    filtered = incomingOrders.filter(o => new Date(o.createdAt) >= startOfWeek);
   } else if (filter === "Last Month") {
-    const lastMonth = (now.getMonth() === 0) ? 11 : now.getMonth() - 1;
-    const lastMonthYear = (now.getMonth() === 0) ? now.getFullYear() - 1 : now.getFullYear();
-    filtered = incomingOrders.filter(order => {
-      const created = new Date(order.createdAt);
-      return created.getMonth() === lastMonth && created.getFullYear() === lastMonthYear;
+    const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const year = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    filtered = incomingOrders.filter(o => {
+      const d = new Date(o.createdAt);
+      return d.getMonth() === lastMonth && d.getFullYear() === year;
     });
   }
 
   res.json(filtered);
 });
 
-// GET notifications with optional time filter
 app.get("/api/notifications", (req, res) => {
-  const filter = req.query.filter || "All";
   const now = new Date();
-
+  const filter = req.query.filter || "All";
   let filtered = notifications;
 
   if (filter === "Today") {
-    filtered = notifications.filter((n) => {
-      const created = new Date(n.createdAt);
-      return created.toDateString() === now.toDateString();
-    });
+    filtered = notifications.filter(n => new Date(n.createdAt).toDateString() === now.toDateString());
   } else if (filter === "This Week") {
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay());
-    filtered = notifications.filter(
-      (n) => new Date(n.createdAt) >= startOfWeek
-    );
+    filtered = notifications.filter(n => new Date(n.createdAt) >= startOfWeek);
   } else if (filter === "Last Month") {
     const lastMonth = now.getMonth() - 1;
-    filtered = notifications.filter((n) => {
-      const created = new Date(n.createdAt);
-      return (
-        created.getMonth() === lastMonth &&
-        created.getFullYear() === now.getFullYear()
-      );
+    filtered = notifications.filter(n => {
+      const d = new Date(n.createdAt);
+      return d.getMonth() === lastMonth && d.getFullYear() === now.getFullYear();
     });
   }
 
   res.json(filtered);
 });
 
-// PATCH notification status
 app.patch("/api/notifications/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const notification = notifications.find((n) => n.id === id);
-  if (!notification)
-    return res.status(404).json({ error: "Notification not found" });
-
+  const notification = notifications.find(n => n.id === parseInt(req.params.id));
+  if (!notification) return res.status(404).json({ error: "Notification not found" });
   Object.assign(notification, req.body);
   res.json(notification);
 });
 
-// PATCH incoming order status
-app.patch("/api/incoming-orders/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const order = incomingOrders.find((o) => o.id === id);
-  if (!order)
+app.get("/api/incoming-order/:id", (req, res) => {
+  const orderId = parseInt(req.params.id);
+  const order = incomingOrders.find(o => o.id === orderId);
+
+  if (!order) {
     return res.status(404).json({ error: "Incoming order not found" });
-
-  if (req.body.details) {
-    order.details = {
-      ...order.details,
-      ...req.body.details,
-    };
-  }
-
-  for (const key in req.body) {
-    if (key !== "details") {
-      order[key] = req.body[key];
-    }
   }
 
   res.json(order);
 });
 
-// GET delivery history
-app.get("/api/delivery-history", (req, res) => {
-  const { status, date } = req.query;
-  let results = deliveryHistory;
+app.patch("/api/incoming-orders/:id", (req, res) => {
+  const orderId = parseInt(req.params.id);
+  const order = incomingOrders.find(o => o.id === orderId);
 
-  if (status) {
-    results = results.filter((entry) => entry.status === status);
+  if (!order) {
+    return res.status(404).json({ error: "Incoming order not found" });
   }
 
-  if (date) {
-    results = results.filter((entry) => entry.date === date);
+  const { status } = req.body;
+  if (!["pending", "accepted", "rejected"].includes(status)) {
+    return res.status(400).json({ error: "Invalid status" });
   }
 
-  res.json(results);
+  order.status = status;
+  res.json(order);
 });
 
-// GET sections for basics page
+app.get("/api/delivery-history", (req, res) => {
+  res.json(deliveryHistory);
+});
+
 app.get("/api/sections", (req, res) => {
   res.json(sections);
 });
 
-// Serve uploaded files statically
+// Static file access
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Start server
 const server = http.createServer(app);
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

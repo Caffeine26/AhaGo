@@ -173,9 +173,10 @@ const router = createRouter({
           ],
         },
         {
-          path: "mapOrder",
+          path: "mapOrder/:id",
           name: "mapOrder",
           component: mapOrder,
+          props: true
         },
         {
           path: "aboutus",

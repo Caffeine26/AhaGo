@@ -22,7 +22,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .box {
     width: 310px;
     height:fit-content;

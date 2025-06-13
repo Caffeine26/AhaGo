@@ -33,7 +33,7 @@
         text="Accept orders via the AhaGo Driver App, pick up meals from restaurants, and deliver them to customers quickly and professionally. It's simple, and every delivery adds to your income."
       />
       <Timeline />
-       <Title :title="button14?.name" />
+       <Title class="title" :title="button14?.name" />
       <Text v-if="button14?.text" :text="button14?.text" />
 
       <div  v-if="button14?.descriptions?.length">
@@ -108,10 +108,10 @@ export default {
     await store.fetchSections();
     await store.fetchButtons();
 
-    // Find the button with driver_button id 13 from the fetched sections
+    // Find the button with driver_button id 13/14 from the fetched sections
     this.button13 = store.buttons.find(button => button.id === 13);
     this.button14 = store.buttons.find(button => button.id === 14);
-    // Set the selectedButton to the button with driver_button id 13
+    // Set the selectedButton to the button with driver_button id 13/14
     if (!this.button13) console.error('Button with ID 13 not found');
     if (!this.button14) console.error('Button with ID 14 not found');
   }
@@ -186,5 +186,8 @@ body {
   display: flex;
   gap: 20px;
   padding: 0px 20px;
+}
+.title {
+  width: 800px;
 }
 </style>

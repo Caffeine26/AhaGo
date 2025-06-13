@@ -1,4 +1,3 @@
-
 const drivers = [
   {
     id: 1,
@@ -16,14 +15,14 @@ const drivers = [
     vehicleColor: "Red",
     licensePlate: "XYZ 1234",
     documents: {
-      idCardImage: null, // e.g. URL or base64 string
+      idCardImage: null,
       drivingLicenseImage: null,
       vehicleRegistrationImage: null,
     }
   },
 ];
 
- let notifications = [
+let notifications = [
   {
     id: 1,
     title: "New Delivery Assigned!",
@@ -46,7 +45,7 @@ const drivers = [
   },
 ];
 
- let incomingOrders = [
+let incomingOrders = [
   {
     id: 1,
     title: "New Order Incoming!",
@@ -63,6 +62,10 @@ const drivers = [
       },
       customer: "Jane Smith",
     },
+    orderItems: [
+      { name: "Pepperoni Pizza", quantity: 1, price: 8.99 },
+      { name: "Garlic Bread", quantity: 1, price: 3.50 },
+    ],
     status: "pending",
     createdAt: new Date(),
   },
@@ -82,79 +85,85 @@ const drivers = [
       },
       customer: "Mike Ross",
     },
+    orderItems: [
+      { name: "Sushi Combo", quantity: 1, price: 12.00 },
+      { name: "Miso Soup", quantity: 2, price: 2.50 },
+    ],
     message: "Urgent delivery needed. Accept now if you're nearby.",
     status: "pending",
     createdAt: new Date(Date.now() - 60 * 60 * 1000),
   },
 ];
 
- let deliveryHistory = [
+let deliveryHistory = [
   {
+    orderIndex: "0001",
     orderId: "0001",
-    fireId: "1",
-    location: "Boeung Keng Korng, St XX, Phnom Penh",
-    price: 16.5,
-    items: ["Potato Salad", "Tteokbokki", "Fried Chicken"],
+    orderStatus: "completed",
+    orderItems: ["Potato Salad", "Tteokbokki", "Fried Chicken"],
+    total: 16.5,
+    paid: true,
   },
   {
+    orderIndex: "0002",
     orderId: "0002",
-    fireId: "2",
-    location: "Toul Tompoung, St YY, Phnom Penh",
-    price: 21.0,
-    items: ["Burger", "French Fries", "Coke"],
+    orderStatus: "completed",
+    orderItems: ["Burger", "French Fries", "Coke"],
+    total: 21.0,
+    paid: true,
   },
 ];
 
- const sections = [
+const sections = [
   {
     title: "Before you get started",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+    text: "Get ready for your first delivery with these essential checks and guidelines.",
     linkText: "Before you get started overview",
     linkTo: "basics/before-you-get-started",
     buttons: [
       {
         imageSrc: "https://i.pinimg.com/736x/b2/a4/df/b2a4df2ac895d9bd291bfbefce1ba483.jpg",
         name: "Run a Vehicle Safety Check",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+        text: "Make sure your vehicle is road-ready before every delivery.",
         link: "run-safety-check",
         description: [
           {
-            title: "Meow",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Check Lights",
+            text: "Ensure all lights (headlights, indicators) are working properly.",
+            svg: "lightbulb"
           },
           {
-            title: "Meow",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Inspect Tires",
+            text: "Tire pressure and tread depth should meet safety standards.",
+            svg: "tire"
           },
           {
-            title: "Meow",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Brake Test",
+            text: "Test your brakes for responsiveness and stopping power.",
+            svg: "brake"
           },
         ]
       },
       {
         imageSrc: "https://i.pinimg.com/736x/b2/a4/df/b2a4df2ac895d9bd291bfbefce1ba483.jpg",
         name: "Check delivery equipment",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+        text: "Inspect your bags and gear to keep food secure and warm.",
         link: "check-equipment",
         description: [
           {
-            title: "Crash",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Insulated Bag",
+            text: "Use thermal bags to maintain food temperature.",
+            svg: "bag"
           },
           {
-            title: "Crash",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Phone Mount",
+            text: "Keep your phone safely mounted for navigation.",
+            svg: "mount"
           },
           {
-            title: "Crash",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Charger",
+            text: "Always carry a backup power bank or charger.",
+            svg: "battery"
           },
         ]
       },
@@ -162,7 +171,7 @@ const drivers = [
   },
   {
     title: "Making deliveries",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+    text: "Learn how to handle multiple deliveries efficiently and on time.",
     linkText: "Making deliveries overview",
     linkTo: "basics/making-delivery",
     buttons: [
@@ -172,31 +181,21 @@ const drivers = [
         link: "deliver-multiple-orders",
         description: [
           {
-            title: "Crash",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Group Orders",
+            text: "Plan your route to handle multiple deliveries smoothly.",
+            svg: "map"
           },
           {
-            title: "Meow",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Time Management",
+            text: "Use time-saving strategies during peak hours.",
+            svg: "clock"
           },
           {
-            title: "Meow",
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
-            svg: "cloud"
+            title: "Customer Updates",
+            text: "Keep customers informed if you're running behind.",
+            svg: "chat"
           },
         ]
-      },
-      {
-        imageSrc: "https://i.pinimg.com/736x/b2/a4/df/b2a4df2ac895d9bd291bfbefce1ba483.jpg",
-        name: "Information about back-to-back deliveries",
-        link: "back-to-back-deliveries"
-      },
-      {
-        imageSrc: "https://i.pinimg.com/736x/b2/a4/df/b2a4df2ac895d9bd291bfbefce1ba483.jpg",
-        name: "Delivering multiple orders",
-        link: "deliver-multiple-orders"
       },
       {
         imageSrc: "https://i.pinimg.com/736x/b2/a4/df/b2a4df2ac895d9bd291bfbefce1ba483.jpg",
@@ -207,7 +206,7 @@ const drivers = [
   },
   {
     title: "Earnings",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+    text: "Understand how your earnings are calculated and tracked.",
     linkText: "Earnings overview",
     linkTo: "basics/earnings",
     buttons: [
@@ -217,11 +216,11 @@ const drivers = [
         link: "track-earnings",
         description: [
           {
-            text: "Track your earnings",
-            svg: "cloud"
+            text: "Daily, weekly, and monthly summaries available",
+            svg: "graph"
           },
           {
-            text: "Track your vehicle",
+            text: "Earnings split by completed vs canceled orders",
           }
         ]
       },
@@ -234,7 +233,7 @@ const drivers = [
   },
   {
     title: "Ratings, communities and more",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+    text: "Explore how ratings work and how to connect with other drivers.",
     linkText: "Ratings, communities and more overview",
     linkTo: "basics/ratings-communities",
     buttons: [
@@ -251,6 +250,7 @@ const drivers = [
     ],
   },
 ];
+
 module.exports = {
   drivers,
   notifications,

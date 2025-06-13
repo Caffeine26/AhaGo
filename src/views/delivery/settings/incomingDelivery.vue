@@ -23,11 +23,19 @@
 
           <div v-if="order.status === 'pending'" class="bottom">
             <div class="buttons">
-              <StatusAction
-                :statusId="0"
-                @accept="() => handleAccept(order.id)"
-                @reject="() => handleReject(order.id)"
-              />
+              <GeneralButton
+  title="Accept"
+  btnColor="#059669"
+  titleColor="#fff"
+  @click="handleAccept(order.id)"
+/>
+<GeneralButton
+  title="Reject"
+  btnColor="#DC2626"
+  titleColor="#fff"
+  @click="handleReject(order.id)"
+/>
+
             </div>
           </div>
         </Box>
@@ -42,7 +50,7 @@ import axios from "axios";
 import { useRouter } from "vue-router"; 
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
-import StatusAction from "@/components/StatusAction.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
 const router = useRouter(); 
 
 const incomingOrders = ref([]);
@@ -81,22 +89,14 @@ const updateOrderStatus = async (id, status) => {
   isProcessing.value = true;
 
   try {
-    await axios.patch(`http://localhost:4000/api/incoming-orders/${id}`, {
-      status,
-    });
+await axios.patch(`http://localhost:4000/api/incoming-orders/${id}`, { status });
 
     const order = incomingOrders.value.find((o) => o.id === id);
 
     if (status === "accepted") {
       router.push({
         name: "mapOrder", // Make sure this route name is defined in your router
-        query: {
-          orderId: order.id,
-          restaurantLat: order.details.restaurantLocation.lat,
-          restaurantLng: order.details.restaurantLocation.lng,
-          clientLat: order.details.clientLocation.lat,
-          clientLng: order.details.clientLocation.lng,
-        },
+        params: { id: order.id } // ← better than using query
       });
     } else {
       await fetchIncomingOrders(); // refresh list after rejection
