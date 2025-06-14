@@ -24,7 +24,6 @@ import MenuNewCategory from "@/views/owner/MenuNewCategory.vue";
 import MenuCreatePage from "@/views/owner/MenuCreatePage.vue";
 import OwnerLandingPage from "@/views/owner/OwnerLandingPage.vue";
 import OrdersPage from "@/views/owner/OrdersPage.vue";
-import OrderDetails from "@/components/OrderDetails.vue";
 import OrderDetailPage from "@/views/owner/OrderDetailPage.vue";
 import MenuEditPage from "@/views/owner/MenuEditPage.vue";
 import InvoicePage from "@/views/owner/InvoicePage.vue";
@@ -47,7 +46,6 @@ import Review from "@/views/Admin/Review.vue";
 import Inventory from "@/views/Admin/Inventory.vue";
 import Login from "@/views/Admin/Login.vue";
 import Signup from "@/views/Admin/Signup.vue";
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

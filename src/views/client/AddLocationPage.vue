@@ -2,69 +2,79 @@
   <div class="page-container">
     <Header :title="'Add Location'" />
     <button class="back-btn" @click="goBack">&#8592; Cancel</button>
+
     <div class="add-location-container">
-      <div class="map-placeholder">
-        <!-- Map placeholder -->
-        <div class="map-box">
-          <img src="@/assets/store_details/map.png" alt="Map" />
-        </div>
-      </div>
-      <form class="location-form" @submit.prevent="saveLocation">
+      <Map
+        :useGeolocation="false"
+        :enableClickSelection="true"
+        @map-clicked="onMapClick"
+      />
+
+      <form class="location-form">
+        <InputText v-model="address" label="Delivery Address" placeholder="Enter delivery address" />
+        <InputText v-model="addressLabel" label="Address" placeholder="e.g. Home" />
+
         <div class="form-group">
-          <label>Delivery Address</label>
-          <input v-model="address" placeholder="Enter delivery address" required />
-        </div>
-        <div class="form-group">
-          <label>Address</label>
-          <input v-model="addressLabel" placeholder="e.g. Home" required />
-        </div>
-        <div class="form-group">
-          <label>Delivery Service <span class="note">(For Takeaway Orders Only)</span></label>
-          <select v-model="deliveryService">
+          <label class="label">Delivery Service <span class="note">(For Takeaway Orders Only)</span></label>
+          <select class="select" v-model="deliveryService" required>
             <option disabled value="">Please select delivery service</option>
             <option>Downstairs pick-up</option>
             <option>Door delivery</option>
           </select>
         </div>
+
+        <InputText v-model="customerName" label="Customer Name" placeholder="Enter your name" />
+
         <div class="form-group">
-          <label>Customer Name</label>
-          <input v-model="customerName" placeholder="Enter your name" required />
+          <label class="label">Gender</label>
           <div class="radio-group">
             <label><input type="radio" value="Mr." v-model="gender" /> Mr.</label>
             <label><input type="radio" value="Ms." v-model="gender" /> Ms.</label>
           </div>
         </div>
+
+        <InputText v-model="contact" label="Contact" placeholder="Phone number" type="tel" />
+        <InputText v-model="telegram" label="Telegram" placeholder="Telegram username" />
+
         <div class="form-group">
-          <label>Contact</label>
-          <input v-model="contact" placeholder="Phone number" required />
-        </div>
-        <div class="form-group">
-          <label>Online Contact</label>
-          <div class="online-contact">
-            <span class="telegram-icon">&#128241;</span>
-            <input v-model="telegram" placeholder="Telegram username" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Label</label>
+          <label class="label">Label</label>
           <div class="label-group">
-            <button type="button" :class="{active: label==='Home'}" @click="label='Home'">Home</button>
-            <button type="button" :class="{active: label==='Work'}" @click="label='Work'">Work</button>
-            <button type="button" :class="{active: label==='School'}" @click="label='School'">School</button>
-            <button type="button" :class="{active: label==='Other'}" @click="label='Other'">Other</button>
+            <GeneralButton
+              v-for="option in ['Home', 'Work', 'School', 'Other']"
+              :key="option"
+              :title="option"
+              :btnColor="label === option ? '#b91c1c' : '#ffffff'"
+              :titleColor="label === option ? '#ffffff' : '#b91c1c'"
+              :border="'1px solid #b91c1c'"
+              @click="label = option"
+            />
           </div>
         </div>
+
         <div class="form-group">
-          <label>Photo <span class="sample-photo">Sample Photo</span></label>
+          <label class="label">Photo <span class="sample-photo">Sample Photo</span></label>
           <input type="file" @change="onPhotoChange" accept="image/*" />
           <div v-if="photoUrl" class="photo-preview">
             <img :src="photoUrl" alt="Preview" />
           </div>
-          <small class="photo-desc">Please upload photo of your house number, doorway, and its surroundings to help the delivery man to deliver your meal in no time.</small>
+          <small class="photo-desc">
+            Please upload photo of your house number, doorway, and its surroundings to help the delivery man to deliver your meal in no time.
+          </small>
         </div>
-        <button class="save-btn" type="submit">SAVE LOCATION</button>
+
+        <div class="button">
+          <GeneralButton
+            class="save-btn"
+            title="SAVE LOCATION"
+            :btnColor="'#b91c1c'"
+            :titleColor="'#fff'"
+                  @click="saveLocation"
+
+          />
+        </div>
       </form>
     </div>
+
     <AppFooter />
   </div>
 </template>
@@ -74,8 +84,13 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '@/components/all/header.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import GeneralButton from '@/components/GeneralButton.vue'
+import InputText from '@/components/all/inputText.vue'
+import Map from '@/components/delivery/map.vue'
 
 const router = useRouter()
+
+// Form fields
 const address = ref('')
 const addressLabel = ref('Home')
 const deliveryService = ref('')
@@ -86,7 +101,15 @@ const telegram = ref('')
 const label = ref('Home')
 const photo = ref(null)
 const photoUrl = ref('')
+const customerCoords = ref({ lat: null, lng: null })
 
+// Handle map click event
+function onMapClick({ coords, address: resolvedAddress }) {
+  address.value = resolvedAddress
+  customerCoords.value = coords
+}
+
+// Handle photo file upload
 function onPhotoChange(e) {
   const file = e.target.files[0]
   if (file) {
@@ -95,15 +118,36 @@ function onPhotoChange(e) {
   }
 }
 
+// Save the location to localStorage and go back
 function saveLocation() {
-  // Save logic here
-  alert('Location saved!')
+  if (!address.value || !customerCoords.value.lat || !customerCoords.value.lng) {
+    alert("Please click on the map to select your delivery location.")
+    return
+  }
+
+  const locationData = {
+    address: address.value,
+    addressLabel: addressLabel.value,
+    deliveryService: deliveryService.value,
+    customerName: customerName.value,
+    gender: gender.value,
+    contact: contact.value,
+    telegram: telegram.value,
+    label: label.value,
+    photoUrl: photoUrl.value,
+    coords: customerCoords.value,
+  }
+
+  localStorage.setItem('savedLocation', JSON.stringify(locationData))
+  router.back()
 }
 
+// Cancel/back button
 function goBack() {
   router.back()
 }
 </script>
+
 
 <style scoped>
 .page-container {
@@ -113,12 +157,12 @@ function goBack() {
   background: #fafafa;
 }
 .add-location-container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 1rem;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   flex: 1;
 }
 .back-btn {
@@ -131,103 +175,35 @@ function goBack() {
   cursor: pointer;
   align-self: flex-start;
 }
-.map-placeholder {
-  margin-bottom: 1rem;
-}
-.map-box {
-  width: 100%;
-  height: 140px;
-  background: #e5e7eb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 1.1rem;
-  overflow: hidden;
-}
-.map-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-}
 .location-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding-right: 10px;
 }
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+  margin-right: -10px;
 }
 .form-group label {
   font-weight: 600;
-}
-input[type="text"],
-input[type="tel"],
-input[type="file"],
-select,
-textarea {
-  width: 100%;
-  padding: 0.7rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: #fafafa;
-  margin-top: 0.2rem;
-  box-sizing: border-box;
-}
-input[type="file"] {
-  padding: 0.3rem 0;
-  background: none;
-  border: none;
-}
-textarea {
-  min-height: 60px;
-  resize: vertical;
-}
-.note {
-  font-size: 0.9em;
-  color: #888;
-  font-weight: 400;
 }
 .radio-group {
   display: flex;
   gap: 1rem;
   margin-top: 0.3rem;
 }
-.radio-group label {
+.note {
+  font-size: 0.9em;
+  color: #888;
   font-weight: 400;
-}
-.online-contact {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.telegram-icon {
-  font-size: 1.2em;
 }
 .label-group {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-}
-.label-group button {
-  padding: 0.3rem 1.2rem;
-  border-radius: 16px;
-  border: 1px solid #b91c1c;
-  background: #fff;
-  color: #b91c1c;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.label-group button.active,
-.label-group button:hover {
-  background: #b91c1c;
-  color: #fff;
 }
 .sample-photo {
   color: #b91c1c;
@@ -248,20 +224,18 @@ textarea {
   color: #666;
   font-size: 0.92em;
 }
-.save-btn {
-  width: 100%;
-  background: #b91c1c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 1rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-top: 1rem;
-  cursor: pointer;
-  transition: background 0.2s;
+.label {
+  font-size: 20px;
+  color: #9A0404;
 }
-.save-btn:hover {
-  background: #991818;
+.select {
+  padding: 10px;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 16px;
 }
-</style> 
+.button {
+  display: flex;
+  justify-content: center;
+}
+</style>

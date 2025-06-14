@@ -144,6 +144,7 @@ onMounted(fetchNotifications);
   font-weight: 600;
 }
 .text {
+  margin-left: 16px;
   font-size: 18px;
 }
 .link {
