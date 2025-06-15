@@ -1,6 +1,5 @@
 <template>
   <div class="page-container">
-    <Header :title="'Add Location'" />
     <button class="back-btn" @click="goBack">&#8592; Cancel</button>
 
     <div class="add-location-container">
@@ -11,11 +10,22 @@
       />
 
       <form class="location-form">
-        <InputText v-model="address" label="Delivery Address" placeholder="Enter delivery address" />
-        <InputText v-model="addressLabel" label="Address" placeholder="e.g. Home" />
+        <InputText
+          v-model="address"
+          label="Delivery Address"
+          placeholder="Enter delivery address"
+        />
+        <InputText
+          v-model="addressLabel"
+          label="Address"
+          placeholder="e.g. Home"
+        />
 
         <div class="form-group">
-          <label class="label">Delivery Service <span class="note">(For Takeaway Orders Only)</span></label>
+          <label class="label"
+            >Delivery Service
+            <span class="note">(For Takeaway Orders Only)</span></label
+          >
           <select class="select" v-model="deliveryService" required>
             <option disabled value="">Please select delivery service</option>
             <option>Downstairs pick-up</option>
@@ -23,18 +33,35 @@
           </select>
         </div>
 
-        <InputText v-model="customerName" label="Customer Name" placeholder="Enter your name" />
+        <InputText
+          v-model="customerName"
+          label="Customer Name"
+          placeholder="Enter your name"
+        />
 
         <div class="form-group">
           <label class="label">Gender</label>
           <div class="radio-group">
-            <label><input type="radio" value="Mr." v-model="gender" /> Mr.</label>
-            <label><input type="radio" value="Ms." v-model="gender" /> Ms.</label>
+            <label
+              ><input type="radio" value="Mr." v-model="gender" /> Mr.</label
+            >
+            <label
+              ><input type="radio" value="Ms." v-model="gender" /> Ms.</label
+            >
           </div>
         </div>
 
-        <InputText v-model="contact" label="Contact" placeholder="Phone number" type="tel" />
-        <InputText v-model="telegram" label="Telegram" placeholder="Telegram username" />
+        <InputText
+          v-model="contact"
+          label="Contact"
+          placeholder="Phone number"
+          type="tel"
+        />
+        <InputText
+          v-model="telegram"
+          label="Telegram"
+          placeholder="Telegram username"
+        />
 
         <div class="form-group">
           <label class="label">Label</label>
@@ -52,13 +79,17 @@
         </div>
 
         <div class="form-group">
-          <label class="label">Photo <span class="sample-photo">Sample Photo</span></label>
+          <label class="label"
+            >Photo <span class="sample-photo">Sample Photo</span></label
+          >
           <input type="file" @change="onPhotoChange" accept="image/*" />
           <div v-if="photoUrl" class="photo-preview">
             <img :src="photoUrl" alt="Preview" />
           </div>
           <small class="photo-desc">
-            Please upload photo of your house number, doorway, and its surroundings to help the delivery man to deliver your meal in no time.
+            Please upload photo of your house number, doorway, and its
+            surroundings to help the delivery man to deliver your meal in no
+            time.
           </small>
         </div>
 
@@ -68,61 +99,60 @@
             title="SAVE LOCATION"
             :btnColor="'#b91c1c'"
             :titleColor="'#fff'"
-                  @click="saveLocation"
-
+            @click="saveLocation"
           />
         </div>
       </form>
     </div>
-
-    <AppFooter />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import Header from '@/components/all/header.vue'
-import AppFooter from '@/components/AppFooter.vue'
-import GeneralButton from '@/components/GeneralButton.vue'
-import InputText from '@/components/all/inputText.vue'
-import Map from '@/components/delivery/map.vue'
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import GeneralButton from "@/components/GeneralButton.vue";
+import InputText from "@/components/all/inputText.vue";
+import Map from "@/components/delivery/map.vue";
 
-const router = useRouter()
+const router = useRouter();
 
 // Form fields
-const address = ref('')
-const addressLabel = ref('Home')
-const deliveryService = ref('')
-const customerName = ref('')
-const gender = ref('Ms.')
-const contact = ref('')
-const telegram = ref('')
-const label = ref('Home')
-const photo = ref(null)
-const photoUrl = ref('')
-const customerCoords = ref({ lat: null, lng: null })
+const address = ref("");
+const addressLabel = ref("Home");
+const deliveryService = ref("");
+const customerName = ref("");
+const gender = ref("Ms.");
+const contact = ref("");
+const telegram = ref("");
+const label = ref("Home");
+const photo = ref(null);
+const photoUrl = ref("");
+const customerCoords = ref({ lat: null, lng: null });
 
 // Handle map click event
 function onMapClick({ coords, address: resolvedAddress }) {
-  address.value = resolvedAddress
-  customerCoords.value = coords
+  address.value = resolvedAddress;
+  customerCoords.value = coords;
 }
 
 // Handle photo file upload
 function onPhotoChange(e) {
-  const file = e.target.files[0]
+  const file = e.target.files[0];
   if (file) {
-    photo.value = file
-    photoUrl.value = URL.createObjectURL(file)
+    photo.value = file;
+    photoUrl.value = URL.createObjectURL(file);
   }
 }
 
 // Save the location to localStorage and go back
 function saveLocation() {
-  if (!address.value || !customerCoords.value.lat || !customerCoords.value.lng) {
-    alert("Please click on the map to select your delivery location.")
-    return
+  if (
+    !address.value ||
+    !customerCoords.value.lat ||
+    !customerCoords.value.lng
+  ) {
+    alert("Please click on the map to select your delivery location.");
+    return;
   }
 
   const locationData = {
@@ -136,18 +166,17 @@ function saveLocation() {
     label: label.value,
     photoUrl: photoUrl.value,
     coords: customerCoords.value,
-  }
+  };
 
-  localStorage.setItem('savedLocation', JSON.stringify(locationData))
-  router.back()
+  localStorage.setItem("savedLocation", JSON.stringify(locationData));
+  router.back();
 }
 
 // Cancel/back button
 function goBack() {
-  router.back()
+  router.back();
 }
 </script>
-
 
 <style scoped>
 .page-container {
@@ -226,7 +255,7 @@ function goBack() {
 }
 .label {
   font-size: 20px;
-  color: #9A0404;
+  color: #9a0404;
 }
 .select {
   padding: 10px;

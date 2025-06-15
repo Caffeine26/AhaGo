@@ -11,26 +11,26 @@
 
 <script>
 export default {
-  name: 'HomePage',
+  name: "HomePage",
   data() {
     return {
-      isLeaving: false
-    }
+      isLeaving: false,
+    };
   },
   mounted() {
     setTimeout(() => {
-      this.isLeaving = true
+      this.isLeaving = true;
       setTimeout(() => {
-        this.$router.push('/client') // Changed from '/menu' to '/client'
-      }, 500) // Additional time for fade-out animation
-    }, 2000)
-  }
-}
+        this.$router.push({ name: "ClientLanding" }); // Changed from '/menu' to '/client'
+      }, 500); // Additional time for fade-out animation
+    }, 2000);
+  },
+};
 </script>
 
 <style scoped>
 .splash-container {
-  background-color: #B91C1C;
+  background-color: #b91c1c;
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -67,16 +67,22 @@ export default {
   bottom: -10px;
   width: 100px;
   height: 120px;
-  background: linear-gradient(to right, transparent, #FF4500);
+  background: linear-gradient(to right, transparent, #ff4500);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   transform: rotate(-15deg);
   opacity: 0.8;
 }
 
 @keyframes flameAnimation {
-  0% { transform: rotate(-15deg) scale(1); }
-  50% { transform: rotate(-12deg) scale(1.1); }
-  100% { transform: rotate(-15deg) scale(1); }
+  0% {
+    transform: rotate(-15deg) scale(1);
+  }
+  50% {
+    transform: rotate(-12deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(-15deg) scale(1);
+  }
 }
 
 .flame {

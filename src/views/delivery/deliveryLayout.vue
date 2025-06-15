@@ -1,11 +1,8 @@
 <template>
   <div class="cont">
     <div class="heade">
-      <Header
-        :userLoggedIn="userLoggedIn"
-        :goToAccount="goToAccount"
-        title="<span style='color: #9A0404;'>AhaGo</span> Delivery"
-      />
+      <Header         title="<span style='color: #9A0404;'>AhaGo</span> Delivery"
+ :basePath="'deliver'" :userLoggedIn="false" />
       <Header2
         title="Deliver"
         it1="Overview"

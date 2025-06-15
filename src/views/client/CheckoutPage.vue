@@ -1,14 +1,21 @@
 <template>
   <div class="page-container">
-    <Header :title="'Checkout'" />
-
     <div class="checkout-page">
       <!-- Show saved location if exists -->
       <div v-if="savedLocation" class="saved-location">
         <h3>Delivery Location</h3>
-        <p><strong>Address:</strong> {{ savedLocation.address }} ({{ savedLocation.addressLabel }})</p>
-        <p><strong>Delivery Service:</strong> {{ savedLocation.deliveryService }}</p>
-        <p><strong>Name:</strong> {{ savedLocation.gender }} {{ savedLocation.customerName }}</p>
+        <p>
+          <strong>Address:</strong> {{ savedLocation.address }} ({{
+            savedLocation.addressLabel
+          }})
+        </p>
+        <p>
+          <strong>Delivery Service:</strong> {{ savedLocation.deliveryService }}
+        </p>
+        <p>
+          <strong>Name:</strong> {{ savedLocation.gender }}
+          {{ savedLocation.customerName }}
+        </p>
         <p><strong>Contact:</strong> {{ savedLocation.contact }}</p>
         <p><strong>Telegram:</strong> {{ savedLocation.telegram }}</p>
         <div v-if="savedLocation.photoUrl" class="photo-preview">
@@ -18,7 +25,12 @@
       </div>
 
       <!-- Fallback to store info if no saved location -->
-      <Location v-else :cover="cover1" :address="storeAddress" :contact="storeContact" />
+      <Location
+        v-else
+        :cover="cover1"
+        :address="storeAddress"
+        :contact="storeContact"
+      />
 
       <GeneralButton
         title="+ Add Location"
@@ -56,93 +68,92 @@
         />
       </div>
     </div>
-
-    <AppFooter />
   </div>
 </template>
 
 <script>
-import Header from '@/components/all/header.vue'
-import AppFooter from '@/components/AppFooter.vue'
-import InfoList from '@/components/customer/InfoList.vue'
-import OrderSummary from '@/components/customer/OrderSummary.vue'
-import PriceDetails from '@/components/customer/PriceDetail.vue'
-import RemarksSection from '@/components/customer/RemarkInput.vue'
-import GeneralButton from '@/components/GeneralButton.vue'
-import Location from '@/components/customer/Location.vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ref, computed, onMounted } from 'vue'
-import cover1 from '@/assets/store_details/house.png'
+import InfoList from "@/components/customer/InfoList.vue";
+import OrderSummary from "@/components/customer/OrderSummary.vue";
+import PriceDetails from "@/components/customer/PriceDetail.vue";
+import RemarksSection from "@/components/customer/RemarkInput.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
+import Location from "@/components/customer/Location.vue";
+import { useRoute, useRouter } from "vue-router";
+import { ref, computed, onMounted } from "vue";
+import cover1 from "@/assets/store_details/house.png";
 
 export default {
-  name: 'CheckoutPage',
+  name: "CheckoutPage",
   components: {
-    Header,
-    AppFooter,
     Location,
     InfoList,
     OrderSummary,
     PriceDetails,
     RemarksSection,
-    GeneralButton
+    GeneralButton,
   },
   setup() {
-    const route = useRoute()
-    const router = useRouter()
-    const brandName = route.params.brandName
-    const cartItems = ref(JSON.parse(route.params.cartItems || '[]'))
-    const remarks = ref('')
+    const route = useRoute();
+    const router = useRouter();
+    const brandName = route.params.brandName;
+    const cartItems = ref(JSON.parse(route.params.cartItems || "[]"));
+    const remarks = ref("");
 
-    const storeAddress = ref('35c St 472, Phnom Penh, Cambodia 35c St 472, TTP2, Chamkar Mon')
-    const storeContact = ref('+855 12 345 678')
+    const storeAddress = ref(
+      "35c St 472, Phnom Penh, Cambodia 35c St 472, TTP2, Chamkar Mon"
+    );
+    const storeContact = ref("+855 12 345 678");
 
     const cartTotal = computed(() => {
-      return cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0)
-    })
+      return cartItems.value.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+    });
 
-    const finalTotal = computed(() => cartTotal.value + 0.45)
+    const finalTotal = computed(() => cartTotal.value + 0.45);
 
-    const savedLocation = ref(null)
+    const savedLocation = ref(null);
 
     onMounted(() => {
-      const saved = localStorage.getItem('savedLocation')
+      const saved = localStorage.getItem("savedLocation");
       if (saved) {
-        savedLocation.value = JSON.parse(saved)
+        savedLocation.value = JSON.parse(saved);
       }
-    })
+    });
 
     const placeOrder = () => {
-      console.log('Order placed:', {
+      console.log("Order placed:", {
         items: cartItems.value,
         total: finalTotal.value,
         remarks: remarks.value,
-        deliveryLocation: savedLocation.value || null
-      })
-      alert('Order placed! Check console for details.')
+        deliveryLocation: savedLocation.value || null,
+      });
+      alert("Order placed! Check console for details.");
 
       // Optionally clear saved location on order placed
       // localStorage.removeItem('savedLocation')
-    }
+    };
 
     const deliveryInfo = [
-      { label: 'Delivery Time', value: 'Instant (12:30)', highlight: true },
-      { label: 'Delivery Service', value: 'Downstairs pick-up', chevron: true },
-      { label: 'Payment Method', value: 'Cash On Delivery' }
-    ]
+      { label: "Delivery Time", value: "Instant (12:30)", highlight: true },
+      { label: "Delivery Service", value: "Downstairs pick-up", chevron: true },
+      { label: "Payment Method", value: "Cash On Delivery" },
+    ];
 
     const promoRows = [
-      { label: 'Red Envelope', value: 'No available red envelopes' },
-      { label: 'Coupons', value: 'Not Available' },
+      { label: "Red Envelope", value: "No available red envelopes" },
+      { label: "Coupons", value: "Not Available" },
       {
-        label: '0% Off Promotion',
+        label: "0% Off Promotion",
         value: `-$${(cartTotal.value * 0).toFixed(2)}`,
-        highlight: true
-      }
-    ]
+        highlight: true,
+      },
+    ];
 
     const goToAddLocation = () => {
-      router.push({ name: 'AddLocation' })
-    }
+      router.push({ name: "AddLocation" });
+    };
 
     return {
       brandName,
@@ -157,10 +168,10 @@ export default {
       deliveryInfo,
       promoRows,
       cover1,
-      savedLocation
-    }
-  }
-}
+      savedLocation,
+    };
+  },
+};
 </script>
 
 <style scoped>

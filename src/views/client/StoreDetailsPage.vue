@@ -1,6 +1,5 @@
 <template>
   <div class="page-container">
-    <Header :title="'AHA GO'" />
     <div class="store-details-page">
       <Breadcrumb :crumbs="breadcrumbCrumbs" />
 
@@ -18,11 +17,7 @@
         @reviews="onReviews"
       />
 
-      <ImageGallery
-        :cover1="cover1"
-        :cover2="cover2"
-        :cover3="cover3"
-      />
+      <ImageGallery :cover1="cover1" :cover2="cover2" :cover3="cover3" />
 
       <div class="tabs">
         <span
@@ -51,11 +46,7 @@
                 placeholder="Search within menu"
                 v-model="search"
               />
-              <span
-                v-if="search"
-                class="clear-search"
-                @click="search = ''"
-              >
+              <span v-if="search" class="clear-search" @click="search = ''">
                 ✕
               </span>
             </div>
@@ -90,10 +81,7 @@
           />
         </div>
 
-        <ReviewList
-          v-else
-          :reviews="reviewData"
-        />
+        <ReviewList v-else :reviews="reviewData" />
 
         <CartSidebar
           v-if="activeTab === 'order'"
@@ -107,7 +95,6 @@
         />
       </div>
     </div>
-    <AppFooter />
   </div>
 </template>
 
@@ -115,8 +102,6 @@
 import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import Header from "@/components/all/header.vue";
-import AppFooter from "@/components/AppFooter.vue";
 import Breadcrumb from "@/components/customer/Breadcrumb.vue";
 import StoreInfo from "@/components/customer/StoreInfo.vue";
 import ActionButtons from "@/components/customer/ActionButtons.vue";
@@ -146,8 +131,6 @@ import shrimp5 from "@/assets/store_details/shrimp5.png";
 export default {
   name: "StoreDetailsPage",
   components: {
-    Header,
-    AppFooter,
     Breadcrumb,
     StoreInfo,
     ActionButtons,
@@ -162,7 +145,9 @@ export default {
 
     // These could be fetched from backend or route params
     const brandName = computed(() => route.params.brandName || "AHA GO");
-    const storeAddress = ref("35c St 472, Phnom Penh, Cambodia 35c St 472, TTP2, Chamkar Mon");
+    const storeAddress = ref(
+      "35c St 472, Phnom Penh, Cambodia 35c St 472, TTP2, Chamkar Mon"
+    );
     const openStatus = ref("Open");
     const timeStatus = ref("10:00 AM - 9:00 PM");
     const phoneNumber = ref("+855 1234 5678");

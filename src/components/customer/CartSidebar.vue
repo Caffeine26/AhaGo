@@ -8,11 +8,7 @@
       </div>
       <div v-else class="cart-content">
         <div class="cart-items">
-          <div
-            v-for="item in cartItems"
-            :key="item.id"
-            class="cart-item"
-          >
+          <div v-for="item in cartItems" :key="item.id" class="cart-item">
             <img :src="item.image" class="cart-item-img" />
             <div class="cart-item-info">
               <div class="cart-item-title">{{ item.title }}</div>

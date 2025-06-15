@@ -39,27 +39,30 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+basePath: {
+  type: String,
+  default: "", // Default to root for customer panel
+}
+
 });
 
 const router = useRouter();
+const buildRoute = (path) => {
+  return props.basePath ? `/${props.basePath}/${path}` : `/${path}`;
+};
 
 const goToLogin = () => {
-  router.push("/deliver/login");
+  router.push(buildRoute("login"));
 };
 
 const goToSignup = () => {
-  router.push("/deliver/signup");
+  router.push(buildRoute("signup"));
 };
 
 const goToOverview = () => {
-  router.push("/delivery/overview");
-};
-
-const goToSignUp = () => {
-  router.push('/signup');
+  router.push(buildRoute("overview"));
 };
 </script>
-
 
 <style scoped>
 .container {

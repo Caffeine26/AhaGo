@@ -26,10 +26,9 @@
 <script setup>
 defineProps({
   cartTotal: Number,
-  finalTotal: Number
-})
+  finalTotal: Number,
+});
 </script>
-
 
 <style scoped>
 .price-details {

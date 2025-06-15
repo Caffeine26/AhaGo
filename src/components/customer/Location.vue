@@ -12,8 +12,8 @@
 defineProps({
   cover: String,
   address: String,
-  contact: String
-})
+  contact: String,
+});
 </script>
 
 <style scoped>

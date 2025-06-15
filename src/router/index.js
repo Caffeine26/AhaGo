@@ -33,7 +33,8 @@ import OwnerProfileEdit from "@/views/owner/OwnerProfileEdit.vue";
 import OwnerLogin from "@/views/owner/OwnerLogin.vue";
 import OwnerSignup from "@/views/owner/OwnerSignup.vue";
 import OwnerTrackings from "@/views/owner/OwnerTrackings.vue";
-import HomePage from '@/views/client/HomePage.vue'
+import HomePage from '@/views/client/HomePage.vue';
+import CustomerLayout from "@/views/client/CustomerLayout.vue";
 import DashboardView from "@/views/Admin/DashboardView.vue";
 import OrderView from "@/views/Admin/OrderView.vue";
 import MessageView from "@/views/Admin/MessageView.vue";
@@ -60,7 +61,7 @@ const router = createRouter({
       component: HomePage
     },
     {
-      path: "/signin",
+      path: "/login",
       name: "SignIn",
       component: AuthPanel,
       props: { defaultPanel: "login" },
@@ -83,7 +84,11 @@ const router = createRouter({
       component: () => import('@/views/TestCards.vue')
     },
     {
-      path: '/client',
+      path: '/',
+      component: CustomerLayout,
+      children: [
+        {
+      path: '/',
       name: 'ClientLanding',
       component: () => import('@/views/client/LandingPage.vue')
     },
@@ -102,6 +107,8 @@ const router = createRouter({
       path: '/add-location',
       name: 'AddLocation',
       component: () => import('@/views/client/AddLocationPage.vue')
+    },
+      ]
     },
     {
       path: "/delivery",

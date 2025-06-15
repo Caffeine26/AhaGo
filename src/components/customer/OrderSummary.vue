@@ -8,7 +8,9 @@
           <div class="item-name">{{ item.title }}</div>
           <div class="item-quantity">x{{ item.quantity }}</div>
         </div>
-        <div class="item-price">${{ (item.price * item.quantity).toFixed(2) }}</div>
+        <div class="item-price">
+          ${{ (item.price * item.quantity).toFixed(2) }}
+        </div>
       </div>
     </div>
   </div>
@@ -17,8 +19,8 @@
 <script setup>
 defineProps({
   category: String,
-  items: Array
-})
+  items: Array,
+});
 </script>
 
 <style scoped>

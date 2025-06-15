@@ -12,8 +12,8 @@
 
 <script setup>
 defineProps({
-  info: Array
-})
+  info: Array,
+});
 </script>
 
 <style scoped>

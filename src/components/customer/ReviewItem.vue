@@ -9,9 +9,13 @@
     </div>
     <div class="review-type">{{ review.type }}</div>
     <div class="review-time">{{ review.time }}</div>
-    
+
     <!-- Use RateStar component here -->
-    <RateStar :modelValue="review.rating" :totalStars="5" @update:modelValue="noop" />
+    <RateStar
+      :modelValue="review.rating"
+      :totalStars="5"
+      @update:modelValue="noop"
+    />
 
     <div class="review-comment">{{ review.comment }}</div>
     <div class="review-actions">
