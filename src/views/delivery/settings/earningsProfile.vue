@@ -1,7 +1,7 @@
 <template>
   <div class="earnings">
     <div class="container">
-        <Title class="title" title="Track your earnings" />
+      <Title class="title" title="Track your earnings" />
       <div class="content">
         <!-- Summary Section -->
         <div class="summary">
@@ -30,34 +30,34 @@
         />
 
         <!-- Aggregated Earnings List by Type -->
-<!-- Aggregated Earnings List by Type -->
-       <ButtonFilter
-              class="filter"
-              v-model:value="selectedFilter"
-              :options="filterOptions"
-            />
-<Box class="earnings-list">
-  <!-- Table Header -->
-  <div class="earning-header">
-    <div>Source</div>
-    <div>Transactions</div>
-    <div>Today's Earnings</div>
-    <div>Overall Earnings</div>
-  </div>
+        <!-- Aggregated Earnings List by Type -->
+        <ButtonFilter
+          class="filter"
+          v-model:value="selectedFilter"
+          :options="filterOptions"
+        />
+        <Box class="earnings-list">
+          <!-- Table Header -->
+          <div class="earning-header">
+            <div>Source</div>
+            <div>Transactions</div>
+            <div>Today's Earnings</div>
+            <div>Overall Earnings</div>
+          </div>
 
-  <!-- Aggregated Rows -->
-  <div
-    class="earning-row"
-    v-for="(summary, index) in earningsSummary"
-    :key="index"
-  >
-    <div class="source">{{ summary.source }}</div>
-    <div>{{ summary.count }}</div>
-    <div>${{ summary.total.toFixed(2) }}</div>
-    <div>${{ summary.total.toFixed(2) }}</div> <!-- Same as today's for now -->
-  </div>
-</Box>
-
+          <!-- Aggregated Rows -->
+          <div
+            class="earning-row"
+            v-for="(summary, index) in earningsSummary"
+            :key="index"
+          >
+            <div class="source">{{ summary.source }}</div>
+            <div>{{ summary.count }}</div>
+            <div>${{ summary.total.toFixed(2) }}</div>
+            <div>${{ summary.total.toFixed(2) }}</div>
+            <!-- Same as today's for now -->
+          </div>
+        </Box>
       </div>
     </div>
   </div>
@@ -108,7 +108,6 @@ const earningsSummary = computed(() => {
   }
   return Array.from(map.values());
 });
-
 </script>
 
 <style scoped>

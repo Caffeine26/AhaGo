@@ -54,14 +54,14 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router"; 
+import { useRouter } from "vue-router";
 
 import ButtonFilter from "@/components/ButtonFilter.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 
-const router = useRouter(); 
+const router = useRouter();
 
 const selectedFilter = ref("Today");
 
@@ -119,7 +119,6 @@ watch(selectedFilter, fetchNotifications);
 onMounted(fetchNotifications);
 </script>
 
-
 <style scoped>
 .notification {
   display: flex;
@@ -159,7 +158,7 @@ onMounted(fetchNotifications);
 }
 .bottom {
   display: flex;
-  justify-content:end;
+  justify-content: end;
   align-items: center;
 }
 .buttons {

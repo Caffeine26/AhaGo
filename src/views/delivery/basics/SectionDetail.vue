@@ -130,7 +130,8 @@ async function loadSectionData() {
     // If not found, try fallback by section prop
     if (!foundSection) {
       foundSection =
-        allSections.find((sec) => sec.linkTo === props.section) || allSections[0];
+        allSections.find((sec) => sec.linkTo === props.section) ||
+        allSections[0];
     }
 
     sectionData.value = foundSection;
@@ -147,7 +148,6 @@ const selectedButton = computed(() => {
   return sectionData.value.buttons.find((btn) => btn.link === props.buttonLink);
 });
 </script>
-
 
 <style scoped>
 .contain {

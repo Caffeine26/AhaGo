@@ -1,14 +1,14 @@
 <template>
   <div class="contain">
     <Map
-    id="map"
-    driverProfilePicUrl="https://i.pinimg.com/736x/66/88/2c/66882c2ba53aeea6c32d3862fa656866.jpg"
-    :use-geolocation="true"
-    :restaurant-coords="restaurantCoords"
-    :client-coords="clientCoords"
-    :route-points="routePoints"
-    @update:driver-location="onDriverLocation"
-  />
+      id="map"
+      driverProfilePicUrl="https://i.pinimg.com/736x/66/88/2c/66882c2ba53aeea6c32d3862fa656866.jpg"
+      :use-geolocation="true"
+      :restaurant-coords="restaurantCoords"
+      :client-coords="clientCoords"
+      :route-points="routePoints"
+      @update:driver-location="onDriverLocation"
+    />
     <Box class="box">
       <h2>Order #</h2>
       <div class="line"></div>
@@ -16,54 +16,53 @@
         <div class="content">
           <div class="left">
             <div class="wrap">
-            <img src="@/assets/delivery/icons/serve.svg" />
-          </div>
-          <div class="wrap2">
-            <div class="title">Tube Santhormuk</div>
-            <div class="text">Street 261, Phnom Penh 12156</div>
-          </div>
+              <img src="@/assets/delivery/icons/serve.svg" />
+            </div>
+            <div class="wrap2">
+              <div class="title">Tube Santhormuk</div>
+              <div class="text">Street 261, Phnom Penh 12156</div>
+            </div>
           </div>
           <div class="right">
-            <img class="contact" src="@/assets/delivery/icons/phone.svg"/>
-            <img class="contact" src="@/assets/delivery/icons/chat.svg"/>
+            <img class="contact" src="@/assets/delivery/icons/phone.svg" />
+            <img class="contact" src="@/assets/delivery/icons/chat.svg" />
           </div>
         </div>
 
         <div class="content">
           <div class="left">
             <div class="wrap">
-            <img src="@/assets/delivery/icons/user.svg" />
-          </div>
-          <div class="wrap2">
-            <div class="title">Tube Santhormuk</div>
-            <div class="text">Street 261, Phnom Penh 12156</div>
-          </div>
+              <img src="@/assets/delivery/icons/user.svg" />
+            </div>
+            <div class="wrap2">
+              <div class="title">Tube Santhormuk</div>
+              <div class="text">Street 261, Phnom Penh 12156</div>
+            </div>
           </div>
           <div class="right">
-            <img class="contact" src="@/assets/delivery/icons/phone.svg"/>
-            <img class="contact" src="@/assets/delivery/icons/chat.svg"/>
+            <img class="contact" src="@/assets/delivery/icons/phone.svg" />
+            <img class="contact" src="@/assets/delivery/icons/chat.svg" />
           </div>
         </div>
       </div>
 
       <h2>Total Orders</h2>
       <div class="orders">
-  <Order
-    v-for="(item, index) in orderDetails?.orderItems || []"
-    :key="index"
-    :title="item.name"
-    :amount="item.quantity"
-    :price="item.price.toFixed(2)"
-  />
-</div>
+        <Order
+          v-for="(item, index) in orderDetails?.orderItems || []"
+          :key="index"
+          :title="item.name"
+          :amount="item.quantity"
+          :price="item.price.toFixed(2)"
+        />
+      </div>
 
       <div class="button">
         <GeneralButton
           btnColor="green"
           title="Completed Delivery"
           titleColor="#FFFFFF"
-                    @click="startJourney"
-
+          @click="startJourney"
         />
       </div>
     </Box>
@@ -93,7 +92,9 @@ function onDriverLocation(coords) {
 }
 async function fetchOrderData() {
   try {
-    const { data } = await axios.get(`http://localhost:4000/api/incoming-order/${orderId}`);
+    const { data } = await axios.get(
+      `http://localhost:4000/api/incoming-order/${orderId}`
+    );
     orderDetails.value = data;
 
     const restaurantLocation = data.details?.restaurantLocation;
@@ -101,12 +102,12 @@ async function fetchOrderData() {
 
     restaurantCoords.value = {
       lat: restaurantLocation.lat,
-      lng: restaurantLocation.lng
+      lng: restaurantLocation.lng,
     };
 
     clientCoords.value = {
       lat: clientLocation.lat,
-      lng: clientLocation.lng
+      lng: clientLocation.lng,
     };
   } catch (err) {
     console.error("Failed to fetch order data", err);
@@ -114,7 +115,8 @@ async function fetchOrderData() {
 }
 
 function startJourney() {
-  if (!driverLocation.value || !restaurantCoords.value || !clientCoords.value) return;
+  if (!driverLocation.value || !restaurantCoords.value || !clientCoords.value)
+    return;
   routePoints.value = [
     driverLocation.value,
     restaurantCoords.value,

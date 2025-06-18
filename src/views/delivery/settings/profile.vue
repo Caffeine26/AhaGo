@@ -4,7 +4,11 @@
       <Title class="title" title="Edit Profile" />
       <div class="content">
         <div class="image">
-          <img class="pic" :src="user.photo || defaultPhoto" alt="Profile photo" />
+          <img
+            class="pic"
+            :src="user.photo || defaultPhoto"
+            alt="Profile photo"
+          />
           <GeneralButton
             title="Upload a new photo"
             btnColor="#9A0404"
@@ -27,7 +31,12 @@
             <p>or</p>
             <label class="upload-label">
               Click to browse
-              <input type="file" accept="image/*" @change="handleFileSelect" hidden />
+              <input
+                type="file"
+                accept="image/*"
+                @change="handleFileSelect"
+                hidden
+              />
             </label>
           </div>
         </div>
@@ -51,14 +60,10 @@
                 v-if="isEditing"
                 label="First Name"
                 :modelValue="user.firstname"
-                @update:modelValue="(val) => user.firstname = val"
+                @update:modelValue="(val) => (user.firstname = val)"
                 placeholder="Enter your first name"
               />
-              <Information
-                v-else
-                label="First Name"
-                :value="user.firstname"
-              />
+              <Information v-else label="First Name" :value="user.firstname" />
             </div>
 
             <!-- Last Name -->
@@ -67,14 +72,10 @@
                 v-if="isEditing"
                 label="Last Name"
                 :modelValue="user.lastname"
-                @update:modelValue="(val) => user.lastname = val"
+                @update:modelValue="(val) => (user.lastname = val)"
                 placeholder="Enter your last name"
               />
-              <Information
-                v-else
-                label="Last Name"
-                :value="user.lastname"
-              />
+              <Information v-else label="Last Name" :value="user.lastname" />
             </div>
           </div>
 
@@ -85,14 +86,10 @@
                 v-if="isEditing"
                 label="Email Address"
                 :modelValue="user.email"
-                @update:modelValue="(val) => user.email = val"
+                @update:modelValue="(val) => (user.email = val)"
                 placeholder="Enter your email address"
               />
-              <Information
-                v-else
-                label="Email Address"
-                :value="user.email"
-              />
+              <Information v-else label="Email Address" :value="user.email" />
             </div>
 
             <!-- Phone -->
@@ -101,32 +98,24 @@
                 v-if="isEditing"
                 label="Phone Number"
                 :modelValue="user.phone"
-                @update:modelValue="(val) => user.phone = val"
+                @update:modelValue="(val) => (user.phone = val)"
                 placeholder="Enter your phone number"
               />
-              <Information
-                v-else
-                label="Phone Number"
-                :value="user.phone"
-              />
+              <Information v-else label="Phone Number" :value="user.phone" />
             </div>
           </div>
 
           <!-- Address -->
           <div class="address">
             <InputText
-            id="address"
+              id="address"
               v-if="isEditing"
               label="Address"
               :modelValue="user.address"
-              @update:modelValue="(val) => user.address = val"
+              @update:modelValue="(val) => (user.address = val)"
               placeholder="Enter your address"
             />
-            <Information
-              v-else
-              label="Address"
-              :value="user.address"
-            />
+            <Information v-else label="Address" :value="user.address" />
           </div>
 
           <div class="input">
@@ -136,14 +125,10 @@
                 v-if="isEditing"
                 label="Country"
                 :modelValue="user.country"
-                @update:modelValue="(val) => user.country = val"
+                @update:modelValue="(val) => (user.country = val)"
                 placeholder="Enter your country"
               />
-              <Information
-                v-else
-                label="Country"
-                :value="user.country"
-              />
+              <Information v-else label="Country" :value="user.country" />
             </div>
 
             <!-- City -->
@@ -152,14 +137,10 @@
                 v-if="isEditing"
                 label="City/Province"
                 :modelValue="user.city"
-                @update:modelValue="(val) => user.city = val"
+                @update:modelValue="(val) => (user.city = val)"
                 placeholder="Enter your city"
               />
-              <Information
-                v-else
-                label="City/Province"
-                :value="user.city"
-              />
+              <Information v-else label="City/Province" :value="user.city" />
             </div>
           </div>
 
@@ -170,7 +151,7 @@
                 v-if="isEditing"
                 label="National ID card"
                 :modelValue="user.idCard"
-                @update:modelValue="(val) => user.idCard = val"
+                @update:modelValue="(val) => (user.idCard = val)"
                 placeholder="Enter your id"
               />
               <Information
@@ -186,7 +167,7 @@
                 v-if="isEditing"
                 label="Passport Number"
                 :modelValue="user.passport"
-                @update:modelValue="(val) => user.passport = val"
+                @update:modelValue="(val) => (user.passport = val)"
                 placeholder="Enter your passport"
               />
               <Information
@@ -211,7 +192,7 @@
                 v-if="isEditing"
                 label="Type of Vehicle"
                 :modelValue="user.vehicleType"
-                @update:modelValue="(val) => user.vehicleType = val"
+                @update:modelValue="(val) => (user.vehicleType = val)"
                 placeholder="Enter your vehicle's type"
               />
               <Information
@@ -227,7 +208,7 @@
                 v-if="isEditing"
                 label="Vehicle Name"
                 :modelValue="user.vehicleName"
-                @update:modelValue="(val) => user.vehicleName = val"
+                @update:modelValue="(val) => (user.vehicleName = val)"
                 placeholder="Enter your vehicle's name"
               />
               <Information
@@ -245,7 +226,7 @@
                 v-if="isEditing"
                 label="Vehicle Color"
                 :modelValue="user.vehicleColor"
-                @update:modelValue="(val) => user.vehicleColor = val"
+                @update:modelValue="(val) => (user.vehicleColor = val)"
                 placeholder="Enter your vehicle's color"
               />
               <Information
@@ -261,7 +242,7 @@
                 v-if="isEditing"
                 label="Vehicle's License Plate"
                 :modelValue="user.licensePlate"
-                @update:modelValue="(val) => user.licensePlate = val"
+                @update:modelValue="(val) => (user.licensePlate = val)"
                 placeholder="Enter your license plate"
               />
               <Information
@@ -388,7 +369,7 @@ export default {
       const reader = new FileReader();
       reader.onload = (e) => {
         user.value.photo = e.target.result;
-        hideDropzone(); 
+        hideDropzone();
       };
       reader.readAsDataURL(file);
     };

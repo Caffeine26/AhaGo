@@ -41,19 +41,19 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { useDriverStore } from '@/stores/driverStore'
+import { useDriverStore } from "@/stores/driverStore";
 import Banner from "@/components/all/banner.vue";
 import Title from "@/components/delivery/title.vue";
 import Text from "@/components/delivery/text.vue";
 import Link from "@/components/delivery/link.vue";
 import Button from "@/components/delivery/button.vue";
 
-const driverStore = useDriverStore()
-const { sections } = driverStore
+const driverStore = useDriverStore();
+const { sections } = driverStore;
 
 onMounted(() => {
-  driverStore.fetchSections()
-})
+  driverStore.fetchSections();
+});
 </script>
 
 <style scoped>

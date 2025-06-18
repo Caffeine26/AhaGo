@@ -14,10 +14,10 @@
     </Banner>
     <div class="containerApp">
       <Article />
-        <Title :title="button13?.name" />
+      <Title :title="button13?.name" />
       <Text v-if="button13?.text" :text="button13?.text" />
 
-      <div  v-if="button13?.descriptions?.length">
+      <div v-if="button13?.descriptions?.length">
         <div class="rowApp">
           <Description
             v-for="(desc, i) in button13.descriptions"
@@ -26,17 +26,17 @@
             :SectionTitle="desc.title"
             :text="desc.text"
           />
-      </div>
+        </div>
       </div>
       <Title title="How food delivery driving works" />
       <Text
         text="Accept orders via the AhaGo Driver App, pick up meals from restaurants, and deliver them to customers quickly and professionally. It's simple, and every delivery adds to your income."
       />
       <Timeline />
-       <Title class="title" :title="button14?.name" />
+      <Title class="title" :title="button14?.name" />
       <Text v-if="button14?.text" :text="button14?.text" />
 
-      <div  v-if="button14?.descriptions?.length">
+      <div v-if="button14?.descriptions?.length">
         <div class="rowApp">
           <Description
             v-for="(desc, i) in button14.descriptions"
@@ -45,7 +45,7 @@
             :SectionTitle="desc.title"
             :text="desc.text"
           />
-      </div>
+        </div>
       </div>
 
       <MapFrame />
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { useDriverStore } from '@/stores/driverStore'
+import { useDriverStore } from "@/stores/driverStore";
 import Banner from "@/components/all/banner.vue";
 import Article from "@/components/delivery/article.vue";
 import Description from "@/components/delivery/description.vue";
@@ -81,7 +81,7 @@ export default {
   },
   data() {
     return {
-      button13: null, 
+      button13: null,
       button14: null,
       key,
       cash,
@@ -101,7 +101,7 @@ export default {
         tuktuk,
         motor,
       };
-    }
+    },
   },
   async mounted() {
     const store = useDriverStore();
@@ -109,13 +109,13 @@ export default {
     await store.fetchButtons();
 
     // Find the button with driver_button id 13/14 from the fetched sections
-    this.button13 = store.buttons.find(button => button.id === 13);
-    this.button14 = store.buttons.find(button => button.id === 14);
+    this.button13 = store.buttons.find((button) => button.id === 13);
+    this.button14 = store.buttons.find((button) => button.id === 14);
     // Set the selectedButton to the button with driver_button id 13/14
-    if (!this.button13) console.error('Button with ID 13 not found');
-    if (!this.button14) console.error('Button with ID 14 not found');
-  }
-}
+    if (!this.button13) console.error("Button with ID 13 not found");
+    if (!this.button14) console.error("Button with ID 14 not found");
+  },
+};
 </script>
 
 <style scoped>

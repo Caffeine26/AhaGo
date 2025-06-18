@@ -33,7 +33,7 @@ import OwnerProfileEdit from "@/views/owner/OwnerProfileEdit.vue";
 import OwnerLogin from "@/views/owner/OwnerLogin.vue";
 import OwnerSignup from "@/views/owner/OwnerSignup.vue";
 import OwnerTrackings from "@/views/owner/OwnerTrackings.vue";
-import HomePage from '@/views/client/HomePage.vue';
+import HomePage from "@/views/client/HomePage.vue";
 import CustomerLayout from "@/views/client/CustomerLayout.vue";
 import DashboardView from "@/views/Admin/DashboardView.vue";
 import OrderView from "@/views/Admin/OrderView.vue";
@@ -52,13 +52,13 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      redirect: '/splash'
+      path: "/",
+      redirect: "/splash",
     },
     {
-      path: '/splash',
-      name: 'Splash',
-      component: HomePage
+      path: "/splash",
+      name: "Splash",
+      component: HomePage,
     },
     {
       path: "/login",
@@ -79,36 +79,36 @@ const router = createRouter({
       props: { defaultPanel: "forgot" },
     },
     {
-      path: '/test-cards',
-      name: 'TestCards',
-      component: () => import('@/views/TestCards.vue')
+      path: "/test-cards",
+      name: "TestCards",
+      component: () => import("@/views/TestCards.vue"),
     },
     {
-      path: '/',
+      path: "/",
       component: CustomerLayout,
       children: [
         {
-      path: '/',
-      name: 'ClientLanding',
-      component: () => import('@/views/client/LandingPage.vue')
-    },
-    {
-      path: '/store/:brandName',
-      name: 'StoreDetails',
-      component: () => import('@/views/client/StoreDetailsPage.vue')
-    },
-    {
-      path: '/checkout/:brandName/:cartItems',
-      name: 'checkout',
-      component: () => import('@/views/client/CheckoutPage.vue'),
-      props: true
-    },
-    {
-      path: '/add-location',
-      name: 'AddLocation',
-      component: () => import('@/views/client/AddLocationPage.vue')
-    },
-      ]
+          path: "/",
+          name: "ClientLanding",
+          component: () => import("@/views/client/LandingPage.vue"),
+        },
+        {
+          path: "/store/:brandName",
+          name: "StoreDetails",
+          component: () => import("@/views/client/StoreDetailsPage.vue"),
+        },
+        {
+          path: "/checkout/:brandName/:cartItems",
+          name: "checkout",
+          component: () => import("@/views/client/CheckoutPage.vue"),
+          props: true,
+        },
+        {
+          path: "/add-location",
+          name: "AddLocation",
+          component: () => import("@/views/client/AddLocationPage.vue"),
+        },
+      ],
     },
     {
       path: "/delivery",
@@ -181,7 +181,7 @@ const router = createRouter({
           path: "mapOrder/:id",
           name: "mapOrder",
           component: mapOrder,
-          props: true
+          props: true,
         },
         {
           path: "aboutus",
@@ -209,7 +209,6 @@ const router = createRouter({
           name: "signup",
           component: SignUp,
         },
-       
       ],
     },
     {
@@ -218,19 +217,19 @@ const router = createRouter({
     },
     {
       path: "/owner/menu",
-      component: MenuPage
+      component: MenuPage,
     },
     {
       path: "/owner/menu/addCategory",
-      component: MenuNewCategory
+      component: MenuNewCategory,
     },
     {
       path: "/owner/menu/createItem",
-      component: MenuCreatePage
+      component: MenuCreatePage,
     },
     {
       path: "/owner/menu/edit/:itemId",
-      component: MenuEditPage
+      component: MenuEditPage,
     },
     {
       path: "/owner/order",
@@ -238,107 +237,101 @@ const router = createRouter({
     },
     {
       path: "/owner/order/details/:orderId",
-      component: OrderDetailPage
+      component: OrderDetailPage,
     },
     {
       path: "/owner/order/invoice/:orderId",
-      component: InvoicePage
+      component: InvoicePage,
     },
     {
       path: "/owner/transactions",
-      component: TransactionPage
+      component: TransactionPage,
     },
     {
       path: "/owner/profile/:restId",
-      component: OwnerProfilePage
+      component: OwnerProfilePage,
     },
     {
       path: "/owner/profile/:restId/edit",
-      component: OwnerProfileEdit
+      component: OwnerProfileEdit,
     },
     {
       path: "/owner/profile/:restId/trackings",
-      component: OwnerTrackings
+      component: OwnerTrackings,
     },
     {
       path: "/owner/login",
-      component: OwnerLogin
+      component: OwnerLogin,
     },
     {
       path: "/owner/signup",
-      component: OwnerSignup
+      component: OwnerSignup,
     },
     {
-       
-          path: '/admin/dashboard',
-          name: 'Dashboard',
-          component: DashboardView,
-        
+      path: "/admin/dashboard",
+      name: "Dashboard",
+      component: DashboardView,
     },
     {
-          path: '/admin/orders',
-          name: 'Orders',
-          component:OrderView,
+      path: "/admin/orders",
+      name: "Orders",
+      component: OrderView,
     },
     {
-          path:'/admin/orders/:id',
-          name:'OrderTracking',
-          component: OrderTracking,
+      path: "/admin/orders/:id",
+      name: "OrderTracking",
+      component: OrderTracking,
     },
     {
-          path: '/admin/messages',
-          name: 'Messages',
-          component: MessageView,
+      path: "/admin/messages",
+      name: "Messages",
+      component: MessageView,
     },
     {
-          path: '/admin/menus',
-          name: 'Menu',
-          component: MenuView,
+      path: "/admin/menus",
+      name: "Menu",
+      component: MenuView,
     },
     {
-          path:'/admin/menus/:id',
-          name: 'MenuItemDetail',
-          component: MenuItemDetail,
-    },
-    {     
-          path:'/admin/marketing',
-          name:'MaketingPage',
-          component: MaketingPage,
-
+      path: "/admin/menus/:id",
+      name: "MenuItemDetail",
+      component: MenuItemDetail,
     },
     {
-          path:'/admin/order-tracking',
-          name:'OrderTracking',
-          component: OrderTracking,
+      path: "/admin/marketing",
+      name: "MaketingPage",
+      component: MaketingPage,
     },
     {
-          path:'/admin/account',
-          name: 'Account',
-          component: Account,
+      path: "/admin/order-tracking",
+      name: "OrderTracking",
+      component: OrderTracking,
     },
     {
-          path:'/admin/review',
-          name: 'Review',
-          component: Review,
+      path: "/admin/account",
+      name: "Account",
+      component: Account,
     },
     {
-          path:'/admin/inventory',
-          name: 'Inventory',
-          component: Inventory,
+      path: "/admin/review",
+      name: "Review",
+      component: Review,
     },
     {
-          path: '/admin/login',
-          name: 'Login',
-          component: Login,
+      path: "/admin/inventory",
+      name: "Inventory",
+      component: Inventory,
     },
-    {     
-          path: '/admin/signup',
-          name: 'Signup',
-          component: Signup,
-          
-
+    {
+      path: "/admin/login",
+      name: "Login",
+      component: Login,
     },
-
+    {
+      path: "/admin/signup",
+      name: "Signup",
+      component: Signup,
+    },
   ],
 });
 

@@ -6,36 +6,38 @@
       </div>
 
       <div class="content">
-        <Box v-for="order in incomingOrders" :key="order.id" class="box">
-          <div class="head">{{ order.title || "Delivery Request" }}</div>
+        <Box v-for="order in driverStore.orders" :key="order.id" class="box">
+          <div class="head"> Order #{{ order.id || "Delivery Request" }}</div>
 
-          <p v-if="order.details?.pickUp" class="text">
-            Pick up: {{ order.details.pickUp }}
+          <div class="location">
+            <p v-if="order.restaurant?.name" class="text">
+            Pick up: {{ order.restaurant.name }}
           </p>
-          <p v-if="order.details?.destination" class="text">
-            Destination: {{ order.details.destination }}
+          <p class="text">||</p>
+          <p v-if="order.customer.address" class="text">
+            Destination: {{ order.customer.address }}
           </p>
-          <p v-if="order.details?.customer" class="text">
-            Customer: {{ order.details.customer }}
+          </div>
+          <p v-if="order.customer_profile?.name" class="text">
+            Customer: {{ order.customer_profile.name }}
           </p>
 
-          <p class="text">{{ order.message }}</p>
+          <p class="link">Remark: {{ order.remark }}</p>
 
           <div v-if="order.status === 'pending'" class="bottom">
             <div class="buttons">
               <GeneralButton
-  title="Accept"
-  btnColor="#059669"
-  titleColor="#fff"
-  @click="handleAccept(order.id)"
-/>
-<GeneralButton
-  title="Reject"
-  btnColor="#DC2626"
-  titleColor="#fff"
-  @click="handleReject(order.id)"
-/>
-
+                title="Accept"
+                btnColor="#059669"
+                titleColor="#fff"
+                @click="handleAccept(order.id)"
+              />
+              <GeneralButton
+                title="Reject"
+                btnColor="#DC2626"
+                titleColor="#fff"
+                @click="handleReject(order.id)"
+              />
             </div>
           </div>
         </Box>
@@ -45,27 +47,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import axios from "axios";
-import { useRouter } from "vue-router"; 
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useDriverStore } from "@/stores/driverStore";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
-const router = useRouter(); 
 
-const incomingOrders = ref([]);
+const router = useRouter();
+const driverStore = useDriverStore();
+const isProcessing = ref(false);
 
-const fetchIncomingOrders = async () => {
-  try {
-    const { data } = await axios.get(
-      "http://localhost:4000/api/incoming-orders"
-    );
-    console.log("Fetched incoming orders:", data); // <-- add this line
-    incomingOrders.value = data;
-  } catch (error) {
-    console.error("Failed to fetch incoming orders:", error);
-  }
-};
 const handleAccept = (orderId) => {
   updateOrderStatus(orderId, "accepted");
 };
@@ -73,8 +65,6 @@ const handleAccept = (orderId) => {
 const handleReject = (orderId) => {
   updateOrderStatus(orderId, "rejected");
 };
-
-const isProcessing = ref(false);
 
 const updateOrderStatus = async (id, status) => {
   if (isProcessing.value) return;
@@ -89,17 +79,18 @@ const updateOrderStatus = async (id, status) => {
   isProcessing.value = true;
 
   try {
-await axios.patch(`http://localhost:4000/api/incoming-orders/${id}`, { status });
+    await fetch(`http://localhost:8300/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
 
-    const order = incomingOrders.value.find((o) => o.id === id);
+    const order = driverStore.orders.find((o) => o.id === id);
 
     if (status === "accepted") {
-      router.push({
-        name: "mapOrder", // Make sure this route name is defined in your router
-        params: { id: order.id } // ← better than using query
-      });
+      router.push({ name: "mapOrder", params: { id: order.id } });
     } else {
-      await fetchIncomingOrders(); // refresh list after rejection
+      await driverStore.fetchOrders(); // refresh orders after rejection
     }
   } catch (error) {
     console.error("Failed to update order status:", error);
@@ -109,8 +100,9 @@ await axios.patch(`http://localhost:4000/api/incoming-orders/${id}`, { status })
   }
 };
 
-watch(fetchIncomingOrders);
-onMounted(fetchIncomingOrders);
+onMounted(() => {
+  driverStore.fetchOrders();
+});
 </script>
 
 <style scoped>
@@ -138,13 +130,13 @@ onMounted(fetchIncomingOrders);
 }
 .text {
   font-size: 18px;
+  margin-bottom: 5px;
 }
 .link {
-  color: #9a0404;
+  color: gray;
   font-style: italic;
-}
-.link {
-  text-align: right;
+  text-decoration: underline;
+  margin-bottom: 5px;
 }
 .box {
   padding: 30px 25px;
@@ -165,5 +157,10 @@ onMounted(fetchIncomingOrders);
   flex-direction: column;
   gap: 20px;
   overflow-y: scroll;
+}
+.location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>

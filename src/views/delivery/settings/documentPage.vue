@@ -29,7 +29,11 @@
 
         <GeneralButton
           class="submit-btn"
-          :title="documents.submitted ? 'Documents Submitted' : 'Submit Documents for Review'"
+          :title="
+            documents.submitted
+              ? 'Documents Submitted'
+              : 'Submit Documents for Review'
+          "
           :btnColor="documents.submitted ? '#9ca3af' : '#3b82f6'"
           :titleColor="'white'"
           @click="!documents.submitted && submitDocuments()"

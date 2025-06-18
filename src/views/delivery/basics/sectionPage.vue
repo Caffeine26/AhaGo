@@ -18,29 +18,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useDriverStore } from '@/stores/driverStore' // adjust path if needed
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import { useDriverStore } from "@/stores/driverStore"; // adjust path if needed
 
-import Title from '@/components/delivery/title.vue'
-import Text from '@/components/delivery/text.vue'
-import Button from '@/components/delivery/button.vue'
+import Title from "@/components/delivery/title.vue";
+import Text from "@/components/delivery/text.vue";
+import Button from "@/components/delivery/button.vue";
 
-const route = useRoute()
-const section = ref(null)
+const route = useRoute();
+const section = ref(null);
 
-const driverStore = useDriverStore()
+const driverStore = useDriverStore();
 
 onMounted(async () => {
   if (!driverStore.sections.length) {
-    await driverStore.fetchSections()
+    await driverStore.fetchSections();
   }
 
   section.value = driverStore.sections.find((s) => {
-    const parts = s.linkTo?.split('/') || []
-    return parts[parts.length - 1] === route.params.section
-  })
-})
+    const parts = s.linkTo?.split("/") || [];
+    return parts[parts.length - 1] === route.params.section;
+  });
+});
 </script>
 
 <style scoped>

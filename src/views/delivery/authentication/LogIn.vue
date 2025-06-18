@@ -28,15 +28,15 @@
 </template>
 
 <script setup>
-import InputText from '@/components/all/inputText.vue';
-import GeneralButton from '@/components/GeneralButton.vue';
-import { ref } from 'vue';
+import InputText from "@/components/all/inputText.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
+import { ref } from "vue";
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const login = () => {
-  console.log('User login:', {
+  console.log("User login:", {
     email: email.value,
     password: password.value,
   });
@@ -54,7 +54,7 @@ const login = () => {
 
 .image-section {
   flex: 1;
-  background-image: url('https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp');
+  background-image: url("https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp");
   background-size: cover;
   background-position: center;
 }
@@ -75,7 +75,7 @@ const login = () => {
 }
 
 h2 {
-  color: #9A0404;
+  color: #9a0404;
   margin-bottom: 20px;
 }
 
@@ -97,7 +97,7 @@ h2 {
 }
 
 a {
-  color: #9A0404;
+  color: #9a0404;
   text-decoration: none;
 }
 </style>

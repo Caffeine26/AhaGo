@@ -5,13 +5,13 @@
       <div class="form-box">
         <h2>Sign Up</h2>
         <div class="name-fields">
-  <div class="input-wrapper">
-    <InputText v-model="firstName" placeholder="First Name" />
-  </div>
-  <div class="input-wrapper">
-    <InputText v-model="lastName" placeholder="Last Name" />
-  </div>
-</div>
+          <div class="input-wrapper">
+            <InputText v-model="firstName" placeholder="First Name" />
+          </div>
+          <div class="input-wrapper">
+            <InputText v-model="lastName" placeholder="Last Name" />
+          </div>
+        </div>
 
         <InputText v-model="email" type="email" placeholder="Email Address" />
         <InputText v-model="password" type="password" placeholder="Password" />
@@ -23,12 +23,13 @@
             <a href="#">Terms and Conditions</a>
           </label>
         </div>
-        <GeneralButton class="button"
-  :title="'Sign Up'"
-  :btnColor="'#9A0404'"
-  :titleColor="'#ffffff'"
-  @click="submit"
-/>
+        <GeneralButton
+          class="button"
+          :title="'Sign Up'"
+          :btnColor="'#9A0404'"
+          :titleColor="'#ffffff'"
+          @click="submit"
+        />
 
         <p class="small">
           Already have an account?
@@ -40,24 +41,24 @@
 </template>
 
 <script setup>
-import InputText from '@/components/all/inputText.vue';
-import GeneralButton from '@/components/GeneralButton.vue';
-import { ref } from 'vue';
+import InputText from "@/components/all/inputText.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
+import { ref } from "vue";
 
-const firstName = ref('');
-const lastName = ref('');
-const email = ref('');
-const password = ref('');
+const firstName = ref("");
+const lastName = ref("");
+const email = ref("");
+const password = ref("");
 const agreed = ref(false);
 
 const submit = () => {
   if (!agreed.value) {
-    alert('You must agree to the terms and conditions.');
+    alert("You must agree to the terms and conditions.");
     return;
   }
 
   if (!firstName.value || !lastName.value || !email.value || !password.value) {
-    alert('Please fill in all fields.');
+    alert("Please fill in all fields.");
     return;
   }
 
@@ -68,13 +69,12 @@ const submit = () => {
     email: email.value,
   };
 
-  localStorage.setItem('auth_token', 'mock_token_123'); // Simulated token
-  localStorage.setItem('user_data', JSON.stringify(user));
+  localStorage.setItem("auth_token", "mock_token_123"); // Simulated token
+  localStorage.setItem("user_data", JSON.stringify(user));
 
-  alert('Signup successful!');
-  window.location.href = '/delivery/settings/profile'; // Redirect after signup
+  alert("Signup successful!");
+  window.location.href = "/delivery/settings/profile"; // Redirect after signup
 };
-
 </script>
 
 <style scoped>
@@ -85,7 +85,7 @@ const submit = () => {
 
 .image-section {
   flex: 1;
-  background-image: url('https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp');
+  background-image: url("https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp");
   background-size: cover;
   background-position: center;
 }
@@ -106,7 +106,7 @@ const submit = () => {
 }
 
 h2 {
-  color: #9A0404;
+  color: #9a0404;
   margin-bottom: 20px;
 }
 
@@ -117,7 +117,7 @@ h2 {
 }
 .input-wrapper {
   /* flex: 1; */
-  max-width: 170px; 
+  max-width: 170px;
 }
 .terms {
   display: flex;
@@ -137,7 +137,7 @@ h2 {
 }
 
 a {
-  color: #9A0404;
+  color: #9a0404;
   text-decoration: none;
 }
 </style>
