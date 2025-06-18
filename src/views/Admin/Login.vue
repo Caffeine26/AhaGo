@@ -15,7 +15,7 @@
 
         <p class="switch">
           Don't have an account?
-          <router-link to="/admin/signup">Sign up</router-link>
+          <router-link :to="`/${detectedRole}/signup`">Sign up</router-link>
         </p>
       </form>
     </div>
@@ -30,11 +30,55 @@ export default {
       email: '',
       password: '',
       remember: false,
+      detectedRole: 'customer',
     };
   },
+  mounted() {
+    this.detectRoleFromRoute();
+  },
   methods: {
-    handleLogin() {
-      alert(`Logged in as ${this.email}`);
+    detectRoleFromRoute() {
+      const path = this.$route.path.toLowerCase();
+      if (path.includes('/admin')) this.detectedRole = 'admin';
+      else if (path.includes('/customer')) this.detectedRole = 'customer';
+      else if (path.includes('/driver')) this.detectedRole = 'driver';
+      else if (path.includes('/restaurant')) this.detectedRole = 'restaurant';
+    },
+
+    async handleLogin() {
+      const loginUrl = `http://localhost:8300/api/${this.detectedRole}/login`;
+
+      try {
+        const response = await fetch(loginUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            email: this.email,
+            password: this.password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          alert(`Welcome, ${data.user.name}`);
+
+          // Store user (or token if you enable it later)
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('role', this.detectedRole);
+
+          // Navigate to dashboard
+          this.$router.push(`/${this.detectedRole}/dashboard`);
+        } else {
+          alert(data.message || 'Login failed.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Unable to connect. Please try again.');
+      }
     },
   },
 };
