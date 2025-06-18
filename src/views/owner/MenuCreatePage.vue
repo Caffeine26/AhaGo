@@ -18,7 +18,8 @@ it5="Profile"
     
     <MenuItemInfo
     to-do="Create"
-    :categories="categs"
+    :categories="categories"
+    :create-item="createItem"
     ></MenuItemInfo>
 </div>
 <AppFooter></AppFooter>
@@ -34,6 +35,8 @@ import add from '@/assets/owner/svg/additem.svg';
 import image from '@/assets/owner/svg/image.svg';
 import edit from '@/assets/owner/svg/edit-white.svg';
 import MenuItemInfo from '@/components/MenuItemInfo.vue';
+import { useRoute } from 'vue-router';
+import { useCategoryStore } from '@/stores/categoryStore';
 
 export default {
     components: {
@@ -43,8 +46,27 @@ export default {
         MenuItemInfo,
         AppFooter
     },
+    created() {
+        const route = useRoute()
+        this.categoryStore = useCategoryStore()
+        this.restId = parseInt(route.params.restId)
+
+        this.categoryStore.categories.forEach(element => {
+            if (element.restaurant_id === this.restId) {
+                this.categories.push(element.name)
+            }
+        });
+
+        console.log('Selected categories=', this.categories)
+
+    },
     data() {
         return {
+            categoryStore: null,
+            restId: null,
+            categories: [],
+            createItem: true,
+
             add: add,
             addTitle: 'Add item',
             rest: 'Malis Restaurant',

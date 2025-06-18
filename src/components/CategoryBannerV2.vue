@@ -39,6 +39,7 @@
 <script>
 import add from '@/assets/owner/svg/add.svg';
 import image from '@/assets/owner/img/malis.png';
+import { useRoute } from 'vue-router';
 
 export default {
     props: {
@@ -49,7 +50,7 @@ export default {
             default: true
         },
         editProfile: Boolean,
-        restId: Number,
+        // restId: Number,
         bannerBtn: String,
         bannerIcon: String,
         givenIndex: {
@@ -58,6 +59,10 @@ export default {
         }
     },
     created() {
+        const route = useRoute()
+        this.restId = parseInt(route.params.restId)
+        console.log('restaurant Id = ', this.restId)
+
         // restId find restaurant img and info
         // display img in banner
     },
@@ -66,7 +71,7 @@ export default {
             if (this.editProfile) {
                 return '/owner/profile/' + this.restId + '/edit'
             } else {
-                return '/owner/menu/addCategory'
+                return '/owner/' + this.restId + '/menu/addCategory'
             }
         }
     },
@@ -78,6 +83,7 @@ export default {
     },
     data() {
         return {
+            restId: null,
             chosen: false,
             chosenIndex: this.givenIndex,
             name: 'Malis Restaurant',
@@ -131,7 +137,6 @@ export default {
 }
 .categoryName:hover {
     cursor: pointer;
-    font-weight: 500;
 }
 .chosenCateg {
     width: fit-content;

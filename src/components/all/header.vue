@@ -34,6 +34,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  ownerUrl: {
+    type: Boolean,
+    default: false
+  },
   goToAccount: Function,
   userLoggedIn: {
     type: Boolean,
@@ -44,20 +48,30 @@ const props = defineProps({
 const router = useRouter();
 
 const goToLogin = () => {
-  router.push("/deliver/login");
+  if(props.ownerUrl) {
+    router.push("/owner/login");
+  } else {
+    router.push("/deliver/login");
+  }
+  
 };
 
 const goToSignup = () => {
-  router.push("/deliver/signup");
+  if(props.ownerUrl) {
+    router.push("/owner/signup");
+  } else {
+    router.push("/deliver/signup");
+
+  }
 };
 
 const goToOverview = () => {
   router.push("/delivery/overview");
 };
 
-const goToSignUp = () => {
-  router.push('/signup');
-};
+// const goToSignUp = () => {
+//   router.push('/signup');
+// };
 </script>
 
 

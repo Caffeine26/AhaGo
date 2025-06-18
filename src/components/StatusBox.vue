@@ -15,20 +15,20 @@ export default {
   computed: {
     statusText() {
       switch (this.statusId) {
+        case 0:
+          return "Out of stock";
         case 1:
           return "Available";
-        case 2:
-          return "Out of stock";
         default:
           return "Pending";
       }
     },
     statusClass() {
       switch (this.statusId) {
+        case 0:
+          return "out";
         case 1:
           return "available";
-        case 2:
-          return "out";
         default:
           return "pending";
       }

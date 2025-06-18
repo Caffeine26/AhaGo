@@ -15,7 +15,7 @@ title-header="Malis Restaurant"
 :titles = "categs"
 add-category="true"
 edit-profile="true"
-rest-id=1
+:rest-id=restId
 banner-btn="Edit Profile"
 :banner-icon="edit"
 @toggle-category="toggleCategoryData"
@@ -49,8 +49,12 @@ import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
 import Header2 from '@/components/delivery/header2.vue';
+import { useRestStore } from '@/stores/restStore';
+import { useRoute } from 'vue-router';
 
 import edit from '@/assets/owner/svg/edit-white.svg';
+import { onMounted, computed } from 'vue';
+import { useUserStore } from '@/stores/userStore';
 export default {
     components: {
         Header,
@@ -58,22 +62,73 @@ export default {
         AppFooter,
         CategoryBannerV2
     },
-    created() {
-        this.restId = parseInt(this.$route.params.restId);
-        console.log('Router restId:', this.restId);
-        const rest = this.rests.find( item => item.restId === this.restId);
+    async created() {
+        const route = useRoute() // access route params
+        const userStore = useUserStore()
+        const restStore = useRestStore()
+        this.restId = parseInt(route.params.restId)
 
-        this.restName = rest.restName;
-        this.openHours = rest.openHours;
-        this.address = rest.address;
-        this.desc = rest.desc;
-        this.email = rest.email;
-        this.tele = rest.tele;
+        // fetch data if it's not loaded yet
+        onMounted(() => {
+            if(!restStore.rests.length) {
+                console.log('Fetching data...')
+                restStore.fetchRests()
+            }
+        })
+        console.log('restaurants in store = ', restStore.rests)
+        console.log('route param restId = ', this.restId)
+
+        const selectedRestaurant = restStore.rests.find(r => r.id === this.restId)
+        console.log('Selected Restaurant=', selectedRestaurant)   // ret null on 2nd try
+
+        const selectedUser = userStore.users.find(u => u.id === selectedRestaurant.user_id)
+        console.log('Selected User=', selectedUser)
+        
+
+        if(selectedRestaurant && selectedUser) {
+            console.log('selectedRest = ', selectedRestaurant)
+            // break it into variables
+            this.restName = selectedRestaurant.name 
+            this.openHours = selectedRestaurant.working_hours
+            this.desc = selectedRestaurant.description
+
+            this.email = selectedUser.email
+            this.address = selectedUser.address
+            this.tele = selectedUser.phone_number
+
+        } else {
+            console.error('Restaurant with ID ', this.restId, ' not found.')
+            this.restName = ''
+            this.openHours = ''
+            this.desc = ''
+
+            this.email = ''
+            this.address = ''
+            this.tele = ''
+        }
     },
+    setup() {
+
+        // const restId = route.params.restId
+        // find restaurant from store using the id in the url
+    },
+    // created() {
+    //     this.restId = parseInt(this.$route.params.restId);
+    //     console.log('Router restId:', this.restId);
+    //     const rest = this.rests.find( item => item.restId === this.restId);
+
+    //     this.restName = rest.restName;
+    //     this.openHours = rest.openHours;
+    //     this.address = rest.address;
+    //     this.desc = rest.desc;
+    //     this.email = rest.email;
+    //     this.tele = rest.tele;
+    // },
     methods: {
         toggleCategoryData(index) {
+            const restId = parseInt(this.$route.params.restId);
             if (index == 1) {
-                this.$router.push('/owner/profile/' + this.restId + '/trackings')
+                this.$router.push('/owner/profile/' + restId + '/trackings')
             }
         }
     },

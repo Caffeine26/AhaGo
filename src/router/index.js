@@ -51,6 +51,10 @@ import Signup from "@/views/Admin/Signup.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // Always scroll to top
+    return { top: 0 };
+  },
   routes: [
     {
       path: '/',
@@ -211,19 +215,19 @@ const router = createRouter({
       component: OwnerLandingPage,
     },
     {
-      path: "/owner/menu",
+      path: "/owner/:restId/menu",
       component: MenuPage
     },
     {
-      path: "/owner/menu/addCategory",
+      path: "/owner/:restId/menu/addCategory",
       component: MenuNewCategory
     },
     {
-      path: "/owner/menu/createItem",
+      path: "/owner/:restId/menu/createItem",
       component: MenuCreatePage
     },
     {
-      path: "/owner/menu/edit/:itemId",
+      path: "/owner/:restId/menu/edit/:itemId",
       component: MenuEditPage
     },
     {

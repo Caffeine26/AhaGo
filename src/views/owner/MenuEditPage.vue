@@ -20,7 +20,8 @@ it5="Profile"
     <MenuItemInfo
     :item-id="itemId"
     to-do="Save"
-    :categories="categs"
+    :categories="categories"
+    :update-item="updateItem"
     ></MenuItemInfo>
 
     
@@ -38,6 +39,7 @@ import add from '@/assets/owner/svg/additem.svg';
 import image from '@/assets/owner/svg/image.svg';
 import edit from '@/assets/owner/svg/edit.svg';
 import MenuItemInfo from '@/components/MenuItemInfo.vue';
+import { useCategoryStore } from '@/stores/categoryStore';
 
 export default {
     components: {
@@ -49,10 +51,27 @@ export default {
     },
     created() {
         this.itemId = parseInt(this.$route.params.itemId);
+        this.restId = parseInt(this.$route.params.restId);
+
+        this.categoryStore = useCategoryStore()
+        this.categoryStore.categories.forEach(element => {
+            if (element.restaurant_id === this.restId) {
+                this.categories.push(element.name)
+            }
+        });
+        console.log('categories=', this.categories)
+        
     },
     data() {
         return {
-            itemId: 0,
+            updateItem: true,
+            categories: [],
+
+            itemId: null,
+            restId: null,
+            categoryStore: null,
+            selectedItem: null,
+
             add: add,
             editTitle: 'Edit item',
             rest: 'Malis Restaurant',
@@ -68,13 +87,6 @@ export default {
             description: '',
             selectedStock: '',
             discountP: 0,
-
-            categs: [
-                'A La Carte',
-                'Breakfast',
-                'Business Lunch',
-                'Highlights',
-            ],
             isChecked: false,
         }
     },

@@ -37,7 +37,8 @@ banner-btn="Edit Profile"
                 id="upload"
                 >
                 <img :src="image" alt="img">
-                Upload Image</button>
+                Upload Image
+                </button>
             </div>
         </div>
 
@@ -91,9 +92,11 @@ banner-btn="Edit Profile"
     </div>
 
     <div class="btns">
-        <button id="cancel">Cancel</button>
         <button 
-        @click="getInfo"
+        @click="cancelChange"
+        id="cancel">Cancel</button>
+        <button 
+        @click="updateRestData"
         id="save">Save</button>
     </div>
 </div>
@@ -112,6 +115,12 @@ import edit from '@/assets/owner/svg/edit-white.svg';
 import image from '@/assets/owner/svg/image.svg';
 import malis from '@/assets/owner/img/malis.png';
 
+import { useRestStore } from '@/stores/restStore';
+import { useRoute } from 'vue-router';
+import RestService from '@/services/RestService';
+import { useUserStore } from '@/stores/userStore';
+import UserService from '@/services/UserService';
+
 export default {
     components: {
         Header,
@@ -119,17 +128,40 @@ export default {
         AppFooter,
         CategoryBannerV2
     },
-    created() {
-        const restId = this.$route.params.restId;
-        const rest = this.rests.find( item => item.restId == restId);
+    async created() {
+        const route = useRoute()
+        this.store = useRestStore()
+        this.userStore = useUserStore()
+        this.restId = parseInt(route.params.restId)
 
-        this.restName = rest.restName;
-        this.openHours = rest.openHours;
-        this.address = rest.address;
-        this.desc = rest.desc;
-        this.email = rest.email;
-        this.tele = rest.tele;
-        this.imageSrc = rest.imageSrc;
+        const rest = await this.store.rests.find(r => r.id === this.restId)
+        this.userId = rest.user_id
+        const user = await this.userStore.users.find(u => u.id === this.userId)
+        console.log('Found user=', user)
+
+        if(rest) {
+            this.restName = rest.name;
+            this.openHours = rest.working_hours;
+            this.desc = rest.description;
+        }
+
+        if(user) {
+            this.email = user.email
+            this.address = user.address
+            this.tele = user.phone_number
+            this.imageSrc = user.img_src
+        }
+
+        // reststore: [ name, openhours, desc, userid]
+        // userstore: [ email, address, tel, img]
+
+        // this.restName = rest.restName;
+        // this.openHours = rest.openHours;
+        // this.address = rest.address;
+        // this.desc = rest.desc;
+        // this.email = rest.email;
+        // this.tele = rest.tele;
+        // this.imageSrc = rest.imageSrc;
     },
     methods: {
         handleFileUpload(event) {
@@ -141,9 +173,65 @@ export default {
         triggerFileInput() {
             this.$refs.fileInput.click();
         },
+        cancelChange () {
+            this.$router.back()
+        },
+        async updateRestData() {
+            const restReq = {
+                'name': this.restName,
+                'user_id': this.userId,
+                'working_hours': this.openHours,
+                'description': this.desc
+            };
+            try {
+                const res = await RestService.update(this.restId, restReq)
+                console.log('Updated: ', res.data)
+                // update store
+                const index = this.store.rests.findIndex(r => r.id === this.restId)
+                if (index !== -1) {
+                    this.store.rests[index].name = restReq.name
+                    this.store.rests[index].user_id = restReq.user_id
+                    this.store.rests[index].working_hours = restReq.working_hours
+                    this.store.rests[index].description = restReq.description
+                }
+            } catch (err) {
+                console.log('Failed to update:', err)
+                console.log('Data:', restReq)
+
+                if(!restReq.working_hours) {
+                    alert('Working hours field is required.')
+                }
+            }
+            const userReq = {
+                'email': this.email,
+                'address': this.address,
+                'phone_number': this.tele,
+                'img_src': this.imageSrc
+            };
+            try {
+                const res = await UserService.update(this.userId, userReq)
+                console.log('Updated: ', res.data)
+                const index = this.userStore.users.findIndex(u => u.id === this.userId)
+                if(index !== -1) {
+                    this.userStore.users[index].email = userReq.email
+                    this.userStore.users[index].address = userReq.address
+                    this.userStore.users[index].phone_number = userReq.phone_number
+                    this.userStore.users[index].img_src = userReq.img_src
+
+                }
+                this.$router.push('/owner/profile/' + this.restId)
+            } catch (err) {
+                console.log('Failed to update:', err)
+                console.log('Data:', userReq)
+            }
+        }
     },
     data() {
         return {
+            store: null,
+            userStore: null,
+            userId: '',
+            restId: '',
             image: image,
             restName: '',
             openHours: '',
@@ -176,6 +264,9 @@ export default {
 </script>
 
 <style scoped>
+* {
+    font-family: 'Quicksand';
+}
 .editBox {
     border-left: 2px solid #D90000;
     border-right: 2px solid #D90000;
@@ -261,6 +352,20 @@ export default {
 }
 .uploadBtn {
     position: relative;
+    
+}
+#upload {
+    background-color: #D90000;
+    padding: 5px 10px;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    font-family: 'Raleway';
+    font-weight: 600;
+
 }
 .editBtn {
     background-color: #D90000;

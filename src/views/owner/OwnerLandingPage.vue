@@ -1,6 +1,8 @@
 <template>
     <div class="landingContainer">
-        <Header></Header>
+        <Header
+        :ownerUrl="ownerUrl"
+        ></Header>
         <div id="banner">
             <img :src="burger" alt="burger">
             <div>
@@ -18,6 +20,7 @@
             
             <img :src="pasta" alt="pasta">
         </div>
+        <div>{{ restStore.rests }}</div>
         <div id="about">
             <p class="title">About AhaGo</p>
             <div id="aboutText">
@@ -70,6 +73,10 @@ import Header from '@/components/all/header.vue';
 import PicTitleBox from '@/components/PicTitleBox.vue';
 import ArrowText from '@/components/ArrowText.vue';
 import AppFooter from '@/components/AppFooter.vue';
+import { useRestStore } from '@/stores/restStore';
+import { useUserStore } from '@/stores/userStore';
+import { useCategoryStore } from '@/stores/categoryStore';
+import { useOrdersStore } from '@/stores/ordersStore';
 
 export default {
     components: {
@@ -78,8 +85,29 @@ export default {
         ArrowText,
         AppFooter
     },
+    setup() {
+        const restStore = useRestStore()
+        const userStore = useUserStore()
+        const categoryStore = useCategoryStore()
+        const ordersStore = useOrdersStore()
+
+        restStore.fetchRests()
+        userStore.fetchUsers()
+        categoryStore.fetchCategories()
+        categoryStore.fetchFoodItems()
+        ordersStore.fetchOrders()
+        ordersStore.fetchOrdersItems()
+
+        return { 
+            restStore,
+            userStore,
+            categoryStore,
+            ordersStore
+        }
+    },
     data() {
         return {
+            ownerUrl: true,
             burger: "src/assets/owner/img/burger.png",
             pasta: "src/assets/owner/img/pasta.png",
             logo: "src/assets/owner/img/ahago-logo-2.png",
