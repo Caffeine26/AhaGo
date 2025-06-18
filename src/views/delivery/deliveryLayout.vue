@@ -3,7 +3,7 @@
     <div class="heade">
       <Header
         title="<span style='color: #9A0404;'>AhaGo</span> Delivery"
-        :basePath="'deliver'"
+        :basePath="'driver'"
         :userLoggedIn="false"
       />
       <Header2

@@ -1,11 +1,8 @@
 <template>
   <div class="dashboard-wrapper">
-    <!-- Sidebar -->
-    <Sidebar class="sidebar"/>
+    <Sidebar class="sidebar" />
 
-    <!-- Main Content -->
     <div class="main-content">
-      <!-- Top Bar: Header -->
       <header class="header">
         <h2 class="text-2xl font-bold">Chat</h2>
         <div class="header-right">
@@ -16,120 +13,111 @@
           </div>
         </div>
       </header>
-       <div class="message-container">
-    <!-- Sidebar with contacts -->
-    <aside class="contact-sidebar">
-      <div class="sidebar-header">
-        <div class="message-title">Contact</div>
-      </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search anythings" v-model="searchQuery" />
-        <img src="@/assets/icons/search.png" alt="Search" class="search-icon" />
-        <button class="filter-button" @click="toggleFilter">
-          <img src="@/assets/icons/filter.png" alt="Filter" class="filter-icon" />
-        </button>
-        <button class="add-button" @click="addContact">
-          <img src="@/assets/icons/addnew.png" alt="Add" class="add-icon" />
-        </button>
-      </div>
 
-      <!-- Contact list -->
-      <div class="contact-list">
-        <div
-          v-for="contact in filteredContacts"
-          :key="contact.id"
-          class="contact-item"
-          :class="{ active: selectedContact && selectedContact.id === contact.id }"
-          @click="selectContact(contact)"
-        >
-          <div class="contact-avatar">
-            <img :src="contact.avatar" :alt="contact.name" />
+      <div class="message-container">
+        <!-- Contacts Sidebar -->
+        <aside class="contact-sidebar">
+          <div class="sidebar-header">
+            <div class="message-title">Contact</div>
           </div>
-          <div class="contact-info">
-            <div class="contact-name">{{ contact.name }}</div>
-            <div class="contact-meta">
-              <span class="contact-role">{{ contact.role }}</span>
-              <span class="contact-time">{{ contact.time }}</span>
+          <div class="search-bar">
+            <input type="text" placeholder="Search anythings" v-model="searchQuery" />
+            <img src="@/assets/icons/search.png" alt="Search" class="search-icon" />
+            <button class="filter-button" @click="toggleFilter">
+              <img src="@/assets/icons/filter.png" alt="Filter" class="filter-icon" />
+            </button>
+            <button class="add-button" @click="addContact">
+              <img src="@/assets/icons/addnew.png" alt="Add" class="add-icon" />
+            </button>
+          </div>
+          <div class="contact-list">
+            <div
+              v-for="contact in filteredContacts"
+              :key="contact.id"
+              class="contact-item"
+              :class="{ active: selectedContact && selectedContact.id === contact.id }"
+              @click="selectContact(contact)"
+            >
+              <div class="contact-avatar">
+                <img :src="contact.avatar" :alt="contact.name" />
+              </div>
+              <div class="contact-info">
+                <div class="contact-name">{{ contact.name }}</div>
+                <div class="contact-meta">
+                  <span class="contact-role">{{ contact.role }}</span>
+                  <span class="contact-time">{{ contact.time }}</span>
+                </div>
+                <div class="contact-last-message">
+                  {{ contact.lastMessage }}
+                  <span v-if="contact.unreadCount" class="unread-count">{{ contact.unreadCount }}</span>
+                </div>
+              </div>
             </div>
-            <div class="contact-last-message">
-              {{ contact.lastMessage }}
-              <span v-if="contact.unreadCount" class="unread-count">{{ contact.unreadCount }}</span>
+          </div>
+        </aside>
+        <!-- Chat Area -->
+        <main class="chat-main" :class="{ 'no-conversation': !selectedContact }">
+          <header class="chat-header" v-if="selectedContact">
+            <div class="current-user">
+              <div class="user-avatar">
+                <img :src="selectedContact.avatar" :alt="selectedContact.name" />
+              </div>
+              <div class="user-info">
+                <div class="user-name">{{ selectedContact.name }}</div>
+                <div class="user-status">{{ selectedContact.status || 'Offline' }}</div>
+              </div>
             </div>
-          </div>
-        </div>
+            <div class="header-actions">
+              <img src="@/assets/icons/call.png" alt="Call" class="icon call-icon" />
+              <img src="@/assets/icons/video.png" alt="Video" class="icon video-icon" />
+              <img src="@/assets/icons/more.png" alt="More Options" class="icon more-icon" />
+            </div>
+          </header>
+
+          <section class="chat-messages" ref="messagesContainer">
+            <div v-if="selectedContact">
+              <div
+                v-for="(msg, index) in currentMessages"
+                :key="index"
+                :class="['message', msg.isOwn ? 'own' : 'other']"
+              >
+                <div class="message-content">{{ msg.text }}</div>
+                <div class="message-time">{{ msg.time }}</div>
+              </div>
+            </div>
+            <div v-else class="no-selection">
+              Select a contact to start chatting.
+            </div>
+          </section>
+
+          <footer class="chat-input" v-if="selectedContact">
+            <input
+              v-model="newMessage"
+              @keydown.enter.prevent="sendMessage"
+              type="text"
+              placeholder="Type a message"
+            />
+            <button @click="sendMessage">Send</button>
+          </footer>
+        </main>
       </div>
-    </aside>
-
-    <!-- Main chat area -->
-    <main class="chat-main" :class="{ 'no-conversation': !selectedContact }">
-      <header class="chat-header" v-if="selectedContact">
-        <div class="current-user">
-          <div class="user-avatar">
-            <img :src="selectedContact.avatar" :alt="selectedContact.name" />
-          </div>
-          <div class="user-info">
-            <div class="user-name">{{ selectedContact.name }}</div>
-            <div class="user-status">{{ selectedContact.status || 'Offline' }}</div>
-          </div>
-        </div>
-        <div class="header-actions">
-          <img src="@/assets/icons/call.png" alt="Call" class="icon call-icon" />
-          <img src="@/assets/icons/video.png" alt="Video" class="icon video-icon" />
-          <img src="@/assets/icons/more.png" alt="More Options" class="icon more-icon" />
-        </div>
-      </header>
-
-      <!-- Chat messages -->
-      <section class="chat-messages" ref="messagesContainer">
-        <div v-if="selectedContact">
-          <div
-            v-for="(msg, index) in currentMessages"
-            :key="index"
-            :class="['message', msg.isOwn ? 'own' : 'other']"
-          >
-            <div class="message-content">{{ msg.text }}</div>
-            <div class="message-time">{{ msg.time }}</div>
-          </div>
-        </div>
-        <div v-else class="no-selection">
-          Select a contact to start chatting.
-        </div>
-      </section>
-
-      <!-- Message input -->
-      <footer class="chat-input" v-if="selectedContact">
-        <input
-          v-model="newMessage"
-          @keydown.enter.prevent="sendMessage"
-          type="text"
-          placeholder="Type a message"
-        />
-        <button @click="sendMessage">Send</button>
-      </footer>
-    </main>
-  </div>
-
-  </div>
-
- 
+    </div>
   </div>
 </template>
-
 <script>
+import axios from 'axios';
+import Sidebar from '@/components/admin/Sidebar.vue';
 import avatar1 from '@/assets/avatars/avatar1.png';
 import avatar2 from '@/assets/avatars/avatar2.png';
-import Sidebar from '@/components/admin/Sidebar.vue';
 
 export default {
-  components: {
-    Sidebar
-  },
+  components: { Sidebar },
   data() {
-
     return {
       searchQuery: '',
       selectedContact: null,
       newMessage: '',
+      currentUserId: null, // Dynamically set from localStorage
       contacts: [
         {
           id: 1,
@@ -140,10 +128,7 @@ export default {
           lastMessage: 'Hey, are you coming?',
           unreadCount: 2,
           status: 'Online',
-          messages: [
-            { text: 'Hey!', time: '10:00 AM', isOwn: false },
-            { text: 'Hi Alice!', time: '10:05 AM', isOwn: true },
-          ],
+          messages: [],
         },
         {
           id: 2,
@@ -154,9 +139,7 @@ export default {
           lastMessage: 'Check the update.',
           unreadCount: 0,
           status: 'Offline',
-          messages: [
-            { text: 'Did you check the update?', time: '9:20 AM', isOwn: false },
-          ],
+          messages: [],
         },
       ],
     };
@@ -173,39 +156,80 @@ export default {
     },
   },
   methods: {
-    selectContact(contact) {
+    async selectContact(contact) {
       this.selectedContact = contact;
-      this.scrollToBottom();
-    },
-    sendMessage() {
-      const message = this.newMessage.trim();
-      if (!message || !this.selectedContact) return;
 
-      this.selectedContact.messages.push({
-        text: message,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isOwn: true,
-      });
-      this.newMessage = '';
-      this.scrollToBottom();
+      try {
+        const response = await axios.get('http://localhost:8300/api/messages', {
+          params: {
+            sender_id: this.currentUserId,
+            receiver_id: contact.id,
+          },
+        });
+
+        contact.messages = response.data.map(msg => ({
+          text: msg.message,
+          time: new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOwn: msg.sender_id === this.currentUserId,
+        }));
+
+        this.scrollToBottom();
+      } catch (err) {
+        console.error('Failed to load messages', err);
+      }
     },
+
+    async sendMessage() {
+      const messageText = this.newMessage.trim();
+      if (!messageText || !this.selectedContact) return;
+      try {
+        const response = await axios.post('http://localhost:8300/api/messages', {
+          sender_id: this.currentUserId,
+          receiver_id: this.selectedContact.id,
+          message: messageText,
+        });
+
+        this.selectedContact.messages.push({
+          text: response.data.message,
+          time: new Date(response.data.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOwn: true,
+        });
+
+        this.newMessage = '';
+        this.scrollToBottom();
+      } catch (err) {
+        console.error('Send message failed', err);
+      }
+    },
+
     scrollToBottom() {
       this.$nextTick(() => {
         const container = this.$refs.messagesContainer;
-        if (container) {
-          container.scrollTop = container.scrollHeight;
-        }
+        if (container) container.scrollTop = container.scrollHeight;
       });
     },
+
     toggleFilter() {
-      alert('Filter toggled! Implement filter logic here.');
+      alert('Filter toggled!');
     },
+
     addContact() {
-      alert('Add contact clicked! Implement adding logic here.');
+      alert('Add contact clicked!');
     },
+  },
+  mounted() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      this.currentUserId = user.id;
+    } else {
+      console.warn('No logged-in user found.');
+      // Optionally redirect or notify
+    }
   },
 };
 </script>
+
 
 <style scoped>
 .dashboard-wrapper {
@@ -404,7 +428,6 @@ export default {
   border-bottom: 1px solid #ddd;
   align-items: center;
 }
-
 .current-user {
   display: flex;
   align-items: center;

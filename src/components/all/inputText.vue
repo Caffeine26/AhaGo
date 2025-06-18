@@ -5,14 +5,13 @@
       :id="id"
       :type="type"
       :placeholder="placeholder"
-      v-model="localValue"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-
 const props = defineProps({
   modelValue: String,
   label: String,
@@ -26,24 +25,6 @@ const props = defineProps({
     default: () => `input-${Math.random().toString(36).substr(2, 9)}`,
   },
 });
-
-const emit = defineEmits(["update:modelValue"]);
-
-// create a local copy
-const localValue = ref(props.modelValue);
-
-// watch for local changes and emit
-watch(localValue, (newVal) => {
-  emit("update:modelValue", newVal);
-});
-
-// watch if parent changes modelValue
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    localValue.value = newVal;
-  }
-);
 </script>
 
 <style scoped>

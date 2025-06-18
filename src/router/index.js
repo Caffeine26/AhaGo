@@ -206,7 +206,7 @@ const router = createRouter({
       ],
     },
     {
-      path: "/deliver",
+      path: "/driver",
       component: deliverLayout,
       children: [
         {

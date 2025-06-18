@@ -64,7 +64,7 @@ const goToSignup = () => {
 };
 
 const goToOverview = () => {
-  router.push(buildRoute("overview"));
+  router.push(buildRoute(""));
 };
 </script>
 

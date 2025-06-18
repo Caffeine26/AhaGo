@@ -125,7 +125,7 @@ const activeItem = computed(() => {
 });
 
 const logout = () => {
-  router.push("/deliver/login"); // Redirect to login page
+  router.push("/driver/login"); // Redirect to login page
 };
 </script>
 

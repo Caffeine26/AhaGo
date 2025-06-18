@@ -4,17 +4,19 @@
     <div class="form-section">
       <div class="form-box">
         <h2>Sign Up</h2>
-        <div class="name-fields">
+        <form @submit.prevent="handleSignUp">
+          <div class="name-fields">
           <div class="input-wrapper">
-            <InputText v-model="firstName" placeholder="First Name" />
+            <InputText v-model="driverStore.firstName" placeholder="First Name" />
           </div>
           <div class="input-wrapper">
-            <InputText v-model="lastName" placeholder="Last Name" />
+            <InputText v-model="driverStore.lastName" placeholder="Last Name" />
           </div>
         </div>
 
-        <InputText v-model="email" type="email" placeholder="Email Address" />
-        <InputText v-model="password" type="password" placeholder="Password" />
+        <InputText v-model="driverStore.email" type="email" placeholder="Email Address" />
+        <InputText v-model="driverStore.password" type="password" placeholder="Password" />
+        <InputText v-model="driverStore.confirmPassword" type="password" placeholder="Confirm Password" />
 
         <div class="terms">
           <input type="checkbox" id="terms" v-model="agreed" />
@@ -33,48 +35,55 @@
 
         <p class="small">
           Already have an account?
-          <a href="/deliver/login">Log In</a>
+          <a href="/driver/login">Log In</a>
         </p>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import InputText from "@/components/all/inputText.vue";
-import GeneralButton from "@/components/GeneralButton.vue";
-import { ref } from "vue";
+import InputText from "@/components/all/inputText.vue"
+import GeneralButton from "@/components/GeneralButton.vue"
+import { ref } from "vue"
+import { useDriverStore } from "@/stores/driverStore"
 
-const firstName = ref("");
-const lastName = ref("");
-const email = ref("");
-const password = ref("");
-const agreed = ref(false);
+const agreed = ref(false)
+const driverStore = useDriverStore()
 
 const submit = () => {
   if (!agreed.value) {
-    alert("You must agree to the terms and conditions.");
-    return;
+    alert("You must agree to the terms and conditions.")
+    return
   }
 
-  if (!firstName.value || !lastName.value || !email.value || !password.value) {
-    alert("Please fill in all fields.");
-    return;
+  const {
+    firstName,
+    lastName,
+    email,
+    password,
+    confirmPassword
+  } = driverStore
+
+  if (
+    !firstName.value ||
+    !lastName.value ||
+    !email.value ||
+    !password.value ||
+    !confirmPassword.value
+  ) {
+    alert("Please fill in all fields.")
+    return
   }
 
-  // Save mock user data (simulate successful signup)
-  const user = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    email: email.value,
-  };
+  if (password.value !== confirmPassword.value) {
+    alert("Passwords do not match.")
+    return
+  }
 
-  localStorage.setItem("auth_token", "mock_token_123"); // Simulated token
-  localStorage.setItem("user_data", JSON.stringify(user));
-
-  alert("Signup successful!");
-  window.location.href = "/delivery/settings/profile"; // Redirect after signup
-};
+  driverStore.handleSignUp()
+}
 </script>
 
 <style scoped>
@@ -85,7 +94,7 @@ const submit = () => {
 
 .image-section {
   flex: 1;
-  background-image: url("https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp");
+  background-image: url("https://www.gocambodia.tours/wp-content/uploads/2024/06/Traditional-Khmer-Cuisine-with-go-laos-tours.jpg");
   background-size: cover;
   background-position: center;
 }

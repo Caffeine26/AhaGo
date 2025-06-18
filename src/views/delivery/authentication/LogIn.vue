@@ -4,24 +4,25 @@
     <div class="form-section">
       <div class="form-box">
         <h2>Log In</h2>
+        <form @submit.prevent="login">
+          <InputText v-model="email" type="email" placeholder="Email Address" />
+          <InputText v-model="password" type="password" placeholder="Password" />
 
-        <InputText v-model="email" type="email" placeholder="Email Address" />
-        <InputText v-model="password" type="password" placeholder="Password" />
+          <div class="link small">Forgot your password?</div>
 
-        <div class="link small">Forgot your password?</div>
+          <GeneralButton
+            class="button"
+            :title="'Log In'"
+            :btnColor="'#9A0404'"
+            :titleColor="'#ffffff'"
+            @click="login"
+          />
 
-        <GeneralButton
-          class="button"
-          :title="'Log In'"
-          :btnColor="'#9A0404'"
-          :titleColor="'#ffffff'"
-          @click="login"
-        />
-
-        <p class="small">
-          Don’t have an account?
-          <a href="/deliver/signup">Sign Up</a>
-        </p>
+          <p class="small">
+            Don’t have an account?
+            <a href="/driver/signup">Sign Up</a>
+          </p>
+        </form>
       </div>
     </div>
   </div>
@@ -31,18 +32,26 @@
 import InputText from "@/components/all/inputText.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import { ref } from "vue";
+import { useDriverStore } from '@/stores/driverStore'
+
+const driverStore = useDriverStore()
 
 const email = ref("");
 const password = ref("");
 
-const login = () => {
-  console.log("User login:", {
-    email: email.value,
-    password: password.value,
-  });
+// On login button click
+async function login() {
+  if (!email.value || !password.value) {
+    alert("Please enter email and password.");
+    return;
+  }
 
-  // TODO: Replace with real authentication logic
-};
+  // Set the store refs for login
+  driverStore.email = email.value
+  driverStore.password = password.value
+
+  await driverStore.handleLogin();
+}
 </script>
 
 <style scoped>
@@ -54,7 +63,7 @@ const login = () => {
 
 .image-section {
   flex: 1;
-  background-image: url("https://vilandtravel.com/wp-content/uploads/2023/03/siem-reap-khmer-foods-viland-travels-4-1.png.webp");
+  background-image: url("https://www.gocambodia.tours/wp-content/uploads/2024/06/Traditional-Khmer-Cuisine-with-go-laos-tours.jpg");
   background-size: cover;
   background-position: center;
 }
