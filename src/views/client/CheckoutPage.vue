@@ -21,7 +21,6 @@
         <div v-if="savedLocation.photoUrl" class="photo-preview">
           <img :src="savedLocation.photoUrl" alt="Location photo" />
         </div>
-        <hr />
       </div>
 
       <!-- Fallback to store info if no saved location -->
@@ -40,23 +39,45 @@
         class="add-location-btn"
       />
 
-      <hr />
-
-      <InfoList :info="deliveryInfo" />
-
-      <hr />
-
       <OrderSummary category="Sweet Shrimp (TTP)" :items="cartItems" />
 
-      <hr />
-
       <InfoList :info="promoRows" />
-
-      <hr />
 
       <PriceDetails :cartTotal="cartTotal" :finalTotal="finalTotal" />
 
       <RemarksSection v-model="remarks" />
+
+      <div class="payment-card">
+        <div class="payment-title">Payment</div>
+        <div class="payment-options">
+          <label
+            v-for="method in paymentMethods"
+            :key="method.value"
+            class="payment-option"
+          >
+            <input
+              type="radio"
+              name="payment"
+              :value="method.value"
+              v-model="selectedPayment"
+            />
+            <span class="payment-radio"></span>
+            <span class="payment-label">
+              <span class="payment-icons">
+                <span
+                  v-for="icon in method.icons"
+                  :key="icon"
+                  :class="icon"
+                ></span>
+              </span>
+              <span v-if="method.value === 'aba'" class="aba-title">{{ method.label }}</span>
+              <span v-else>{{ method.label }}</span>
+              <span v-if="method.desc" class="aba-desc">{{ method.desc }}</span>
+            </span>
+            <div v-if="method.info" class="aba-info">{{ method.info }}</div>
+          </label>
+        </div>
+      </div>
 
       <div class="action-buttons">
         <GeneralButton
@@ -115,6 +136,26 @@ export default {
 
     const savedLocation = ref(null);
 
+    const selectedPayment = ref('aba');
+
+    // Dynamic payment methods array
+    const paymentMethods = [
+      {
+        label: 'Credit or Debit Card',
+        value: 'card',
+        icons: ['icon-card', 'icon-mastercard', 'icon-visa'],
+        desc: '',
+        info: '',
+      },
+      {
+        label: 'ABA PAY',
+        value: 'aba',
+        icons: ['icon-aba'],
+        desc: 'Scan to pay with ABA Mobile',
+        info: "Scan the QR with your ABA app. Please ensure you have the app on your device. You'll be redirected to the foodpanda after payment is complete.",
+      },
+    ];
+
     onMounted(() => {
       const saved = localStorage.getItem("savedLocation");
       if (saved) {
@@ -123,23 +164,28 @@ export default {
     });
 
     const placeOrder = () => {
-      console.log("Order placed:", {
-        items: cartItems.value,
-        total: finalTotal.value,
-        remarks: remarks.value,
-        deliveryLocation: savedLocation.value || null,
-      });
-      alert("Order placed! Check console for details.");
+    const orderData = {
+    pickupOption: {
+      label: "Downstairs pick-up",
+      time: "Instant (12:30)"
+    },
+    paymentMethod: {
+      label: "Cash On Delivery",
+      desc: "Pay with cash at pickup",
+      icon: "", // Optional: add icon path if needed
+      info: "Please prepare the exact amount."
+    },
+    voucher: "No available red envelopes" // Or any real value from promoRows
+  };
 
-      // Optionally clear saved location on order placed
-      // localStorage.removeItem('savedLocation')
+  localStorage.setItem("orderData", JSON.stringify(orderData));
+
+  router.push({ name: "OrderConfirmation" });
+};
+
+    const goToAddLocation = () => {
+      router.push({ name: "AddLocation" });
     };
-
-    const deliveryInfo = [
-      { label: "Delivery Time", value: "Instant (12:30)", highlight: true },
-      { label: "Delivery Service", value: "Downstairs pick-up", chevron: true },
-      { label: "Payment Method", value: "Cash On Delivery" },
-    ];
 
     const promoRows = [
       { label: "Red Envelope", value: "No available red envelopes" },
@@ -151,10 +197,6 @@ export default {
       },
     ];
 
-    const goToAddLocation = () => {
-      router.push({ name: "AddLocation" });
-    };
-
     return {
       brandName,
       cartItems,
@@ -165,10 +207,11 @@ export default {
       finalTotal,
       placeOrder,
       goToAddLocation,
-      deliveryInfo,
       promoRows,
       cover1,
       savedLocation,
+      selectedPayment,
+      paymentMethods,
     };
   },
 };
@@ -229,5 +272,112 @@ export default {
   .checkout-page {
     padding: 0.5rem;
   }
+}
+.payment-card {
+  background: #fafafa;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1.5px solid #ededed;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  margin: 2rem 0 1.5rem 0;
+  max-width: 600px;
+}
+.payment-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.payment-option {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  padding: 1.2rem 1rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+.payment-option input[type="radio"] {
+  display: none;
+}
+.payment-radio {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #bbb;
+  border-radius: 50%;
+  margin-right: 1rem;
+  background: #f3f3f3;
+  position: relative;
+}
+.payment-option input[type="radio"]:checked + .payment-radio {
+  border-color: #222;
+  background: #fff;
+}
+.payment-option input[type="radio"]:checked + .payment-radio::after {
+  content: '';
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: #222;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+}
+.payment-label {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.payment-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: 0.5rem;
+}
+.icon-card, .icon-mastercard, .icon-visa, .icon-aba {
+  width: 32px;
+  height: 20px;
+  background: #eee;
+  border-radius: 4px;
+  display: inline-block;
+}
+.icon-mastercard {
+  background: linear-gradient(90deg, #ff5f00 50%, #eb001b 50%);
+}
+.icon-visa {
+  background: #1a1f71;
+}
+.icon-aba {
+  background: url('https://aba-bank.com/images/logo-aba-pay.png') no-repeat center/contain, #fff;
+  border: 1px solid #ddd;
+}
+.aba-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+.aba-desc {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-left: 0.7rem;
+  color: #444;
+}
+.aba-info {
+  font-size: 1.1rem;
+  color: #444;
+  margin-top: 0.7rem;
+  margin-left: 3.5rem;
+  max-width: 90%;
 }
 </style>
