@@ -92,27 +92,33 @@ const router = createRouter({
       component: CustomerLayout,
       children: [
         {
-          path: "/",
-          name: "ClientLanding",
-          component: () => import("@/views/client/LandingPage.vue"),
-        },
-        {
-          path: "/store/:brandName",
-          name: "StoreDetails",
-          component: () => import("@/views/client/StoreDetailsPage.vue"),
-        },
-        {
-          path: "/checkout/:brandName/:cartItems",
-          name: "checkout",
-          component: () => import("@/views/client/CheckoutPage.vue"),
-          props: true,
-        },
-        {
-          path: "/add-location",
-          name: "AddLocation",
-          component: () => import("@/views/client/AddLocationPage.vue"),
-        },
-      ],
+      path: '/',
+      name: 'ClientLanding',
+      component: () => import('@/views/client/LandingPage.vue')
+    },
+    {
+      path: '/store/:brandName',
+      name: 'StoreDetails',
+      component: () => import('@/views/client/StoreDetailsPage.vue')
+    },
+    {
+      path: '/checkout/:brandName/:cartItems',
+      name: 'checkout',
+      component: () => import('@/views/client/CheckoutPage.vue'),
+      props: true
+    },
+    {
+      path: '/add-location',
+      name: 'AddLocation',
+      component: () => import('@/views/client/AddLocationPage.vue')
+    },
+    {
+      path: '/order-confirmation',
+      name: 'OrderConfirmation',
+      component: () => import('@/views/client/OrderConfirmationPage.vue'),
+      
+    },
+      ]
     },
     {
       path: "/delivery",
