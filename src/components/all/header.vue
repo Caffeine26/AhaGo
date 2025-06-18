@@ -34,6 +34,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  ownerUrl: {
+    type: Boolean,
+    default: false
+  },
   goToAccount: Function,
   userLoggedIn: {
     type: Boolean,

@@ -1,5 +1,7 @@
 <template>
-<Header></Header>
+<Header
+:ownerUrl="ownerUrl"
+></Header>
 
 <div class="content">
     <img :src="restImg" alt="" id="image">
@@ -81,6 +83,7 @@ export default {
     },
     data() {
         return {
+            ownerUrl: true,
             restImg: restImg,
             mail: mail,
             eye: eye,

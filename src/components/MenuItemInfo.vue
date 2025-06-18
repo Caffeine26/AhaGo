@@ -43,9 +43,9 @@
         <div>
             <select v-model="selectedCategory">
                 <option 
-                v-for="(item,index) in categories" 
-                :value="index"
-                :key="item"
+                v-for="(item, index) in categories" 
+                :value="index+1"
+                :key="index+1"
                 >
                 {{ item }}
                 </option>
@@ -80,8 +80,8 @@
         <div>Availability:</div>
         <div>
             <select v-model="selectedStock">
-                <option value="1">In Stock</option>
-                <option value="0">Out of Stock</option>
+                <option value=1>In Stock</option>
+                <option value=0>Out of Stock</option>
             </select>
         </div>
 
@@ -95,7 +95,7 @@
                 <div :style="{ visibility: isChecked ? 'visible' : 'hidden' }" class="discountP">
                     <input 
                     v-model="discountP"
-                    type="text" placeholder="Discount %" id="">
+                    type="number" placeholder="Discount %" id="">
                     <span>%</span>
                 </div>
             </div>
@@ -104,9 +104,11 @@
 </div>
 
 <div class="btns">
-    <button id="cancel">Cancel</button>
     <button 
-    @click="getInfo"
+    @click="goToPrevPage"
+    id="cancel">Cancel</button>
+    <button 
+    @click="getData"
     id="save">{{ toDo }}</button>
 </div>
 </div>
@@ -115,28 +117,51 @@
 <script>
 import edit from '@/assets/owner/svg/edit-white.svg';
 import image from '@/assets/owner/svg/image.svg';
+import FoodItemService from '@/services/FoodItemService';
+import { useCategoryStore } from '@/stores/categoryStore';
+import { useRoute } from 'vue-router';
 
 export default {
     props: {
         itemId: Number,
         toDo: String,
-        categories: Array
+        categories: Array,
+        createItem: {
+            type: Boolean,
+            default: false
+        },
+        updateItem: {
+            type: Boolean,
+            default: false
+        },
     },
     created() {
-        if (this.itemId) {
-            console.log('item id = ', this.itemId);
-            const item = this.items.find( item => item.id == this.itemId );
-            this.uploaded = item.imageSrc;
-            this.selectedCategory = item.categoryId;
-            this.name = item.name;
-            this.price = item.price;
-            this.description = item.desc;
-            this.selectedStock = 1;
-            this.discountP = 10;
+        const route = useRoute()
+        this.restId = parseInt(route.params.restId)
+        this.categoryStore = useCategoryStore()
+        console.log('+ Page create new item +')
+        console.log('+ Init items store=', this.categoryStore.foodItems)
+        if (this.updateItem) {
+            const selectedItem = this.categoryStore.foodItems.find( item => item.id === this.itemId)
 
-            if(this.discountP > 0) {
-                this.isChecked = true
+            if(selectedItem) {
+                this.uploaded = selectedItem.img_url
+                this.selectedCategory = selectedItem.category_id
+                this.name = selectedItem.name
+                this.price = selectedItem.price
+                this.description = selectedItem.description
+                this.selectedStock = selectedItem.available
+                this.discountP = selectedItem.discount
+
+                if(this.discountP > 0) {
+                    this.isChecked = true
+                }
+
+                console.log('selected item=', selectedItem)
             }
+            
+
+ 
         }
     },
     methods: {
@@ -152,16 +177,48 @@ export default {
         getCheckValue(event) {
             console.log(this.isChecked)
         },
-        getInfo() {
-            const item = {
-                category: this.selectedCategory,
-                name: this.name,
-                price: this.price,
-                desc: this.description,
-                stock: this.selectedStock,
-                discount: this.discountP
+        async getData() {
+            const newItem = {
+                'restaurant_id': this.restId,
+                'category_id': this.selectedCategory,
+                'name': this.name,
+                'price': this.price,
+                'description': this.description,
+                'available': parseInt(this.selectedStock),
+                'discount': this.discountP,
+                'img_url': this.uploaded
             }
-            console.log(item)
+            console.log('new item =', newItem)
+
+            if(this.createItem) {
+                const res = await FoodItemService.create(newItem)
+                this.categoryStore.foodItems.push(newItem)
+                console.log(res)
+                this.$router.back()
+            }
+            else if (this.updateItem) {
+                // update db
+                const res = await FoodItemService.update(this.itemId, newItem)
+                // update store
+                const index = this.categoryStore.foodItems.findIndex(item => item.id === this.itemId)
+                if (index !== -1) {
+                    this.categoryStore.foodItems[index].category_id = this.selectedCategory
+                    this.categoryStore.foodItems[index].name = this.name
+                    this.categoryStore.foodItems[index].price = this.price
+                    this.categoryStore.foodItems[index].description = this.description
+                    this.categoryStore.foodItems[index].available = parseInt(this.selectedStock)
+                    this.categoryStore.foodItems[index].discount = this.discountP
+                    this.categoryStore.foodItems[index].img_url = this.uploaded
+                }
+                console.log('updated in db=',res)
+                console.log('updated in store=',this.categoryStore.foodItems[index])
+
+                this.$router.back()
+            }
+            
+        },
+        goToPrevPage() {
+            this.$router.back()
         }
     },
     data() {
@@ -173,14 +230,16 @@ export default {
             delete: 'src/assets/owner/svg/delete.svg',
             image: image,
 
+            categoryStore: null,
             // required data
             uploaded: '',
-            selectedCategory: '',
+            selectedCategory: null,
             name: '',
             price: 0,
             description: '',
-            selectedStock: '',
+            selectedStock: null,
             discountP: 0,
+            restId: null,
 
             items: [
                 {

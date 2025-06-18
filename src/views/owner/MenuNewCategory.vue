@@ -12,8 +12,11 @@ it5="Profile"
 
 <CategoryBannerV2
 :title-header= "`${rest} Menu`"
-:given-index="categs.length-1"
-:titles="categs"
+:given-index="categories.length-1"
+:titles="categories"
+:edit-profile="editProfile"
+banner-btn="Add Category"
+:banner-icon="add"
 ></CategoryBannerV2>
 
 <div class="somecontainer">
@@ -38,9 +41,11 @@ it5="Profile"
     </div>
 
     <div class="btns">
-        <button id="cancel">Cancel</button>
         <button 
-        @click="getInfo"
+        @click="goToPrevPage"
+        id="cancel">Cancel</button>
+        <button 
+        @click="createCategory"
         id="save">Create</button>
         
     </div>
@@ -57,6 +62,10 @@ import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
 import Header2 from '@/components/delivery/header2.vue';
+import add from '@/assets/owner/svg/add.svg';
+import { useRoute } from 'vue-router';
+import { useCategoryStore } from '@/stores/categoryStore';
+import CategoryService from '@/services/CategoryService';
 
 export default {
     components: {
@@ -65,8 +74,49 @@ export default {
         CategoryBannerV2,
         AppFooter
     },
+    created() {
+        const route = useRoute()
+        this.categoryStore = useCategoryStore()
+        this.restId = parseInt(route.params.restId)
+
+        console.log('In menu page, categories=', this.categoryStore.categories)
+
+        this.categoryStore.categories.forEach(element => {
+            if (element.restaurant_id === this.restId) {
+                this.categories.push(element.name)
+            }
+        });
+        this.categories.push('New')
+
+        console.log('Selected categories=', this.categories)
+
+    },
+    methods: {
+        goToPrevPage() {
+            this.$router.back()
+        },
+        async createCategory() {
+            const newId = this.categoryStore.categories.length +1
+            const category = {
+                'id': newId,
+                'restaurant_id': this.restId,
+                'name': this.name,
+                'description': this.description
+            }
+            const res = await CategoryService.create(category)
+            console.log('New Category created successfully=', res)
+            this.categoryStore.categories.push(category)
+            this.$router.back()
+        }
+    },
     data() {
         return {
+            restId: null,
+            add: add,
+            editProfile: false,
+            categories: [],
+            categoryStore: null,
+
             name: '',
             description: '',
 
@@ -75,9 +125,7 @@ export default {
             edit: 'src/assets/owner/svg/edit.svg',
             delete: 'src/assets/owner/svg/delete.svg',
 
-            categs: [
-                'All items', 'A La Carte', 'Breakfast', 'Business Lunch', 'New'
-            ]
+            
         }
     },
     }
