@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="form-box">
-      <h2>Sign Up</h2>
+      <h2>Admin Sign Up</h2>
       <form @submit.prevent="handleSignUp">
         <div class="name-fields">
           <input type="text" v-model="firstName" placeholder="First Name" required />
@@ -10,6 +10,9 @@
         <input type="email" v-model="email" placeholder="Email" required />
         <input type="password" v-model="password" placeholder="Password" required />
         <input type="password" v-model="confirmPassword" placeholder="Confirm Password" required />
+        <input type="text" v-model="address" placeholder="Address (optional)" />
+        <input type="text" v-model="city" placeholder="City (optional)" />
+        <input type="text" v-model="phoneNumber" placeholder="Phone Number (optional)" />
 
         <label class="checkbox-label">
           <input type="checkbox" v-model="agree" />
@@ -28,8 +31,10 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'SignUpPage',
+  name: 'AdminSignUp',
   data() {
     return {
       firstName: '',
@@ -37,6 +42,9 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
+      address: '',
+      city: '',
+      phoneNumber: '',
       agree: false,
     };
   },
@@ -54,8 +62,27 @@ export default {
     },
   },
   methods: {
-    handleSignUp() {
-      alert(`Account created for ${this.firstName} ${this.lastName}`);
+    async handleSignUp() {
+      try {
+        const response = await axios.post('http://localhost:8300/api/signup', {
+          name: this.firstName + ' ' + this.lastName,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.confirmPassword,
+          role: 'admin',
+          first_name: this.firstName,
+          last_name: this.lastName,
+          address: this.address,
+          city: this.city,
+          phone_number: this.phoneNumber,
+        });
+
+        alert('Signup successful! Please login.');
+        this.$router.push('/admin/login');
+      } catch (error) {
+        console.error('Signup failed:', error.response?.data || error.message);
+        alert('Signup failed: ' + (error.response?.data?.message || 'Unknown error'));
+      }
     },
   },
 };
@@ -101,7 +128,6 @@ input[type="password"] {
   padding: 10px 15px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
-  background-color: #28a745;
   border-radius: 8px;
   font-size: 14px;
 }
