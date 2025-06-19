@@ -5,7 +5,7 @@
       <div class="booking-list">
         <Order
           class="orders"
-          v-for="(item, index) in driverStore.orders"
+          v-for="(item, index) in completedOrders"
           :key="index"
           :index="index"
           :order-id="item.id"
@@ -22,18 +22,17 @@
 
 <script setup>
 import Order from "@/components/OrderCard02.vue";
-import { ref, onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import Title from "@/components/delivery/title.vue";
-import { computed } from "vue";
 import { useDriverStore } from "@/stores/driverStore";
 
-
-const orders = ref([]);
+const completedOrders = computed(() => {
+  return driverStore.orders.filter((order) => order.status === "completed");
+});
 const driverStore = useDriverStore();
 onMounted(async () => {
-  await driverStore.fetchOrders("pending");
+  await driverStore.fetchOrders();
 });
-
 </script>
 
 <style scoped>

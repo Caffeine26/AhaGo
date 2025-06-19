@@ -4,39 +4,57 @@
     <div class="form-section">
       <div class="form-box">
         <h2>Sign Up</h2>
-        <form @submit.prevent="handleSignUp">
+        <form @submit.prevent="submit">
           <div class="name-fields">
-          <div class="input-wrapper">
-            <InputText v-model="driverStore.firstName" placeholder="First Name" />
+            <div class="input-wrapper">
+              <InputText
+                v-model="driverStore.firstName"
+                placeholder="First Name"
+              />
+            </div>
+            <div class="input-wrapper">
+              <InputText
+                v-model="driverStore.lastName"
+                placeholder="Last Name"
+              />
+            </div>
           </div>
-          <div class="input-wrapper">
-            <InputText v-model="driverStore.lastName" placeholder="Last Name" />
+
+          <InputText
+            v-model="driverStore.email"
+            type="email"
+            placeholder="Email Address"
+          />
+          <InputText
+            v-model="driverStore.password"
+            type="password"
+            placeholder="Password"
+          />
+          <InputText
+            v-model="driverStore.confirmPassword"
+            type="password"
+            placeholder="Confirm Password"
+          />
+
+          <div class="terms">
+            <input type="checkbox" id="terms" v-model="agreed" />
+            <label for="terms">
+              I agree to the
+              <a href="#">Terms and Conditions</a>
+            </label>
           </div>
-        </div>
+          <GeneralButton
+            class="button"
+            :title="'Sign Up'"
+            :btnColor="'#9A0404'"
+            :titleColor="'#ffffff'"
+            type="submit"
+          />
 
-        <InputText v-model="driverStore.email" type="email" placeholder="Email Address" />
-        <InputText v-model="driverStore.password" type="password" placeholder="Password" />
-        <InputText v-model="driverStore.confirmPassword" type="password" placeholder="Confirm Password" />
-
-        <div class="terms">
-          <input type="checkbox" id="terms" v-model="agreed" />
-          <label for="terms">
-            I agree to the
-            <a href="#">Terms and Conditions</a>
-          </label>
-        </div>
-        <GeneralButton
-          class="button"
-          :title="'Sign Up'"
-          :btnColor="'#9A0404'"
-          :titleColor="'#ffffff'"
-          @click="submit"
-        />
-
-        <p class="small">
-          Already have an account?
-          <a href="/driver/login">Log In</a>
-        </p>
+          <p class="small">
+            Already have an account?
+            <a href="/driver/login">Log In</a>
+          </p>
         </form>
       </div>
     </div>
@@ -44,46 +62,44 @@
 </template>
 
 <script setup>
-import InputText from "@/components/all/inputText.vue"
-import GeneralButton from "@/components/GeneralButton.vue"
-import { ref } from "vue"
-import { useDriverStore } from "@/stores/driverStore"
+import InputText from "@/components/all/inputText.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
+import { ref } from "vue";
+import { useDriverStore } from "@/stores/driverStore";
+import { useRouter } from "vue-router";
 
-const agreed = ref(false)
-const driverStore = useDriverStore()
+const driverStore = useDriverStore();
+const router = useRouter();
 
-const submit = () => {
+// Local reactive ref for terms checkbox
+const agreed = ref(false);
+
+// Submit handler for form
+const submit = async () => {
+  // Validate terms
   if (!agreed.value) {
-    alert("You must agree to the terms and conditions.")
-    return
+    alert("You must agree to the terms and conditions.");
+    return;
   }
 
-  const {
-    firstName,
-    lastName,
-    email,
-    password,
-    confirmPassword
-  } = driverStore
-
+  // Validate all fields filled
   if (
-    !firstName.value ||
-    !lastName.value ||
-    !email.value ||
-    !password.value ||
-    !confirmPassword.value
+    !driverStore.firstName ||
+    !driverStore.lastName ||
+    !driverStore.email ||
+    !driverStore.password ||
+    !driverStore.confirmPassword
   ) {
-    alert("Please fill in all fields.")
-    return
+    alert("Please fill in all fields.");
+    return;
   }
 
-  if (password.value !== confirmPassword.value) {
-    alert("Passwords do not match.")
-    return
+  // Validate password confirmation
+  if (driverStore.password !== driverStore.confirmPassword) {
+    alert("Passwords do not match.");
+    return;
   }
-
-  driverStore.handleSignUp()
-}
+};
 </script>
 
 <style scoped>

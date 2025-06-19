@@ -62,7 +62,7 @@
           btnColor="green"
           title="Completed Delivery"
           titleColor="#FFFFFF"
-          @click="startJourney"
+          @click="markOrderCompleted"
         />
       </div>
     </Box>
@@ -71,7 +71,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Map from "@/components/delivery/map.vue";
 import Box from "@/components/delivery/box.vue";
@@ -79,6 +79,7 @@ import GeneralButton from "@/components/GeneralButton.vue";
 import Order from "@/components/delivery/OrderCard.vue";
 
 const route = useRoute();
+const router = useRouter();
 const orderId = route.params.id;
 
 const driverLocation = ref(null);
@@ -122,6 +123,19 @@ function startJourney() {
     restaurantCoords.value,
     clientCoords.value,
   ];
+}
+async function markOrderCompleted() {
+  try {
+    await axios.patch(`http://localhost:8300/api/orders/${orderId}`, {
+      status: "completed",
+    });
+
+    alert("Order marked as completed!");
+    router.push("/delivery/settings/history");
+  } catch (error) {
+    console.error("Failed to complete order:", error);
+    alert("Something went wrong. Please try again.");
+  }
 }
 
 onMounted(fetchOrderData);
