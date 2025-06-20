@@ -45,7 +45,7 @@
             v-for="restaurant in filteredRestaurants"
             :key="restaurant.id"
             :title="restaurant.title"
-            :image="restaurant.img_url"
+            :image="restaurant.image"
             :price="restaurant.price"
             :category="restaurant.category"
             :delivery-time="restaurant.deliveryTime"

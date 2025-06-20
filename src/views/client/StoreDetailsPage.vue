@@ -135,6 +135,8 @@ import ImageGallery from "@/components/customer/ImageGallery.vue";
 import MenuList from "@/components/customer/MenuList.vue";
 import ReviewList from "@/components/customer/ReviewList.vue";
 import CartSidebar from "@/components/customer/CartSidebar.vue";
+import DineInSection from "@/components/customer/DineInSection.vue";
+import Map from "@/components/delivery/map.vue";
 
 // Avatars
 import avatar1 from "@/assets/avatars/avatar1.png";
@@ -151,11 +153,6 @@ import shrimp2 from "@/assets/store_details/shrimp2.png";
 import shrimp3 from "@/assets/store_details/shrimp3.png";
 import shrimp4 from "@/assets/store_details/shrimp4.png";
 import shrimp5 from "@/assets/store_details/shrimp5.png";
-
-import avatar1 from "@/assets/avatars/avatar1.png";
-import avatar2 from "@/assets/avatars/avatar2.png";
-import avatar3 from "@/assets/avatars/avatar3.png";
-import avatar4 from "@/assets/avatars/avatar3.png";
 
 export default {
   name: "StoreDetailsPage",
