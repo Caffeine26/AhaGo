@@ -4,7 +4,7 @@
         <div class="orderHeader">
             <div>#{{ orderIndex }}</div>
             <StatusAction
-            :status-id="orderStatus"
+            :status="orderStatus"
             ></StatusAction>
         </div>
     </RouterLink>
@@ -19,22 +19,24 @@
         <div
         v-for="(item, index) in orderItems"
         >
-        {{ index+1 }}- {{ item }}
+        {{ index+1 }}- {{ item.name }} ${{ item.price }}
+          
         </div>
     </div>
     
 
     <div class="totalBox">
         <div>Total: ${{ total }}</div>
-        <div v-if="paid">PAID</div>
+        <div v-if="paid === 'paid'">PAID</div>
         <div v-else>UNPAID</div>
     </div>
     
     <div class="actionBtn">
         <StatusButtons
         :order-id="orderIndex"
-        :status-id="orderStatus"
+        :status="orderStatus"
         :paid="paid"
+        @change-state="toggleNewState"
         ></StatusButtons>
     </div>
     
@@ -44,6 +46,7 @@
 </template>
 
 <script>
+import { useOrdersStore } from '@/stores/ordersStore';
 import StatusAction from './StatusAction.vue';
 import StatusButtons from './StatusButtons.vue';
 
@@ -52,15 +55,29 @@ export default {
         StatusAction,
         StatusButtons
     },
+    // created() {
+    //     this.ordersStore = useOrdersStore()
+    // },
     props: {
         orderIndex: Number,
-        orderStatus: Number,
+        orderStatus: String,
         orderTime: String,
         orderId: Number,
         orderItems: Array,
-        total: Number,
-        paid: Boolean
+        total: String,
+        paid: String
 
+    },
+    methods: {
+        toggleNewState(newState) {
+            // update state in db
+            // update state in store
+            console.log('newstate=', newState)
+            const ordersStore = useOrdersStore()
+            ordersStore.updateOrderStatus(this.orderIndex, newState)
+            console.log('toggled item=', ordersStore.orders[this.orderIndex])
+
+        }
     },
     
     data() {

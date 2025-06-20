@@ -231,7 +231,7 @@ const router = createRouter({
       component: MenuEditPage
     },
     {
-      path: "/owner/order",
+      path: "/owner/:restId/orders",
       component: OrdersPage,
     },
     {
@@ -243,7 +243,7 @@ const router = createRouter({
       component: InvoicePage
     },
     {
-      path: "/owner/transactions",
+      path: "/owner/:restId/transactions",
       component: TransactionPage
     },
     {

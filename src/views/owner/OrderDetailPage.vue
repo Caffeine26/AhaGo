@@ -17,11 +17,13 @@ title-header= "Order Management"
 
 <OrderDetails
 v-if="selectedOrder"
-:order-id="selectedOrder.orderId"
-:order-date="selectedOrder.orderTime"
-:paid="selectedOrder.paid"
-:order-status="selectedOrder.orderStatus"
-:order-items="selectedOrder.orderItems"
+:order-id="selectedOrder.id"
+:order-date="selectedOrder.created_at"
+:paid="selectedOrder.payment_status"
+:order-status="selectedOrder.status"
+:order-items="selectedOrder.food_items"
+:amount="selectedOrder.total_amount"
+:remark="selectedOrder.remark"
 ></OrderDetails>
 
 <AppFooter></AppFooter>
@@ -34,6 +36,7 @@ import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
 import Header2 from '@/components/delivery/header2.vue';
 import OrderDetails from '@/components/OrderDetails.vue';
+import { useOrdersStore } from '@/stores/ordersStore';
 
 export default {
     components: {
@@ -44,11 +47,10 @@ export default {
         AppFooter
     },
     created() {
-        const orderIndex = this.$route.params.orderId;
-        console.log(orderIndex)
-        const order = this.orders.find( order => order.orderIndex == orderIndex );
-        this.selectedOrder = order;
-        console.log('selectedOrder = ', order)
+        this.orderId = parseInt(this.$route.params.orderId);
+        const orders = useOrdersStore()
+        this.selectedOrder = orders.orders.find(order => order.id === this.orderId)
+        console.log('selectedOrder = ', this.selectedOrder)
     },
     methods: {
         select(index) {
@@ -60,7 +62,8 @@ export default {
     },
     data() {
         return {
-            selectedOrder: [],
+            selectedOrder: null,
+            orderId: null,
             selectedIndex: 0,
             selectedSortIndex: 0,
             buttons: [

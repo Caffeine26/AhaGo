@@ -18,9 +18,9 @@ export const useCategoryStore = defineStore('category', {
                 console.log(err)
             }
         },
-        async fetchFoodItems() {
+        async fetchFoodItemsByRest(restId) {
             try {
-                const response = await FoodItemService.getAll();
+                const response = await FoodItemService.getByRest(restId);
                 this.foodItems = response.data;
                 console.log('food items = ', this.foodItems)
             } catch (err) {
