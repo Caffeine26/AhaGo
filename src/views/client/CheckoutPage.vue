@@ -54,6 +54,7 @@
             v-for="method in paymentMethods"
             :key="method.value"
             class="payment-option"
+            :class="{ selected: selectedPayment === method.value }"
           >
             <input
               type="radio"
@@ -61,20 +62,75 @@
               :value="method.value"
               v-model="selectedPayment"
             />
-            <span class="payment-radio"></span>
-            <span class="payment-label">
-              <span class="payment-icons">
-                <span
-                  v-for="icon in method.icons"
-                  :key="icon"
-                  :class="icon"
-                ></span>
+            <div class="payment-main-row">
+              <span class="payment-radio-custom"></span>
+              <span class="payment-labels">
+                <template v-if="method.value === 'card'">
+                  <img :src="method.icons[0]" class="pay-icon-img" alt="Mastercard" />
+                  <span class="main-label">{{ method.label }}</span>
+                  <span class="visa-text">VISA</span>
+                </template>
+                <template v-else>
+                  <img :src="method.icons[0]" class="pay-icon-img" alt="ABA PAY" />
+                  <span class="main-label aba-label">{{ method.label }}</span>
+                  <template v-if="selectedPayment === 'aba'">
+                    <span v-if="method.desc" class="desc-label">{{ method.desc }}</span>
+                  </template>
+                </template>
               </span>
-              <span v-if="method.value === 'aba'" class="aba-title">{{ method.label }}</span>
-              <span v-else>{{ method.label }}</span>
-              <span v-if="method.desc" class="aba-desc">{{ method.desc }}</span>
-            </span>
-            <div v-if="method.info" class="aba-info">{{ method.info }}</div>
+            </div>
+            <div v-if="selectedPayment === 'aba' && method.info" class="payment-info">{{ method.info }}</div>
+
+
+            <!-- Card form appears only if this is the selected card option -->
+            <div v-if="selectedPayment === 'card' && method.value === 'card'" class="card-form-container">
+              <input
+                v-model="cardForm.number"
+                class="card-input card-number"
+                type="text"
+                placeholder="Card number"
+                maxlength="19"
+              />
+              <div class="card-row">
+                <input
+                  v-model="cardForm.expiry"
+                  class="card-input card-expiry"
+                  type="text"
+                  placeholder="MM/YY"
+                  maxlength="5"
+                />
+                <div class="card-cvc-container">
+                  <input
+                    v-model="cardForm.cvc"
+                    class="card-input card-cvc"
+                    type="text"
+                    placeholder="CVC"
+                    maxlength="4"
+                  />
+                </div>
+              </div>
+              <input
+                v-model="cardForm.name"
+                class="card-input card-holder"
+                type="text"
+                placeholder="Name of the card holder"
+              />
+              <div class="card-save-row">
+                <input
+                  type="checkbox"
+                  v-model="cardForm.save"
+                  id="save-card"
+                  class="card-save-checkbox"
+                />
+                <label for="save-card" class="card-save-label">
+                  Save this card for a faster checkout next time
+                </label>
+              </div>
+              <div class="card-save-info">
+                By saving your card you grant us your consent to store your payment method for future orders. You can withdraw consent at any time.<br />
+                For more information, please visit the <a href="#" class="privacy-link">Privacy policy.</a>
+              </div>
+            </div>
           </label>
         </div>
       </div>
@@ -102,6 +158,8 @@ import Location from "@/components/customer/Location.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ref, computed, onMounted } from "vue";
 import cover1 from "@/assets/store_details/house.png";
+import abapayImg from '@/assets/client/abapay.png';
+import mastercardImg from '@/assets/client/mastercard.png';
 
 export default {
   name: "CheckoutPage",
@@ -138,21 +196,31 @@ export default {
 
     const selectedPayment = ref('aba');
 
+    // Card form state
+    const cardForm = ref({
+      number: '',
+      expiry: '',
+      cvc: '',
+      name: '',
+      save: true,
+    });
+
+
     // Dynamic payment methods array
     const paymentMethods = [
       {
         label: 'Credit or Debit Card',
         value: 'card',
-        icons: ['icon-card', 'icon-mastercard', 'icon-visa'],
+        icons: [mastercardImg, 'visa'],
         desc: '',
         info: '',
       },
       {
         label: 'ABA PAY',
         value: 'aba',
-        icons: ['icon-aba'],
+        icons: [abapayImg],
         desc: 'Scan to pay with ABA Mobile',
-        info: "Scan the QR with your ABA app. Please ensure you have the app on your device. You'll be redirected to the foodpanda after payment is complete.",
+        info: "Scan the QR with your ABA app. Please ensure you have the app on your device. You'll be redirected to the ahago after payment is complete.",
       },
     ];
 
@@ -212,6 +280,7 @@ export default {
       savedLocation,
       selectedPayment,
       paymentMethods,
+      cardForm,
     };
   },
 };
@@ -230,7 +299,7 @@ export default {
 }
 .pay-btn {
   background: white;
-  border: 1px solid #b91c1c;
+  border: 1make px solid #b91c1c;
   color: #b91c1c;
 }
 .order-btn {
@@ -295,89 +364,165 @@ export default {
 }
 .payment-option {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   background: #fff;
   border-radius: 12px;
-  border: 2px solid #ddd;
-  padding: 1.2rem 1rem;
+  border: 2px solid #bbb;
+  padding: 1.2rem 1.2rem 1rem 1.2rem;
   margin-bottom: 0.5rem;
   position: relative;
   cursor: pointer;
-  transition: border 0.2s;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.payment-option.selected {
+  border-color: #222;
+  box-shadow: 0 4px 16px rgba(34,34,34,0.10);
+  background: #fff;
+}
+.payment-main-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
 }
 .payment-option input[type="radio"] {
   display: none;
 }
-.payment-radio {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #bbb;
+.payment-radio-custom {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid #bbb;
   border-radius: 50%;
-  margin-right: 1rem;
-  background: #f3f3f3;
-  position: relative;
-}
-.payment-option input[type="radio"]:checked + .payment-radio {
-  border-color: #222;
   background: #fff;
+  display: inline-block;
+  position: relative;
+  margin-right: 0.7rem;
 }
-.payment-option input[type="radio"]:checked + .payment-radio::after {
+.payment-option.selected .payment-radio-custom {
+  border-color: #222;
+}
+
+.payment-option input[type="radio"]:checked ~ .payment-main-row .payment-radio-custom::after {
   content: '';
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: #222;
   border-radius: 50%;
   position: absolute;
-  top: 4px;
-  left: 4px;
+  top: 5px;
+  left: 5px;
 }
-.payment-label {
-  font-size: 1.4rem;
-  font-weight: 600;
+.pay-icon-img {
+  width: 44px;
+  height: 28px;
+  object-fit: contain;
+  margin-right: 0.5rem;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.visa-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1f71;
+  margin-left: 0.3rem;
+  letter-spacing: 1px;
+  font-family: 'Inter', 'Quicksand', Arial, sans-serif;
+  position: relative;
+  top: -6px;
+}
+.payment-labels {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.7rem;
 }
-.payment-icons {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
+.main-label {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #222;
+}
+.aba-label {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #222;
   margin-right: 0.5rem;
 }
-.icon-card, .icon-mastercard, .icon-visa, .icon-aba {
-  width: 32px;
-  height: 20px;
-  background: #eee;
-  border-radius: 4px;
-  display: inline-block;
-}
-.icon-mastercard {
-  background: linear-gradient(90deg, #ff5f00 50%, #eb001b 50%);
-}
-.icon-visa {
-  background: #1a1f71;
-}
-.icon-aba {
-  background: url('https://aba-bank.com/images/logo-aba-pay.png') no-repeat center/contain, #fff;
-  border: 1px solid #ddd;
-}
-.aba-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-left: 0.5rem;
-}
-.aba-desc {
+.desc-label {
   font-size: 1.2rem;
-  font-weight: 400;
-  margin-left: 0.7rem;
   color: #444;
+  font-weight: 400;
 }
-.aba-info {
+.payment-info {
   font-size: 1.1rem;
   color: #444;
   margin-top: 0.7rem;
   margin-left: 3.5rem;
   max-width: 90%;
+}
+.card-form-container {
+  margin-top: 1.5rem;
+  border-radius: 0;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.card-input {
+  width: 100%;
+  padding: 1.1rem 1.2rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.35rem;
+  font-family: 'Inter', 'Quicksand', Arial, sans-serif;
+  margin-bottom: 0.2rem;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+.card-input:focus {
+  border-color: #b91c1c;
+}
+.card-row {
+  display: flex;
+  gap: 1.2rem;
+}
+.card-expiry, .card-cvc {
+  width: 50%;
+  box-sizing: border-box;
+}
+.card-holder {
+  width: 100%;
+  box-sizing: border-box;
+}
+.card-cvc-container {
+  position: relative;
+  width: 100%;
+}
+.card-save-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 0.7rem;
+}
+.card-save-checkbox {
+  width: 24px;
+  height: 24px;
+  accent-color: #222;
+  border-radius: 6px;
+}
+.card-save-label {
+  font-size: 1.25rem;
+  color: #222;
+  font-family: 'Inter', 'Quicksand', Arial, sans-serif;
+}
+.card-save-info {
+  font-size: 1.1rem;
+  color: #888;
+  margin-top: 0.7rem;
+  font-family: 'Inter', 'Quicksand', Arial, sans-serif;
 }
 </style>
