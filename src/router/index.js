@@ -112,12 +112,6 @@ const router = createRouter({
       name: 'AddLocation',
       component: () => import('@/views/client/AddLocationPage.vue')
     },
-    {
-      path: '/order-confirmation',
-      name: 'OrderConfirmation',
-      component: () => import('@/views/client/OrderConfirmationPage.vue'),
-      
-    },
       ]
     },
     {

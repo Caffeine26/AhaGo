@@ -32,6 +32,12 @@
         >
           Review
         </span>
+        <span
+          :class="{ active: activeTab === 'dine-in' }"
+          @click="activeTab = 'dine-in'"
+        >
+          Dine-In
+        </span>
       </div>
       <hr />
 
@@ -69,7 +75,7 @@
 
           <MenuList
             title="Most ordered right now"
-            :items="filteredMenu"
+            :items="filteredMenu.slice(0, 4)"
             @add="addToCart"
           />
 
@@ -81,7 +87,32 @@
           />
         </div>
 
-        <ReviewList v-else :reviews="reviewData" />
+        <ReviewList v-else-if="activeTab === 'review'" :reviews="reviewData" />
+
+        <div v-else-if="activeTab === 'dine-in'" class="dine-in-content">
+          <div class="dinein-left">
+            <div class="dinein-description">
+              <h3>Description</h3>
+              <p>{{ storeDescription }}</p>
+            </div>
+            <MenuList
+              title="Most ordered right now"
+              :items="filteredMenu.slice(0, 4)"
+              @add="addToCart"
+            />
+          </div>
+          <div class="dinein-right">
+            <div class="dinein-reservation">
+              <DineInSection @make-reservation="handleReservation" />
+            </div>
+            <div class="dinein-map">
+              <Map :useGeolocation="false" style="width:100%;height:220px;" />
+            </div>
+            <div class="dinein-reviews">
+              <ReviewList :reviews="reviewData.slice(0,2)" />
+            </div>
+          </div>
+        </div>
 
         <CartSidebar
           v-if="activeTab === 'order'"
@@ -109,6 +140,8 @@ import ImageGallery from "@/components/customer/ImageGallery.vue";
 import MenuList from "@/components/customer/MenuList.vue";
 import ReviewList from "@/components/customer/ReviewList.vue";
 import CartSidebar from "@/components/customer/CartSidebar.vue";
+import DineInSection from "@/components/customer/DineInSection.vue";
+import Map from "@/components/delivery/map.vue";
 
 // Avatars
 import avatar1 from "@/assets/avatars/avatar1.png";
@@ -138,6 +171,8 @@ export default {
     MenuList,
     ReviewList,
     CartSidebar,
+    DineInSection,
+    Map,
   },
   setup() {
     const route = useRoute();
@@ -343,6 +378,16 @@ export default {
       activeTab.value = "review";
     };
 
+    const handleReservation = (reservation) => {
+      // Here you would implement the reservation handling logic
+      console.log('Reservation details:', reservation);
+      // You could make an API call here to save the reservation
+    };
+
+    const storeDescription = ref(
+      `It serves breakfast, lunch and dinner, and also has private dining rooms for special occasions. "Malis" or Khmer, who make his parents shine. Recent guests found this hidden gem among the restaurants serving premium local tastes can find this beautiful location in a tranquil setting in which you can taste local dishes with traditional recipes, such as Samlor Mchou Kroeung (noodle soup with fresh shrimp and vegetables) and Kuy Teav Phnom Penh (noodle soup with fresh pork and beef). There are also signature rice from nearby Takeo Province and Kep crab with Kampot pepper are also restaurant's highlights.`
+    );
+
     return {
       brandName,
       storeAddress,
@@ -369,6 +414,8 @@ export default {
       onDirection,
       onShare,
       onReviews,
+      handleReservation,
+      storeDescription,
     };
   },
 };
@@ -471,5 +518,91 @@ export default {
   background: white;
   color: #b91c1c;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dine-in-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.dinein-description {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.5rem 2rem 1rem 2rem;
+  margin-bottom: 1.2rem;
+}
+.dinein-description h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #b91c1c;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.dinein-description p {
+  margin: 0;
+  color: #222;
+  font-size: 1rem;
+}
+.dinein-reservation {
+  margin: 1.5rem 0 0.5rem 0;
+}
+.dinein-map {
+  margin: 1.5rem 0 0.5rem 0;
+}
+.dinein-reviews {
+  margin-top: 2rem;
+}
+
+@media (min-width: 900px) {
+  .dine-in-content {
+    flex-direction: row;
+    max-width: 1200px;
+    gap: 2.5rem;
+    align-items: flex-start;
+  }
+  .dinein-left {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .dinein-right {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 340px;
+  }
+  .dinein-description, .dinein-reservation, .dinein-map, .dinein-reviews {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 2rem 2.2rem 1.5rem 2.2rem;
+    margin: 0;
+  }
+  .dinein-description {
+    margin-bottom: 0.5rem;
+  }
+  .dinein-map {
+    padding: 0;
+    overflow: hidden;
+    min-height: 220px;
+  }
+  .dinein-map > * {
+    border-radius: 16px;
+    width: 100% !important;
+    height: 220px !important;
+    min-height: 220px;
+    box-shadow: none;
+  }
+  .dinein-reviews {
+    padding-bottom: 1.2rem;
+  }
+  .dinein-reservation {
+    margin-bottom: 0.5rem;
+  }
 }
 </style>
