@@ -1,12 +1,12 @@
 <template>
   <div class="menu-item">
     <div class="menu-content">
-      <div class="menu-title">{{ item.title }}</div>
+      <div class="menu-title">{{ item.name }}</div>
       <div class="menu-price">from ${{ item.price }}</div>
-      <div class="menu-desc">{{ item.desc }}</div>
+      <div class="menu-desc">{{ item.description }}</div>
     </div>
     <div class="menu-image-container">
-      <img :src="item.image" class="menu-img" />
+      <img :src="item.img_url" class="menu-img" />
       <button class="add-btn" @click="$emit('add', item)">+</button>
     </div>
   </div>

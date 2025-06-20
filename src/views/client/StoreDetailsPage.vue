@@ -4,17 +4,12 @@
       <Breadcrumb :crumbs="breadcrumbCrumbs" />
 
       <StoreInfo
-        :brandName="brandName"
-        :address="storeAddress"
-        :openStatus="openStatus"
-        :timeStatus="timeStatus"
-        :phoneNumber="phoneNumber"
-      />
-
-      <ActionButtons
-        @direction="onDirection"
-        @share="onShare"
-        @reviews="onReviews"
+        v-if="restaurant"
+        :brandName="restaurant.name"
+        :address="restaurant.user?.address"
+        :openStatus="restaurant.open_status"
+        :timeStatus="restaurant.working_hours"
+        :phoneNumber="restaurant.user?.phone_number"
       />
 
       <ImageGallery :cover1="cover1" :cover2="cover2" :cover3="cover3" />
@@ -99,278 +94,147 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useRestaurantStore } from "@/stores/restaurantStore";
 
 import Breadcrumb from "@/components/customer/Breadcrumb.vue";
 import StoreInfo from "@/components/customer/StoreInfo.vue";
-import ActionButtons from "@/components/customer/ActionButtons.vue";
 import ImageGallery from "@/components/customer/ImageGallery.vue";
 import MenuList from "@/components/customer/MenuList.vue";
 import ReviewList from "@/components/customer/ReviewList.vue";
 import CartSidebar from "@/components/customer/CartSidebar.vue";
 
-// Avatars
-import avatar1 from "@/assets/avatars/avatar1.png";
-import avatar2 from "@/assets/avatars/avatar2.png";
-import avatar3 from "@/assets/avatars/avatar3.png";
-import avatar4 from "@/assets/avatars/avatar3.png"; // Note: duplicate image?
-
-// Store images
+// Sample assets
 import cover1 from "@/assets/store_details/cover1.png";
 import cover2 from "@/assets/store_details/cover2.png";
 import cover3 from "@/assets/store_details/cover3.png";
-
-// Menu images
 import shrimp1 from "@/assets/store_details/shrimp1.png";
 import shrimp2 from "@/assets/store_details/shrimp2.png";
 import shrimp3 from "@/assets/store_details/shrimp3.png";
 import shrimp4 from "@/assets/store_details/shrimp4.png";
 import shrimp5 from "@/assets/store_details/shrimp5.png";
 
+import avatar1 from "@/assets/avatars/avatar1.png";
+import avatar2 from "@/assets/avatars/avatar2.png";
+import avatar3 from "@/assets/avatars/avatar3.png";
+import avatar4 from "@/assets/avatars/avatar3.png";
+
 export default {
   name: "StoreDetailsPage",
   components: {
     Breadcrumb,
     StoreInfo,
-    ActionButtons,
     ImageGallery,
     MenuList,
     ReviewList,
     CartSidebar,
   },
   setup() {
-    const route = useRoute();
-    const router = useRouter();
+  const route = useRoute();
+  const router = useRouter();
+  const brandName = computed(() => route.params.brandName);
+  const restaurantStore = useRestaurantStore();
 
-    // These could be fetched from backend or route params
-    const brandName = computed(() => route.params.brandName || "AHA GO");
-    const storeAddress = ref(
-      "35c St 472, Phnom Penh, Cambodia 35c St 472, TTP2, Chamkar Mon"
+  const restaurant = ref(null);
+  const menuData = ref([]); // Define it here so it can be updated
+  const comboData = ref([]); // Optional: Replace later if backend provides
+  const search = ref("");
+  const cartItems = ref([]);
+  const activeTab = ref("order");
+  const deliveryMode = ref("delivery");
+  const showSummary = ref(false);
+
+  const breadcrumbCrumbs = computed(() => [
+    { text: "Home", to: "/" },
+    { text: brandName.value, to: `/restaurant/${brandName.value}` },
+  ]);
+
+  const loadStore = async () => {
+    await restaurantStore.fetchRestaurants();
+
+    restaurant.value = restaurantStore.restaurants.find(
+      (r) => r.name.toLowerCase() === brandName.value.toLowerCase()
     );
-    const openStatus = ref("Open");
-    const timeStatus = ref("10:00 AM - 9:00 PM");
-    const phoneNumber = ref("+855 1234 5678");
 
-    const breadcrumbCrumbs = ref([
-      { text: "Home", to: "/" },
-      { text: brandName.value, to: `/store/${brandName.value}` },
-    ]);
+    if (restaurant.value) {
+      await restaurantStore.fetchFoodItemsByRestaurant(restaurant.value.id);
+      menuData.value = restaurantStore.foodItems;
+    } else {
+      console.warn("Restaurant not found");
+    }
+  };
 
-    const activeTab = ref("order");
-    const search = ref("");
-    const deliveryMode = ref("delivery");
-    const showSummary = ref(false);
-    const cartItems = ref([]);
+  onMounted(loadStore);
 
-    const reviewData = ref([
-      {
-        id: 1,
-        name: "Garima",
-        avatar: avatar1,
-        rating: 4,
-        time: "1 hour ago",
-        type: "Delivery",
-        comment:
-          "Absolutely delicious! The shrimp is perfectly cooked, bursting with flavor, and seasoned to perfection.",
-        reviews: 4,
-      },
-      {
-        id: 2,
-        name: "Cheegy",
-        avatar: avatar2,
-        rating: 4,
-        time: "1 hour ago",
-        type: "Delivery",
-        comment:
-          "Whether grilled, buttered, or in a spicy sauce, their shrimp dishes are simply irresistible!",
-        reviews: 4,
-      },
-      {
-        id: 3,
-        name: "Malina",
-        avatar: avatar3,
-        rating: 4,
-        time: "1 hour ago",
-        type: "Delivery",
-        comment:
-          "If you're a seafood lover, this is a must-try. Highly recommended!",
-        reviews: 4,
-      },
-      {
-        id: 4,
-        name: "Sky",
-        avatar: avatar4,
-        rating: 4,
-        time: "1 hour ago",
-        type: "Delivery",
-        comment:
-          "Every bite is juicy, tender, and packed with that fresh seafood taste we all love.",
-        reviews: 4,
-      },
-    ]);
+  const filteredMenu = computed(() => {
+    if (!search.value) return menuData.value;
+    return menuData.value.filter((item) =>
+      item.name?.toLowerCase().includes(search.value.toLowerCase())
+    );
+  });
 
-    const menuData = ref([
-      {
-        id: 1,
-        image: shrimp1,
-        title: "Chicken 2 Pieces",
-        rating: 4,
-        price: 4.59,
-        sold: 3,
-        desc: "Crispy and golden brown (For ref only)",
-      },
-      {
-        id: 2,
-        image: shrimp2,
-        title: "Nuggets (6pc)",
-        rating: 3,
-        price: 2.8,
-        sold: 3,
-        desc: "6 Pcs",
-      },
-      {
-        id: 3,
-        image: shrimp3,
-        title: "Chicken 3 Pieces",
-        rating: 4,
-        price: 6.89,
-        sold: 3,
-        desc: "Crispy and golden brown (For ref only)",
-      },
-      {
-        id: 4,
-        image: shrimp4,
-        title: "Zinger Burger",
-        rating: 4,
-        price: 4.35,
-        sold: 3,
-        desc: "Burger with fried crispy chicken thigh, mayonnaise and iceberg lettuce",
-      },
-      {
-        id: 5,
-        image: shrimp5,
-        title: "Colonel Chicken Burger",
-        rating: 4,
-        price: 2.75,
-        sold: 3,
-        desc: "Tasty colonel chicken burger prepared with lettuce and sweet mayo on a...",
-      },
-      {
-        id: 6,
-        image: shrimp1,
-        title: "Cheesy potato bowl",
-        rating: 4,
-        price: 2.99,
-        sold: 3,
-        desc: "A delicious potato bowl loaded with melted cheese for the ultimate com-...",
-      },
-    ]);
+  const cartTotal = computed(() => {
+    return cartItems.value.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  });
 
-    const comboData = ref([
-      {
-        id: 101,
-        image: shrimp1,
-        title: "Combo 1",
-        price: 5.65,
-        desc: "Colonel burger with 1 fun fries and a Pepsi",
-      },
-      {
-        id: 102,
-        image: shrimp2,
-        title: "Combo 2",
-        price: 8.49,
-        desc: "2pcs Freshly Fried Chicken 1 whipped potato 1 coleslaw 1 Pepsi",
-      },
-    ]);
+  const addToCart = (item) => {
+    const existing = cartItems.value.find((i) => i.id === item.id);
+    if (existing) {
+      existing.quantity++;
+    } else {
+      cartItems.value.push({ ...item, quantity: 1 });
+    }
+  };
 
-    // Filter menu by search query
-    const filteredMenu = computed(() => {
-      if (!search.value) return menuData.value;
-      return menuData.value.filter((item) =>
-        item.title.toLowerCase().includes(search.value.toLowerCase())
-      );
+  const increaseQuantity = (item) => item.quantity++;
+  const decreaseQuantity = (item) => {
+    if (item.quantity > 1) item.quantity--;
+    else cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+  };
+
+  const goToCheckout = () => {
+    router.push({
+      name: "checkout",
+      params: {
+        brandName: brandName.value,
+        cartItems: JSON.stringify(cartItems.value),
+      },
     });
+  };
 
-    // Cart related computed
-    const cartTotal = computed(() => {
-      return cartItems.value.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-    });
+  const reviewData = ref([
+    { id: 1, name: "Garima", avatar: avatar1, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Absolutely delicious..." },
+    { id: 2, name: "Cheegy", avatar: avatar2, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Whether grilled..." },
+    { id: 3, name: "Malina", avatar: avatar3, rating: 4, time: "1 hour ago", type: "Delivery", comment: "If you're a seafood lover..." },
+    { id: 4, name: "Sky", avatar: avatar4, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Every bite is juicy..." },
+  ]);
 
-    // Add item to cart or increase quantity
-    const addToCart = (item) => {
-      const existingItem = cartItems.value.find((i) => i.id === item.id);
-      if (existingItem) {
-        existingItem.quantity++;
-      } else {
-        cartItems.value.push({ ...item, quantity: 1 });
-      }
-    };
-
-    const increaseQuantity = (item) => {
-      item.quantity++;
-    };
-
-    const decreaseQuantity = (item) => {
-      if (item.quantity > 1) {
-        item.quantity--;
-      } else {
-        cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-      }
-    };
-
-    const goToCheckout = () => {
-      router.push({
-        name: "checkout",
-        params: {
-          brandName: brandName.value,
-          cartItems: JSON.stringify(cartItems.value),
-        },
-      });
-    };
-
-    // Placeholder event handlers for ActionButtons
-    const onDirection = () => {
-      alert("Direction clicked!");
-    };
-    const onShare = () => {
-      alert("Share clicked!");
-    };
-    const onReviews = () => {
-      activeTab.value = "review";
-    };
-
-    return {
-      brandName,
-      storeAddress,
-      openStatus,
-      timeStatus,
-      phoneNumber,
-      breadcrumbCrumbs,
-      cover1,
-      cover2,
-      cover3,
-      activeTab,
-      search,
-      filteredMenu,
-      comboItems: comboData,
-      reviewData,
-      cartItems,
-      cartTotal,
-      deliveryMode,
-      showSummary,
-      addToCart,
-      increaseQuantity,
-      decreaseQuantity,
-      goToCheckout,
-      onDirection,
-      onShare,
-      onReviews,
-    };
-  },
+  return {
+    brandName,
+    breadcrumbCrumbs,
+    cover1,
+    cover2,
+    cover3,
+    restaurant,
+    activeTab,
+    search,
+    filteredMenu,
+    comboItems: comboData,
+    reviewData,
+    cartItems,
+    cartTotal,
+    deliveryMode,
+    showSummary,
+    addToCart,
+    increaseQuantity,
+    decreaseQuantity,
+    goToCheckout,
+  };
+}
 };
 </script>
 

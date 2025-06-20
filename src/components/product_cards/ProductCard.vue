@@ -21,7 +21,7 @@
           <span class="rating-star">⭐</span> {{ rating }}
         </div>
       </div>
-      <p class="product-price">${{ price.toFixed(2) }} &bull; {{ category }}</p>
+      <p class="product-price">{{ category }} • Delivery: ${{ deliveryPrice.toFixed(2) }}</p>
       <div class="product-delivery-info">
         <span class="delivery-time">🕒 {{ deliveryTime }}</span>
         <span class="delivery-price">🏍️ ${{ deliveryPrice.toFixed(2) }}</span>
@@ -34,43 +34,43 @@
 export default {
   name: 'ProductCard',
   props: {
-    title: {
-      type: String,
-      required: true
-    },
-    image: {
-      type: String,
-      required: true
-    },
-    price: {
-      type: Number,
-      required: true
-    },
-    category: {
-      type: String,
-      required: true
-    },
-    deliveryTime: {
-      type: String,
-      required: true
-    },
-    deliveryPrice: {
-      type: Number,
-      required: true
-    },
-    rating: {
-      type: Number,
-      default: 4.5
-    },
-    productId: {
-      type: [String, Number],
-      required: true
-    },
-    favorites: {
-      type: Array,
-      default: () => []
-    }
+  title: {
+    type: String,
+    default: 'Unnamed Restaurant'
   },
+  image: {
+    type: String,
+    default: '/placeholder.png'
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
+  category: {
+    type: String,
+    default: 'Uncategorized'
+  },
+  deliveryTime: {
+    type: String,
+    default: '20-30 min'
+  },
+  deliveryPrice: {
+    type: Number,
+    default: 0.0
+  },
+  rating: {
+    type: Number,
+    default: 4.5
+  },
+  productId: {
+    type: [String, Number],
+    required: true
+  },
+  favorites: {
+    type: Array,
+    default: () => []
+  }
+},
   data() {
     return {
       isFavorite: false,

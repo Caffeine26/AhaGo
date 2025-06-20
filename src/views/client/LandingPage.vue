@@ -42,15 +42,18 @@
         </h2>
         <div class="products-grid">
           <ProductCard
-            v-for="store in filteredStores"
-            :key="store.id"
-            :title="store.name"
-            :image="store.logo"
-            :price="store.rating"
-            :category="store.category"
-            :delivery-time="store.deliveryTime"
-            :delivery-price="store.deliveryPrice"
-            @click="goToStoreDetails(store.name)"
+            v-for="restaurant in filteredRestaurants"
+            :key="restaurant.id"
+            :title="restaurant.title"
+            :image="restaurant.img_url"
+            :price="restaurant.price"
+            :category="restaurant.category"
+            :delivery-time="restaurant.deliveryTime"
+            :delivery-price="restaurant.deliveryPrice"
+            :rating="restaurant.rating"
+            :product-id="restaurant.id"
+            @click="goToRestaurantDetails(restaurant.title)"
+
           />
         </div>
       </div>
@@ -72,6 +75,7 @@
 </template>
 
 <script>
+import { useRestaurantStore } from "@/stores/restaurantStore";
 import CategoryCard from "@/components/product_cards/CategoryCard.vue";
 import ProductCard from "@/components/product_cards/ProductCard.vue";
 import BrandHighlight from "@/components/BrandHighlight.vue";
@@ -91,205 +95,39 @@ export default {
         { id: 2, title: "Dessert", image: "/src/assets/client/dessert.png" },
         { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
       ],
-      stores: [
-        {
-          id: 1,
-          name: "KFC",
-          logo: "/src/assets/client/kfc1.png",
-          rating: 4.5,
-          category: "Food",
-          deliveryTime: "20-35 min",
-          deliveryPrice: 0.75,
-        },
-        {
-          id: 2,
-          name: "The Pizza Company",
-          logo: "/src/assets/client/pizza_company.png",
-          rating: 4.2,
-          category: "Food",
-          deliveryTime: "25-40 min",
-          deliveryPrice: 0.85,
-        },
-        {
-          id: 3,
-          name: "Cafe Amazon",
-          logo: "/src/assets/client/amazon.png",
-          rating: 4.4,
-          category: "Drink",
-          deliveryTime: "15-25 min",
-          deliveryPrice: 0.5,
-        },
-        {
-          id: 4,
-          name: "Krispy Kreme Cambodia",
-          logo: "/src/assets/client/krispy_kreme.png",
-          rating: 4.6,
-          category: "Food",
-          deliveryTime: "30-45 min",
-          deliveryPrice: 1.0,
-        },
-        {
-          id: 5,
-          name: "Carl's Jr Cambodia",
-          logo: "/src/assets/client/carlsjr.png",
-          rating: 4.3,
-          category: "Food",
-          deliveryTime: "20-30 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 6,
-          name: "Starbucks",
-          logo: "/src/assets/client/starbucks.png",
-          rating: 4.7,
-          category: "Drink",
-          deliveryTime: "15-20 min",
-          deliveryPrice: 0.45,
-        },
-        {
-          id: 7,
-          name: "KOI",
-          logo: "/src/assets/client/koi.png",
-          rating: 4.5,
-          category: "Drink",
-          deliveryTime: "20-30 min",
-          deliveryPrice: 0.55,
-        },
-        {
-          id: 8,
-          name: "Pong Cambodia",
-          logo: "/src/assets/client/pong.png",
-          rating: 4.4,
-          category: "Food",
-          deliveryTime: "25-35 min",
-          deliveryPrice: 0.8,
-        },
-        {
-          id: 9,
-          name: "Brown",
-          logo: "/src/assets/client/brown.png",
-          rating: 4.6,
-          category: "Drink",
-          deliveryTime: "15-25 min",
-          deliveryPrice: 0.5,
-        },
-        {
-          id: 10,
-          name: "Tube Coffee",
-          logo: "/src/assets/client/tube.png",
-          rating: 4.3,
-          category: "Drink",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 17,
-          name: "Coffee Corner",
-          logo: "/src/assets/client/coffee_corner.png",
-          rating: 4.2,
-          category: "Drink",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 11,
-          name: "Burger King",
-          logo: "/src/assets/client/burgerking.png",
-          rating: 4.5,
-          category: "Food",
-          deliveryTime: "20-35 min",
-          deliveryPrice: 0.75,
-        },
-        {
-          id: 12,
-          name: "Dairy Queen",
-          logo: "/src/assets/client/dairyqueen.png",
-          rating: 4.3,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 13,
-          name: "Mixue",
-          logo: "/src/assets/client/mixue.png",
-          rating: 4.3,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 14,
-          name: "21 Bakery",
-          logo: "/src/assets/client/21bakery.png",
-          rating: 4,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 1,
-        },
-        {
-          id: 15,
-          name: "Swensens",
-          logo: "/src/assets/client/swensens.png",
-          rating: 4.1,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 1.5,
-        },
-        {
-          id: 16,
-          name: "Cats Cake",
-          logo: "/src/assets/client/catscake.png",
-          rating: 4.5,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 17,
-          name: "Bing Chun",
-          logo: "/src/assets/client/bingchun.png",
-          rating: 4.2,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-      ],
-      brands: [
-        { name: "KFC", logo: "/src/assets/client/kfc.png" },
-        { name: "Mhub Khmer", logo: "/src/assets/client/kfc.png" },
-        { name: "Cafe Amazon", logo: "/src/assets/client/amazon.png" },
-        { name: "The Pizza Company", logo: "/src/assets/client/pizza.png" },
-        {
-          name: "Gerbie's Salad & Sandwich",
-          logo: "/src/assets/client/gerbies.png",
-        },
-        { name: "Starbucks", logo: "/src/assets/client/starbucks.png" },
-        { name: "KOI", logo: "/src/assets/client/koi.png" },
-        { name: "Mexicano", logo: "/src/assets/client/mexicano.png" },
-        { name: "Brown", logo: "/src/assets/client/brown.png" },
-        { name: "Tube Coffee", logo: "/src/assets/client/tube.png" },
-        { name: "Lotteria", logo: "/src/assets/client/lotteria.png" },
-      ],
     };
   },
   computed: {
-    filteredStores() {
-      return this.stores.filter(
-        (store) => store.category === this.selectedCategory
-      );
+    restaurantStore() {
+      return useRestaurantStore();
     },
+    filteredRestaurants() {
+    return this.restaurantStore.restaurants.map((restaurant) => ({
+      id: restaurant.id,
+      title: restaurant.name || 'Unnamed Restaurant',
+      image: restaurant.user?.img_src || '/placeholder.png',
+      price: restaurant.rating || 0,
+      category: restaurant.category || 'Uncategorized',
+      deliveryTime: restaurant.deliveryTime || '20-30 min',
+      deliveryPrice: restaurant.deliveryPrice || 0.0,
+      rating: restaurant.rating || 4.5,
+    }));
+  }
+  },
+  created() {
+    this.restaurantStore.fetchRestaurants();
   },
   methods: {
     selectCategory(category) {
       this.selectedCategory = category;
     },
-    goToStoreDetails(brandName) {
+    goToRestaurantDetails(brandName) {
       this.$router.push({ name: "StoreDetails", params: { brandName } });
     },
   },
 };
 </script>
+
 
 <style scoped>
 .landing-page {

@@ -97,7 +97,7 @@ const router = createRouter({
       component: () => import('@/views/client/LandingPage.vue')
     },
     {
-      path: '/store/:brandName',
+      path: '/restaurant/:brandName',
       name: 'StoreDetails',
       component: () => import('@/views/client/StoreDetailsPage.vue')
     },

@@ -9,11 +9,11 @@
       <div v-else class="cart-content">
         <div class="cart-items">
           <div v-for="item in cartItems" :key="item.id" class="cart-item">
-            <img :src="item.image" class="cart-item-img" />
+            <img :src="item.img_url" class="cart-item-img" />
             <div class="cart-item-info">
-              <div class="cart-item-title">{{ item.title }}</div>
+              <div class="cart-item-title">{{ item.name }}</div>
               <div class="cart-item-price">${{ item.price }}</div>
-              <div class="cart-item-desc">{{ item.desc }}</div>
+              <div class="cart-item-desc">{{ item.description }}</div>
             </div>
             <div class="cart-item-controls">
               <div class="quantity-controls">
