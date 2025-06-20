@@ -34,7 +34,6 @@
             <tr>
                 <th>No.</th>
                 <th>Item</th>
-                <th>Size</th>
                 <th>Unit</th>
                 <th>Subtotal</th>
             </tr>
@@ -42,13 +41,11 @@
             <tr v-for="(item, index) in orderItems">
                 <td>{{ index+1 }}</td>
                 <td>{{ item.name }}</td>
-                <td>{{ item.size }}</td>
-                <td>{{ item.unit }}</td>
-                <td>${{ item.subtotal }}</td>
+                <td>{{ item.pivot.quantity }}</td>
+                <td>${{ item.pivot.price }}</td>
             </tr>
 
             <tr>
-                <td></td>
                 <td></td>
                 <td></td>
                 <td>Total</td>
@@ -63,7 +60,7 @@
                 <span v-else>-None-</span>
             </div>
             <div class="remark">
-                <span>Payment method:</span>
+                <span>Payment method: </span>
                 <span>{{ payMethod }}</span>
             </div>
         </div>
@@ -94,6 +91,7 @@ export default {
     data() {
         return {
             logo: logo,
+            total: 30
             // orderId: 1,
             // orderDate: '2025 06 09',
             // clientName: 'Anna Sorkins',

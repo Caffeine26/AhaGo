@@ -77,6 +77,7 @@ import { useRestStore } from '@/stores/restStore';
 import { useUserStore } from '@/stores/userStore';
 import { useCategoryStore } from '@/stores/categoryStore';
 import { useOrdersStore } from '@/stores/ordersStore';
+import { useTransactionStore } from '@/stores/transactionStore';
 
 export default {
     components: {
@@ -90,19 +91,22 @@ export default {
         const userStore = useUserStore()
         const categoryStore = useCategoryStore()
         const ordersStore = useOrdersStore()
+        const transactionStore = useTransactionStore()
 
         restStore.fetchRests()
         userStore.fetchUsers()
         categoryStore.fetchCategories()
-        categoryStore.fetchFoodItems()
-        ordersStore.fetchOrders()
+        categoryStore.fetchFoodItemsByRest(2)
+        ordersStore.fetchOrders(2)
         ordersStore.fetchOrdersItems()
+        transactionStore.fetchTransactions(2)
 
         return { 
             restStore,
             userStore,
             categoryStore,
-            ordersStore
+            ordersStore,
+            transactionStore
         }
     },
     data() {

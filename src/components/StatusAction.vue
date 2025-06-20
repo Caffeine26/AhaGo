@@ -1,27 +1,27 @@
 <template>
   <div class="status-box">
-    <template v-if="statusId === 0">
+    <template v-if="status === 'cancelled'">
       <span class="status-text cancelled">Cancelled</span>
     </template>
     
-    <template v-else-if="statusId === 1">
+    <template v-else-if="status === 'pending'">
       <span class="status-text pending">Pending</span>
     </template>
 
-    <template v-else-if="statusId === 2">
+    <template v-else-if="status === 'preparing'">
       <span class="status-text prepare">Prepare</span>
       
     </template>
 
-    <template v-else-if="statusId === 3">
+    <template v-else-if="status === 'ready'">
       <span class="status-text ready">Ready</span>
     </template>
 
-    <template v-else-if="statusId === 4">
+    <template v-else-if="status === 'delivering'">
       <span class="status-text otw">On the way</span>
     </template>
 
-    <template v-else-if="statusId === 5">
+    <template v-else-if="status === 'completed'">
       <span class="status-text completed">Completed</span>
     </template>
   </div>
@@ -30,8 +30,8 @@
 <script>
 export default {
   props: {
-    statusId: {
-      type: Number,
+    status: {
+      type: String,
       required: true
     }
   }

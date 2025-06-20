@@ -1,28 +1,40 @@
 <template>
 <div class="status-box">
-    <template v-if="statusId === 0">
-        <button v-if="paid" class="status-btn refund">Refund</button>
+    <template v-if="status === 'cancelled'">
+        <button v-if="paid == 'paid'" class="status-btn refund">Refund</button>
         <button v-else class="status-btn remove">Remove</button>
     </template>
     
-    <template v-else-if="statusId === 1">
+    <template v-else-if="status === 'pending'">
         <button class="reject">Reject</button>
-        <button class="status-btn accept">Accept</button>
+        <button 
+        class="status-btn accept"
+        @click="toggleState('preparing')"
+        >Accept</button>
     </template>
 
-    <template v-else-if="statusId === 2">
-        <button class="status-btn ready">Ready</button>
+    <template v-else-if="status === 'preparing'">
+        <button 
+        class="status-btn ready"
+        @click="toggleState('ready')"
+        >Ready</button>
     </template>
 
-    <template v-else-if="statusId === 3">
-        <button class="status-btn deliver">Deliver</button>
+    <template v-else-if="status === 'ready'">
+        <button 
+        class="status-btn deliver"
+        @click="toggleState('delivering')"
+        >Deliver</button>
     </template>
 
-    <template v-else-if="statusId === 4">
-        <button class="status-btn viewDeliver">View Delivery</button>
+    <template v-else-if="status === 'delivering'">
+        <button 
+        class="status-btn viewDeliver"
+        @click="toggleState('completed')"
+        >View Delivery</button>
     </template>
 
-    <template v-else-if="statusId === 5">
+    <template v-else-if="status === 'completed'">
         <RouterLink :to="'/owner/order/invoice/' + orderId">
             <button class="status-btn view">View</button>
         </RouterLink>
@@ -34,13 +46,18 @@
 <script>
 export default {
 props: {
-    statusId: {
-        type: Number,
+    status: {
+        type: String,
         required: true
     },
     orderId: Number,
-    paid: Boolean
-}
+    paid: String
+},
+methods: {
+    toggleState(newState) {
+        this.$emit('change-state', newState)
+    }
+},
 };
 </script>
 

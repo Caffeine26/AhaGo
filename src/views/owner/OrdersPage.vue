@@ -21,12 +21,13 @@ title-header= "Order Management"
     v-for="(item, index) in filteredOrders"
     :key="index"
     :index="index"
-    :order-id="item.orderIndex"
-    :order-index="item.orderIndex"
-    :order-status="item.orderStatus"
-    :order-items="item.orderItems"
-    :total="item.total"
-    :paid="item.paid"
+    :order-id="item.id"
+    :order-index="item.id"
+    :order-status="item.status"
+    :order-items="item.food_items"
+    :order-time="item.created_at"
+    :total="item.total_amount"
+    :paid="item.payment_status"
     />
     
 </div>
@@ -42,6 +43,7 @@ import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
 import Header2 from '@/components/delivery/header2.vue';
 import OrderCard from '@/components/OrderCard.vue';
 import OrderCard02 from '@/components/OrderCard02.vue';
+import { useOrdersStore } from '@/stores/ordersStore';
 
 export default {
     components: {
@@ -53,6 +55,12 @@ export default {
         AppFooter
     },
     created() {
+        const ordersStore = useOrdersStore()
+        
+        this.restId = parseInt(this.$route.params.restId)
+
+        // get orders by restId
+        this.orders = ordersStore.orders.filter(order => order.restaurant_id === this.restId)
         this.filteredOrders = this.orders
     },
     methods: {
@@ -64,7 +72,7 @@ export default {
             }
             else {
                 for (let i=0; i<this.orders.length; i++) {
-                    if (this.orders[i].orderStatus === index) {
+                    if (this.orders[i].status === this.orderStatus[index]) {
                         this.filteredOrders.push(this.orders[i])
                     }
                 }
@@ -79,6 +87,11 @@ export default {
     },
     data() {
         return {
+            orders: [],
+            restId: null,
+            filteredOrders: [],
+            orderStatus: ['all', 'pending', 'preparing', 'ready'],
+
             selectedIndex: 0,
             selectedSortIndex: 0,
             buttons: [
@@ -87,74 +100,74 @@ export default {
                 'Prepare',
                 'Ready'
             ],
-            filteredOrders: [],
-            orders: [
-            {
-                orderIndex: 1,
-                orderStatus: 1,
-                orderTime: "2025 06 09",
-                orderId: "0999",
-                orderItems: [
-                    "Potato Salad",
-                    "Tteokbokki",
-                    "Fried Chicken",
-                ],
-                total: 19.9,
-                paid: false
-            },
-            {
-                orderIndex: 2,
-                orderStatus: 2,
-                orderTime: "2025 06 09",
-                orderId: "0999",
-                orderItems: [
-                    "Potato Salad",
-                    "Tteokbokki",
-                    "Fried Chicken",
-                ],
-                total: 19.9,
-                paid: false
-            },
-            {
-                orderIndex: 3,
-                orderStatus: 3,
-                orderTime: "2025 06 09",
-                orderId: "0999",
-                orderItems: [
-                    "Potato Salad",
-                    "Tteokbokki",
-                    "Fried Chicken",
-                ],
-                total: 19.9,
-                paid: false
-            },
-            {
-                orderIndex: 4,
-                orderStatus: 4,
-                orderTime: "2025 06 09",
-                orderId: "0999",
-                orderItems: [
-                    "Potato Salad",
-                    "Tteokbokki",
-                    "Fried Chicken",
-                ],
-                total: 19.9,
-                paid: false
-            },
-            {
-                orderIndex: 5,
-                orderStatus: 5,
-                orderTime: "2025 06 09",
-                orderId: "0999",
-                orderItems: [
-                    "Potato Salad",
-                    "Tteokbokki",
-                    "Fried Chicken",
-                ],
-                total: 19.9,
-                paid: false
-            },
-            ]
+            
+        //     orders: [
+        //     {
+        //         orderIndex: 1,
+        //         orderStatus: 1,
+        //         orderTime: "2025 06 09",
+        //         orderId: "0999",
+        //         orderItems: [
+        //             "Potato Salad",
+        //             "Tteokbokki",
+        //             "Fried Chicken",
+        //         ],
+        //         total: 19.9,
+        //         paid: false
+        //     },
+        //     {
+        //         orderIndex: 2,
+        //         orderStatus: 2,
+        //         orderTime: "2025 06 09",
+        //         orderId: "0999",
+        //         orderItems: [
+        //             "Potato Salad",
+        //             "Tteokbokki",
+        //             "Fried Chicken",
+        //         ],
+        //         total: 19.9,
+        //         paid: false
+        //     },
+        //     {
+        //         orderIndex: 3,
+        //         orderStatus: 3,
+        //         orderTime: "2025 06 09",
+        //         orderId: "0999",
+        //         orderItems: [
+        //             "Potato Salad",
+        //             "Tteokbokki",
+        //             "Fried Chicken",
+        //         ],
+        //         total: 19.9,
+        //         paid: false
+        //     },
+        //     {
+        //         orderIndex: 4,
+        //         orderStatus: 4,
+        //         orderTime: "2025 06 09",
+        //         orderId: "0999",
+        //         orderItems: [
+        //             "Potato Salad",
+        //             "Tteokbokki",
+        //             "Fried Chicken",
+        //         ],
+        //         total: 19.9,
+        //         paid: false
+        //     },
+        //     {
+        //         orderIndex: 5,
+        //         orderStatus: 5,
+        //         orderTime: "2025 06 09",
+        //         orderId: "0999",
+        //         orderItems: [
+        //             "Potato Salad",
+        //             "Tteokbokki",
+        //             "Fried Chicken",
+        //         ],
+        //         total: 19.9,
+        //         paid: false
+        //     },
+        //     ]
         }
     },
     computed: {
