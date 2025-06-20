@@ -64,11 +64,9 @@ export default {
   padding: 10px;
   border-radius: 8px;
   background-color: #fff;
-  max-height: 300px;
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .item-image {
