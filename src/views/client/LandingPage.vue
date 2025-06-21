@@ -50,6 +50,9 @@
             :category="store.category"
             :delivery-time="store.deliveryTime"
             :delivery-price="store.deliveryPrice"
+            :productId="store.id"
+            :favorites="favoriteIds"
+            @toggle-favorite="handleToggleFavorite"
             @click="goToStoreDetails(store.name)"
           />
         </div>
@@ -71,28 +74,31 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useFavoritesStore } from '@/stores/favorites';
+import { storeToRefs } from 'pinia';
 import CategoryCard from "@/components/product_cards/CategoryCard.vue";
 import ProductCard from "@/components/product_cards/ProductCard.vue";
 import BrandHighlight from "@/components/BrandHighlight.vue";
 
-export default {
-  name: "LandingPage",
-  components: {
-    CategoryCard,
-    ProductCard,
-    BrandHighlight,
-  },
-  data() {
-    return {
-      selectedCategory: "Food",
-      categories: [
-        { id: 1, title: "Food", image: "/src/assets/client/food.png" },
-        { id: 2, title: "Dessert", image: "/src/assets/client/dessert.png" },
-        { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
-      ],
-      stores: [
-        {
+const router = useRouter();
+const favoritesStore = useFavoritesStore();
+const { favoriteProducts } = storeToRefs(favoritesStore);
+
+const selectedCategory = ref("Food");
+
+const favoriteIds = computed(() => favoriteProducts.value.map(p => p.id));
+
+const categories = ref([
+  { id: 1, title: "Food", image: "/src/assets/client/food.png" },
+  { id: 2, title: "Dessert", image: "/src/assets/client/dessert.png" },
+  { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
+]);
+
+const stores = ref([
+  {
           id: 1,
           name: "KFC",
           logo: "/src/assets/client/kfc1.png",
@@ -254,40 +260,40 @@ export default {
           deliveryTime: "10-20 min",
           deliveryPrice: 0.4,
         },
-      ],
-      brands: [
-        { name: "KFC", logo: "/src/assets/client/kfc.png" },
-        { name: "Mhub Khmer", logo: "/src/assets/client/kfc.png" },
-        { name: "Cafe Amazon", logo: "/src/assets/client/amazon.png" },
-        { name: "The Pizza Company", logo: "/src/assets/client/pizza.png" },
-        {
-          name: "Gerbie's Salad & Sandwich",
-          logo: "/src/assets/client/gerbies.png",
-        },
-        { name: "Starbucks", logo: "/src/assets/client/starbucks.png" },
-        { name: "KOI", logo: "/src/assets/client/koi.png" },
-        { name: "Mexicano", logo: "/src/assets/client/mexicano.png" },
-        { name: "Brown", logo: "/src/assets/client/brown.png" },
-        { name: "Tube Coffee", logo: "/src/assets/client/tube.png" },
-        { name: "Lotteria", logo: "/src/assets/client/lotteria.png" },
-      ],
+]);
+
+const filteredStores = computed(() => {
+  if (!selectedCategory.value) {
+    return stores.value;
+  }
+  return stores.value.filter(
+    (store) => store.category === selectedCategory.value
+  );
+});
+
+const selectCategory = (category) => {
+  selectedCategory.value = category;
+};
+
+const goToStoreDetails = (brandName) => {
+  router.push(`/store/${brandName}`);
+};
+
+const handleToggleFavorite = (productId) => {
+  const store = stores.value.find(s => s.id === productId);
+  if (store) {
+    const product = {
+      id: store.id,
+      title: store.name,
+      image: store.logo,
+      price: store.rating, 
+      category: store.category,
+      deliveryTime: store.deliveryTime,
+      deliveryPrice: store.deliveryPrice,
+      rating: store.rating,
     };
-  },
-  computed: {
-    filteredStores() {
-      return this.stores.filter(
-        (store) => store.category === this.selectedCategory
-      );
-    },
-  },
-  methods: {
-    selectCategory(category) {
-      this.selectedCategory = category;
-    },
-    goToStoreDetails(brandName) {
-      this.$router.push({ name: "StoreDetails", params: { brandName } });
-    },
-  },
+    favoritesStore.toggleFavorite(product);
+  }
 };
 </script>
 

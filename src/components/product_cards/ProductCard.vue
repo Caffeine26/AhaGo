@@ -5,11 +5,9 @@
       :class="{ active: isFavorite }"
       @click.stop="toggleFavorite"
       aria-label="Add to favorites"
+      ref="favBtn"
     >
-      <svg v-if="isFavorite" width="28" height="28" fill="#e6007a" viewBox="0 0 24 24">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-      <svg v-else width="28" height="28" fill="none" stroke="#e6007a" stroke-width="2" viewBox="0 0 24 24">
+      <svg width="22" height="22" viewBox="0 0 24 24">
         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
     </button>
@@ -87,12 +85,20 @@ export default {
   },
   methods: {
     toggleFavorite() {
-      this.isFavorite = !this.isFavorite
-      this.$emit('toggle-favorite', this.productId, this.isFavorite)
+      this.isFavorite = !this.isFavorite;
+      this.$emit('toggle-favorite', this.productId, this.isFavorite);
       if (this.isFavorite) {
-        this.favoriteIds.push(this.productId)
+        this.favoriteIds.push(this.productId);
       } else {
-        this.favoriteIds = this.favoriteIds.filter(id => id !== this.productId)
+        this.favoriteIds = this.favoriteIds.filter(id => id !== this.productId);
+      }
+      
+      // Animation logic
+      if (this.$refs.favBtn) {
+        this.$refs.favBtn.classList.add('popping');
+        this.$refs.favBtn.addEventListener('animationend', () => {
+          this.$refs.favBtn.classList.remove('popping');
+        }, { once: true });
       }
     }
   }
@@ -100,6 +106,12 @@ export default {
 </script>
 
 <style scoped>
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
 .product-card {
   border-radius: 12px;
   overflow: hidden;
@@ -183,18 +195,32 @@ export default {
   background: #fff;
   border: none;
   border-radius: 50%;
-  padding: 6px;
+  padding: 4px;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: background 0.2s;
+  transition: transform 0.2s ease, background-color 0.2s;
   z-index: 2;
 }
-.favorite-btn.active svg {
-  fill: #9A0404;
-  stroke: #9A0404;
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+  background-color: #f5f5f5;
 }
+
+.favorite-btn.popping {
+  animation: pop 0.3s ease-in-out;
+}
+
 .favorite-btn svg {
   display: block;
+  fill: none;
+  stroke: #9A0404;
+  stroke-width: 2;
+  transition: fill 0.2s;
+}
+
+.favorite-btn.active svg {
+  fill: #9A0404;
 }
 
 .main-header {
