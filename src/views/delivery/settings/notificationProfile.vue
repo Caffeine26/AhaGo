@@ -70,9 +70,11 @@ const filterOptions = [
   { value: "Last Month", label: "Last Month" },
 ];
 
-onMounted(() => {
-  driverStore.fetchNotifications();
+onMounted(async () => {
+  await driverStore.fetchDriverProfile();
+  await driverStore.fetchNotifications();
 });
+
 </script>
 
 <style scoped>

@@ -19,7 +19,7 @@
             :title="'Log In'"
             :btnColor="'#9A0404'"
             :titleColor="'#ffffff'"
-            @click="login"
+            type="submit"
           />
 
           <p class="small">

@@ -99,6 +99,7 @@ const submit = async () => {
     alert("Passwords do not match.");
     return;
   }
+  await driverStore.handleSignUp();
 };
 </script>
 

@@ -12,7 +12,7 @@
         :phoneNumber="restaurant.user?.phone_number"
       />
 
-      <ImageGallery :cover1="cover1" :cover2="cover2" :cover3="cover3" />
+      <ImageGallery :cover1="dynamicCover1" :cover2="dynamicCover2" :cover3="dynamicCover3" />
 
       <div class="tabs">
         <span
@@ -69,17 +69,13 @@
           </div>
 
           <MenuList
-            title="Most ordered right now"
-            :items="filteredMenu.slice(0, 4)"
+            v-for="category in filteredCategories"
+            :key="category.id"
+            :title="category.name"
+            :items="category.food_items"
             @add="addToCart"
           />
 
-          <MenuList
-            title="Combo Promo"
-            subtitle="40% off selected combos!"
-            :items="comboItems"
-            @add="addToCart"
-          />
         </div>
 
         <ReviewList v-else-if="activeTab === 'review'" :reviews="reviewData" />
@@ -129,6 +125,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useRestaurantStore } from "@/stores/restaurantStore";
 
+// Components
 import Breadcrumb from "@/components/customer/Breadcrumb.vue";
 import StoreInfo from "@/components/customer/StoreInfo.vue";
 import ImageGallery from "@/components/customer/ImageGallery.vue";
@@ -142,17 +139,12 @@ import Map from "@/components/delivery/map.vue";
 import avatar1 from "@/assets/avatars/avatar1.png";
 import avatar2 from "@/assets/avatars/avatar2.png";
 import avatar3 from "@/assets/avatars/avatar3.png";
-import avatar4 from "@/assets/avatars/avatar3.png"; // Note: duplicate image?
+import avatar4 from "@/assets/avatars/avatar3.png";
 
-// Store images
+// Fallback Images
 import cover1 from "@/assets/store_details/cover1.png";
 import cover2 from "@/assets/store_details/cover2.png";
 import cover3 from "@/assets/store_details/cover3.png";
-import shrimp1 from "@/assets/store_details/shrimp1.png";
-import shrimp2 from "@/assets/store_details/shrimp2.png";
-import shrimp3 from "@/assets/store_details/shrimp3.png";
-import shrimp4 from "@/assets/store_details/shrimp4.png";
-import shrimp5 from "@/assets/store_details/shrimp5.png";
 
 export default {
   name: "StoreDetailsPage",
@@ -167,122 +159,174 @@ export default {
     Map,
   },
   setup() {
-  const route = useRoute();
-  const router = useRouter();
-  const brandName = computed(() => route.params.brandName);
-  const restaurantStore = useRestaurantStore();
+    const route = useRoute();
+    const router = useRouter();
+    const restaurantStore = useRestaurantStore();
 
-  const restaurant = ref(null);
-  const menuData = ref([]); // Define it here so it can be updated
-  const comboData = ref([]); // Optional: Replace later if backend provides
-  const search = ref("");
-  const cartItems = ref([]);
-  const activeTab = ref("order");
-  const deliveryMode = ref("delivery");
-  const showSummary = ref(false);
+    // Data
+    const brandName = computed(() => route.params.brandName);
+    const restaurant = ref(null);
+    const menuData = ref([]);
+    const search = ref("");
+    const cartItems = ref([]);
+    const activeTab = ref("order");
+    const deliveryMode = ref("delivery");
+    const showSummary = ref(false);
 
-  const breadcrumbCrumbs = computed(() => [
-    { text: "Home", to: "/" },
-    { text: brandName.value, to: `/restaurant/${brandName.value}` },
-  ]);
+    // Breadcrumb
+    const breadcrumbCrumbs = computed(() => [
+      { text: "Home", to: "/" },
+      { text: brandName.value, to: `/restaurant/${brandName.value}` },
+    ]);
 
-  const loadStore = async () => {
-    await restaurantStore.fetchRestaurants();
-
-    restaurant.value = restaurantStore.restaurants.find(
-      (r) => r.name.toLowerCase() === brandName.value.toLowerCase()
-    );
-
-    if (restaurant.value) {
-      await restaurantStore.fetchFoodItemsByRestaurant(restaurant.value.id);
-      menuData.value = restaurantStore.foodItems;
-    } else {
-      console.warn("Restaurant not found");
-    }
-  };
-
-  onMounted(loadStore);
-
-  const filteredMenu = computed(() => {
-    if (!search.value) return menuData.value;
-    return menuData.value.filter((item) =>
-      item.name?.toLowerCase().includes(search.value.toLowerCase())
-    );
-  });
-
-  const cartTotal = computed(() => {
-    return cartItems.value.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  });
-
-  const addToCart = (item) => {
-    const existing = cartItems.value.find((i) => i.id === item.id);
-    if (existing) {
-      existing.quantity++;
-    } else {
-      cartItems.value.push({ ...item, quantity: 1 });
-    }
-  };
-
-  const increaseQuantity = (item) => item.quantity++;
-  const decreaseQuantity = (item) => {
-    if (item.quantity > 1) item.quantity--;
-    else cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
-  };
-
-  const goToCheckout = () => {
-    router.push({
-      name: "checkout",
-      params: {
-        brandName: brandName.value,
-        cartItems: JSON.stringify(cartItems.value),
-      },
+    // Computed
+    const filteredCategories = computed(() => {
+      if (!search.value) return restaurantStore.categories;
+      return restaurantStore.categories
+        .map((category) => ({
+          ...category,
+          food_items: category.food_items.filter((item) =>
+            item.name?.toLowerCase().includes(search.value.toLowerCase())
+          ),
+        }))
+        .filter((category) => category.food_items.length > 0);
     });
-  };
 
-  const reviewData = ref([
-    { id: 1, name: "Garima", avatar: avatar1, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Absolutely delicious..." },
-    { id: 2, name: "Cheegy", avatar: avatar2, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Whether grilled..." },
-    { id: 3, name: "Malina", avatar: avatar3, rating: 4, time: "1 hour ago", type: "Delivery", comment: "If you're a seafood lover..." },
-    { id: 4, name: "Sky", avatar: avatar4, rating: 4, time: "1 hour ago", type: "Delivery", comment: "Every bite is juicy..." },
-  ]);
+    const filteredMenu = computed(() => {
+      if (!search.value) return menuData.value;
+      return menuData.value.filter((item) =>
+        item.name?.toLowerCase().includes(search.value.toLowerCase())
+      );
+    });
 
-    const handleReservation = (reservation) => {
-      // Here you would implement the reservation handling logic
-      console.log('Reservation details:', reservation);
-      // You could make an API call here to save the reservation
+    const foodImages = computed(() => {
+      const itemsWithImages = menuData.value.filter((item) => item.img_url);
+      return itemsWithImages.slice(0, 3).map((item) => item.img_url);
+    });
+
+    const dynamicCover1 = computed(() => foodImages.value[0] || cover1);
+    const dynamicCover2 = computed(() => foodImages.value[1] || cover2);
+    const dynamicCover3 = computed(() => foodImages.value[2] || cover3);
+
+    const cartTotal = computed(() =>
+      cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0)
+    );
+
+    // Methods
+    const addToCart = (item) => {
+      const existing = cartItems.value.find((i) => i.id === item.id);
+      if (existing) existing.quantity++;
+      else cartItems.value.push({ ...item, quantity: 1 });
     };
 
+    const increaseQuantity = (item) => item.quantity++;
+    const decreaseQuantity = (item) => {
+      if (item.quantity > 1) item.quantity--;
+      else cartItems.value = cartItems.value.filter((i) => i.id !== item.id);
+    };
+
+    const goToCheckout = () => {
+      router.push({
+        name: "checkout",
+        params: {
+          brandName: brandName.value,
+          cartItems: JSON.stringify(cartItems.value),
+        },
+      });
+    };
+
+    const handleReservation = (reservation) => {
+      console.log("Reservation details:", reservation);
+      // Add API logic here if needed
+    };
+
+    // Fetch restaurant data
+    const loadStore = async () => {
+      await restaurantStore.fetchRestaurants();
+      restaurant.value = restaurantStore.restaurants.find(
+        (r) => r.name.toLowerCase() === brandName.value.toLowerCase()
+      );
+
+      if (restaurant.value) {
+        await restaurantStore.fetchCategoriesByRestaurant(restaurant.value.id);
+        await restaurantStore.fetchFoodItemsByRestaurant(restaurant.value.id);
+        menuData.value = restaurantStore.foodItems;
+      } else {
+        console.warn("Restaurant not found");
+      }
+    };
+
+    onMounted(loadStore);
+
+    // Static description (replaceable with backend content later)
     const storeDescription = ref(
-      `It serves breakfast, lunch and dinner, and also has private dining rooms for special occasions. "Malis" or Khmer, who make his parents shine. Recent guests found this hidden gem among the restaurants serving premium local tastes can find this beautiful location in a tranquil setting in which you can taste local dishes with traditional recipes, such as Samlor Mchou Kroeung (noodle soup with fresh shrimp and vegetables) and Kuy Teav Phnom Penh (noodle soup with fresh pork and beef). There are also signature rice from nearby Takeo Province and Kep crab with Kampot pepper are also restaurant's highlights.`
+      `It serves breakfast, lunch and dinner, and also has private dining rooms for special occasions. "Malis" or Khmer, who make his parents shine. Recent guests found this hidden gem among the restaurants serving premium local tastes can find this beautiful location in a tranquil setting in which you can taste local dishes with traditional recipes, such as Samlor Mchou Kroeung and Kuy Teav Phnom Penh. There are also signature rice from nearby Takeo Province and Kep crab with Kampot pepper.`
     );
 
-  return {
-    brandName,
-    breadcrumbCrumbs,
-    cover1,
-    cover2,
-    cover3,
-    restaurant,
-    activeTab,
-    search,
-    filteredMenu,
-    comboItems: comboData,
-    reviewData,
-    cartItems,
-    cartTotal,
-    deliveryMode,
-    showSummary,
-    addToCart,
-    increaseQuantity,
-    decreaseQuantity,
-    goToCheckout,
+    const reviewData = ref([
+      {
+        id: 1,
+        name: "Garima",
+        avatar: avatar1,
+        rating: 4,
+        time: "1 hour ago",
+        type: "Delivery",
+        comment: "Absolutely delicious...",
+      },
+      {
+        id: 2,
+        name: "Cheegy",
+        avatar: avatar2,
+        rating: 4,
+        time: "1 hour ago",
+        type: "Delivery",
+        comment: "Whether grilled...",
+      },
+      {
+        id: 3,
+        name: "Malina",
+        avatar: avatar3,
+        rating: 4,
+        time: "1 hour ago",
+        type: "Delivery",
+        comment: "If you're a seafood lover...",
+      },
+      {
+        id: 4,
+        name: "Sky",
+        avatar: avatar4,
+        rating: 4,
+        time: "1 hour ago",
+        type: "Delivery",
+        comment: "Every bite is juicy...",
+      },
+    ]);
+
+    // Return to template
+    return {
+      brandName,
+      breadcrumbCrumbs,
+      restaurant,
+      activeTab,
+      search,
+      deliveryMode,
+      showSummary,
+      cartItems,
+      cartTotal,
+      filteredCategories,
+      filteredMenu,
+      dynamicCover1,
+      dynamicCover2,
+      dynamicCover3,
+      addToCart,
+      increaseQuantity,
+      decreaseQuantity,
+      goToCheckout,
+      reviewData,
       handleReservation,
       storeDescription,
-  };
-}
+    };
+  },
 };
 </script>
 

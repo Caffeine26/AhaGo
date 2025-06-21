@@ -102,16 +102,24 @@ export default {
       return useRestaurantStore();
     },
     filteredRestaurants() {
-    return this.restaurantStore.restaurants.map((restaurant) => ({
+    const allRestaurants = this.restaurantStore.restaurants.map((restaurant) => ({
       id: restaurant.id,
       title: restaurant.name || 'Unnamed Restaurant',
       image: restaurant.user?.img_src || '/placeholder.png',
-      price: restaurant.rating || 0,
-      category: restaurant.category || 'Uncategorized',
+      price: restaurant.price || 0,
+      categoryNames: restaurant.categories?.map(c => c.name) || [],
       deliveryTime: restaurant.deliveryTime || '20-30 min',
       deliveryPrice: restaurant.deliveryPrice || 0.0,
       rating: restaurant.rating || 4.5,
     }));
+
+    if (!this.selectedCategory) return allRestaurants;
+
+    return allRestaurants.filter((restaurant) =>
+      restaurant.categoryNames.some(
+        (name) => name.toLowerCase() === this.selectedCategory.toLowerCase()
+      )
+    );
   }
   },
   created() {

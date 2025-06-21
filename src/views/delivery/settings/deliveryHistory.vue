@@ -27,11 +27,15 @@ import Title from "@/components/delivery/title.vue";
 import { useDriverStore } from "@/stores/driverStore";
 
 const completedOrders = computed(() => {
-  return driverStore.orders.filter((order) => order.status === "completed");
-});
+  return driverStore.orders.filter(
+    (order) =>
+      order.status === "completed" &&
+      order.driver_id === driverStore.user?.driver_id 
+  )});
 const driverStore = useDriverStore();
 onMounted(async () => {
   await driverStore.fetchOrders();
+  await driverStore.fetchDriverProfile();
 });
 </script>
 

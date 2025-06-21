@@ -124,19 +124,27 @@ function startJourney() {
     clientCoords.value,
   ];
 }
+const isCompleting = ref(false);
+
 async function markOrderCompleted() {
+  if (isCompleting.value) return;  // ignore duplicate clicks
+
   try {
+    isCompleting.value = true;
+
     await axios.patch(`http://localhost:8300/api/orders/${orderId}`, {
       status: "completed",
     });
 
-    alert("Order marked as completed!");
     router.push("/delivery/settings/history");
   } catch (error) {
     console.error("Failed to complete order:", error);
     alert("Something went wrong. Please try again.");
+  } finally {
+    isCompleting.value = false;
   }
 }
+
 
 onMounted(fetchOrderData);
 </script>

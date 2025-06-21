@@ -8,6 +8,7 @@ export const useRestaurantStore = defineStore('restaurant', () => {
   const favorites = ref([]);
   const loading = ref(false);
   const error = ref(null);
+  const categories = ref([]);
 
   const fetchRestaurants = async () => {
     loading.value = true;
@@ -51,6 +52,20 @@ export const useRestaurantStore = defineStore('restaurant', () => {
     }
   };
 
+  const fetchCategoriesByRestaurant = async (restaurantId) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await axios.get(`http://localhost:8300/api/restaurants/${restaurantId}/categories`);
+      categories.value = response.data.categories; 
+    } catch (err) {
+      error.value = 'Failed to fetch categories';
+      console.error(err);
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const toggleFavorite = (id) => {
     if (favorites.value.includes(id)) {
       favorites.value = favorites.value.filter(favId => favId !== id);
@@ -65,9 +80,11 @@ export const useRestaurantStore = defineStore('restaurant', () => {
     favorites,
     loading,
     error,
+    categories,
     fetchRestaurants,
     fetchFoodItems,
     toggleFavorite,
-    fetchFoodItemsByRestaurant
+    fetchFoodItemsByRestaurant,
+    fetchCategoriesByRestaurant
   };
 });
