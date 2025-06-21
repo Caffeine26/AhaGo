@@ -17,9 +17,9 @@
   </template>
   
   <script setup>
-  import { useFavoritesStore } from '@/stores/favorites'
+  // import { useFavoritesStore } from '@/stores/favorites'
   import ProductCard from '@/components/product_cards/ProductCard.vue'
-  const favoritesStore = useFavoritesStore()
+  // const favoritesStore = useFavoritesStore()
   </script>
   
   <style scoped>

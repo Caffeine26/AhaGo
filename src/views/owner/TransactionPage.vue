@@ -60,8 +60,7 @@ title-header= "Transactions Records"
         <td>${{ item.amount }}</td>
         <td>{{ item.created_at }}</td>
         <td>{{ item.payment }}</td>
-        <td>Success
-        </td>
+        <td>{{ item.order.payment_status }}</td>
         <td>
             <RouterLink :to="'/owner/order/invoice/' + item.order_id">
                 <button class="invoice">Get Invoice</button>
