@@ -17,8 +17,8 @@
       Sign Up
     </ul>
     <div v-if="userLoggedIn" class="user-section" @click="toggleDropdown">
-      <img src="@/assets/delivery/images/image1.png" alt="User" class="user-avatar" />
-      <span class="user-name">Veth</span>
+      <img :src="profile.photo" alt="User" class="user-avatar" />
+      <span class="user-name">{{ profile.firstName }}</span>
       <img
         src="@/assets/down.png"
         alt="arrow"
@@ -36,6 +36,11 @@
   import { useRouter } from "vue-router";
   import { defineProps, ref } from "vue";
   import ProfileDropdown from './ProfileDropdown.vue';
+  import { useUserStore } from '@/stores/userStore';
+  import { storeToRefs } from 'pinia';
+  
+  const userStore = useUserStore();
+  const { profile } = storeToRefs(userStore);
   
   const props = defineProps({
     title: {
