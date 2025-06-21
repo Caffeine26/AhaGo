@@ -6,6 +6,7 @@ export const useOrdersStore = defineStore('orders', {
     state: () => ({
         orders: [],
         ordersItems: [],
+        recentOrders: {},
     }),
     persist: true,
     actions: {
@@ -32,6 +33,11 @@ export const useOrdersStore = defineStore('orders', {
             const order = this.orders.find(o => o.id === orderId)
             if(order) order.status = newStatus
 
+        },
+        async fetchRecentOrders(restId) {
+            const response = await OrderService.getRecentOrders(restId)
+            this.recentOrders = response.data
+            console.log('recent orders=', this.recentOrders)    // obj of arrays dates and orders
         }
     }
 })

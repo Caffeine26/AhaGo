@@ -3,10 +3,10 @@
     
     <div class="menu-list">
       <div class="menu-card" v-for="menu in menus" :key="menu.id">
-        <img :src="menu.image" :alt="menu.name" />
+        <img :src="menu.img_url" :alt="menu.name" />
         <div class="menu-info">
           <h4>{{ menu.name }}</h4>
-          <p>${{ menu.price.toFixed(2) }}</p>
+          <p>${{ menu.price }}</p>
         </div>
       </div>
     </div>

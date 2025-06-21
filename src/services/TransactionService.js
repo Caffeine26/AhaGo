@@ -6,6 +6,9 @@ export default {
   getAll() {
     return axios.get(`${API_URL}`)
   },
+  getRecent(id) {
+    return axios.get(`${API_URL}/recent/${id}`)
+  },
   get(id) {
     return axios.get(`${API_URL}/${id}`)
   },

@@ -9,6 +9,9 @@ export default {
   getAllByRest(id) {
     return axios.get(`${API_URL}/rest/${id}`)
   },
+  getRecentOrders(id) {
+    return axios.get(`${API_URL}/recent/${id}`)
+  },
   get(id) {
     return axios.get(`${API_URL}/${id}`)
   },

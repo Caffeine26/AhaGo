@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 export const useTransactionStore = defineStore('transaction', {
     state: () => ({
         transactions: [],
+        recentTransactions: {},
     }),
     actions: {
         async fetchTransactions(restId) {
@@ -14,6 +15,22 @@ export const useTransactionStore = defineStore('transaction', {
             } catch (err) {
                 console.log(err)
             }
+        },
+        async getRecentTransactions(restId) {
+            try {
+                const response = await TransactionService.getRecent(restId);
+                this.recentTransactions = response.data;
+                console.log('Recent Transactions = ', this.recentTransactions)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        getRevenue() {
+            let sum = 0;
+            for(let transaction of this.transactions) {
+                sum += transaction['amount']
+            }
+            return sum;
         }
     },
     persist: true

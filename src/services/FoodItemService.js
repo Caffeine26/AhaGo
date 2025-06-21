@@ -6,12 +6,16 @@ export default {
   getAll() {
     return axios.get(`${API_URL}`)
   },
+  getTopSellers() {
+    return axios.get(`${API_URL}/top`)
+  },
   get(id) {
     return axios.get(`${API_URL}/${id}`)
   },
   getByRest(restId) {
     return axios.get(`${API_URL}/rest/${restId}`)
   },
+  
   create(data) {
     return axios.post(`${API_URL}`, data)
   },
