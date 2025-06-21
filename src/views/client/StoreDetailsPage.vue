@@ -44,8 +44,6 @@
       <div class="main-content">
         <div v-if="activeTab === 'order'" class="order-content">
           <div class="order-header">
-            <span>Order Online</span>
-            <span class="live-track">⏱️ Live track order | 30m</span>
             <div class="search-menu">
               <input
                 type="text"
@@ -57,22 +55,6 @@
               </span>
             </div>
           </div>
-
-          <div class="delivery-toggle">
-            <button
-              :class="{ active: deliveryMode === 'delivery' }"
-              @click="deliveryMode = 'delivery'"
-            >
-              Delivery
-            </button>
-            <button
-              :class="{ active: deliveryMode === 'pickup' }"
-              @click="deliveryMode = 'pickup'"
-            >
-              Pick-up
-            </button>
-          </div>
-
           <MenuList
             title="Most ordered right now"
             :items="filteredMenu.slice(0, 4)"
@@ -493,33 +475,6 @@ export default {
   color: #b91c1c;
   font-size: 1.1rem;
 }
-
-/* Delivery Toggle */
-.delivery-toggle {
-  display: flex;
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 4px;
-  margin-bottom: 1.5rem;
-  width: fit-content;
-}
-
-.delivery-toggle button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: transparent;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.delivery-toggle button.active {
-  background: white;
-  color: #b91c1c;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
 .dine-in-content {
   display: flex;
   flex-direction: column;
