@@ -347,14 +347,14 @@ export default {
   border-radius: 16px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   border: 1.5px solid #ededed;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
-  margin: 2rem 0 1.5rem 0;
+  padding: 1rem 1rem 0.7rem 1rem;
+  margin: 1.2rem 0 1rem 0;
   max-width: 600px;
 }
 .payment-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
   color: #222;
 }
 .payment-options {
@@ -423,14 +423,14 @@ export default {
   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
 }
 .visa-text {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #1a1f71;
-  margin-left: 0.3rem;
-  letter-spacing: 1px;
+  margin-left: 0.2rem;
+  letter-spacing: 0.5px;
   font-family: 'Inter', 'Quicksand', Arial, sans-serif;
   position: relative;
-  top: -6px;
+  top: -3px;
 }
 .payment-labels {
   display: flex;
@@ -439,46 +439,40 @@ export default {
   gap: 0.7rem;
 }
 .main-label {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: #222;
 }
 .aba-label {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: #222;
   margin-right: 0.5rem;
 }
 .desc-label {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   color: #444;
   font-weight: 400;
 }
 .payment-info {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #444;
-  margin-top: 0.7rem;
-  margin-left: 3.5rem;
+  margin-top: 0.5rem;
+  margin-left: 2.2rem;
   max-width: 90%;
 }
 .card-form-container {
-  margin-top: 1.5rem;
-  border-radius: 0;
-  border: none;
-  padding: 0;
-  box-shadow: none;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
+  margin-top: 1rem;
+  gap: 0.7rem;
 }
 .card-input {
   width: 100%;
-  padding: 1.1rem 1.2rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 1.35rem;
+  padding: 0.6rem 0.8rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
   font-family: 'Inter', 'Quicksand', Arial, sans-serif;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
   outline: none;
   transition: border 0.2s;
   box-sizing: border-box;
@@ -488,7 +482,7 @@ export default {
 }
 .card-row {
   display: flex;
-  gap: 1.2rem;
+  gap: 0.7rem;
 }
 .card-expiry, .card-cvc {
   width: 50%;
