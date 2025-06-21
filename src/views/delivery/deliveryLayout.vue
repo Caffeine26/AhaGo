@@ -4,7 +4,9 @@
       <Header
         title="<span style='color: #9A0404;'>AhaGo</span> Delivery"
         :basePath="'driver'"
-        :userLoggedIn="false"
+        :userLoggedIn="isLoggedIn"
+        :userProfileImg="driverStore.user?.img_src"
+        @go-to-account="goToAccount"
       />
       <Header2
         title="Deliver"
@@ -25,24 +27,22 @@
 import Header from "@/components/all/header.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import Header2 from "@/components/delivery/header2.vue";
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useDriverStore } from "@/stores/driverStore";
+const driverStore = useDriverStore();
 
 const router = useRouter();
-const userLoggedIn = ref(false);
-
-// Replace this with your actual auth logic
-const checkAuth = () => {
-  const token = localStorage.getItem("auth_token");
-  userLoggedIn.value = !!token; // true if token exists
-};
+const isLoggedIn = computed(() => !!driverStore.user);
 
 const goToAccount = () => {
   router.push("/delivery/settings/profile");
 };
 
 onMounted(() => {
-  checkAuth();
+  if (localStorage.getItem("token")) {
+    driverStore.fetchDriverProfile();
+  }
 });
 </script>
 

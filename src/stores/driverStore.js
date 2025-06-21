@@ -18,6 +18,7 @@ export const useDriverStore = defineStore("driver", () => {
   const buttons = ref([]);
   const orders = ref([]);
   const notifications = ref([]);
+  const currentOrder = ref(null);
 
   async function handleSignUp() {
     try {
@@ -30,11 +31,11 @@ export const useDriverStore = defineStore("driver", () => {
         first_name: firstName.value,
         last_name: lastName.value,
       });
-          const data = response.data;
+      const data = response.data;
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("role", "driver");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("role", "driver");
       router.push("/delivery/overview");
     } catch (error) {
       console.error("Signup failed:", error.response?.data || error.message);
@@ -66,77 +67,81 @@ export const useDriverStore = defineStore("driver", () => {
   }
 
   async function fetchDriverProfile() {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    if (!token) {
-      router.push("/login");
-      return;
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      const { data } = await api.get("/auth/currentUser", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+
+      const profile = data.user.driver_profile;
+
+      user.value = {
+        id: data.user.id,
+        email: data.user.email,
+        address: data.user.address,
+        phone: data.user.phone_number,
+        img_src: data.user.img_src,
+        firstname: profile.first_name,
+        lastname: profile.last_name,
+        idCard: profile.id_card,
+        vehicleType: profile.vehicle_type,
+        vehicleName: profile.vehicle_name,
+        vehicleColor: profile.vehicle_color,
+        licensePlate: profile.license_plate,
+        driver_id: profile.id,
+      };
+    } catch (error) {
+      console.error(
+        "Failed to fetch driver profile:",
+        error.response?.data || error.message
+      );
     }
-
-    const { data } = await api.get("/auth/currentUser", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    });
-
-    const profile = data.user.driver_profile;
-
-    user.value = {
-      id: data.user.id,
-      email: data.user.email,
-      address: data.user.address,
-      phone: data.user.phone_number,
-      img_src: data.user.img_src,
-      firstname: profile.first_name,
-      lastname: profile.last_name,
-      idCard: profile.id_card,
-      vehicleType: profile.vehicle_type,
-      vehicleName: profile.vehicle_name,
-      vehicleColor: profile.vehicle_color,
-      licensePlate: profile.license_plate,
-      driver_id: profile.id,
-    };
-  } catch (error) {
-    console.error("Failed to fetch driver profile:", error.response?.data || error.message);
   }
-}
 
+  async function saveUserProfile() {
+    try {
+      const token = localStorage.getItem("token");
 
-async function saveUserProfile() {
-  try {
-    const token = localStorage.getItem("token");
+      const updatedData = {
+        email: user.value.email,
+        phone_number: user.value.phone,
+        address: user.value.address,
+        img_src: user.value.img_src,
+        driver_profile: {
+          first_name: user.value.firstname,
+          last_name: user.value.lastname,
+          id_card: user.value.idCard,
+          vehicle_type: user.value.vehicleType,
+          vehicle_name: user.value.vehicleName,
+          vehicle_color: user.value.vehicleColor,
+          license_plate: user.value.licensePlate,
+        },
+      };
 
-    const updatedData = {
-      email: user.value.email,
-      phone_number: user.value.phone,
-      address: user.value.address,
-      img_src: user.value.img_src,
-      driver_profile: {
-        first_name: user.value.firstname,
-        last_name: user.value.lastname,
-        id_card: user.value.idCard,
-        vehicle_type: user.value.vehicleType,
-        vehicle_name: user.value.vehicleName,
-        vehicle_color: user.value.vehicleColor,
-        license_plate: user.value.licensePlate,
-      },
-    };
-
-    await api.put("/driver/profile", updatedData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    });
-
-  } catch (error) {
-    console.error("Failed to save driver profile:", error.response?.data || error.message);
-    alert("Failed to update profile.");
+      await api.put("/driver/profile", updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.error(
+        "Failed to save driver profile:",
+        error.response?.data || error.message
+      );
+      alert("Failed to update profile.");
+    }
   }
-}
-async function uploadPhoto(file) {
+  async function uploadPhoto(file) {
     const formData = new FormData();
     formData.append("photo", file);
 
@@ -156,7 +161,10 @@ async function uploadPhoto(file) {
 
       return data.img_src;
     } catch (error) {
-      console.error("Photo upload failed:", error.response?.data || error.message);
+      console.error(
+        "Photo upload failed:",
+        error.response?.data || error.message
+      );
       throw error; // rethrow so component can catch if needed
     }
   }
@@ -195,7 +203,23 @@ async function uploadPhoto(file) {
     try {
       const url = status ? `/orders?status=${status}` : "/orders";
       const { data } = await api.get(url);
-      orders.value = data;
+
+      // Parse coordinates as numbers to avoid map issues
+      orders.value = data.map((order) => {
+        return {
+          ...order,
+          restaurant: {
+            ...order.restaurant,
+            latitude: parseFloat(order.restaurant.latitude),
+            longitude: parseFloat(order.restaurant.longitude),
+          },
+          customer: {
+            ...order.customer,
+            latitude: parseFloat(order.customer.latitude),
+            longitude: parseFloat(order.customer.longitude),
+          },
+        };
+      });
     } catch (error) {
       console.error(
         "Error fetching orders:",
@@ -204,13 +228,61 @@ async function uploadPhoto(file) {
     }
   }
 
+  async function fetchOrderById(id) {
+    try {
+      const { data } = await api.get(`/orders/${id}`);
+      const order = data.data;
+
+      currentOrder.value = {
+        id: order.id,
+        status: order.status,
+        remark: order.remark,
+        totalAmount: parseFloat(order.total_amount),
+        createdAt: order.created_at,
+        orderItems: (order.order_items || []).map((item) => ({
+          id: item.id,
+          foodItemId: item.food_item_id,
+          orderId: item.order_id,
+          quantity: item.quantity,
+          price: item.price !== null ? parseFloat(item.price) : 0,
+          name: item.food_item?.name || "Unknown",
+          img_url: item.food_item?.img_url || "Unknown",
+        })),
+        details: {
+          restaurantName: order.restaurant?.name || "Restaurant",
+          restaurantAddress: order.restaurant?.user?.address || "-", // your data shows no user on restaurant, so this fallback
+          restaurantLocation: {
+            lat: parseFloat(order.restaurant?.latitude) || 0,
+            lng: parseFloat(order.restaurant?.longitude) || 0,
+          },
+          clientName:
+            `${order.customer?.first_name || ""} ${
+              order.customer?.last_name || ""
+            }`.trim() || "Customer",
+          clientAddress: order.customer?.user?.address || "-", // your data shows customer.user.address exists
+          clientLocation: {
+            lat: parseFloat(order.customer?.latitude) || 0,
+            lng: parseFloat(order.customer?.longitude) || 0,
+          },
+        },
+      };
+    } catch (error) {
+      console.error(
+        "Failed to fetch order:",
+        error.response?.data || error.message
+      );
+    }
+  }
   async function updateOrderStatus(id, status) {
     try {
       await api.patch(`/orders/${id}`, { status });
       // Remove locally updated order so UI refreshes correctly
       orders.value = orders.value.filter((order) => order.id !== id);
     } catch (error) {
-      console.error("Failed to update order status:", error.response?.data || error.message);
+      console.error(
+        "Failed to update order status:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   }
@@ -247,6 +319,7 @@ async function uploadPhoto(file) {
     buttons,
     orders,
     notifications,
+    currentOrder,
     handleSignUp,
     handleLogin,
     fetchDriverProfile,
@@ -256,6 +329,7 @@ async function uploadPhoto(file) {
     updateOrderStatus,
     fetchNotifications,
     saveUserProfile,
-    uploadPhoto
+    uploadPhoto,
+    fetchOrderById,
   };
 });

@@ -67,7 +67,7 @@ const pendingOrders = computed(() =>
   driverStore.orders.filter(
     (order) =>
       order.status === "pending" &&
-      order.driver_id === driverStore.user?.driver_id 
+      order.driver_id === driverStore.user?.driver_id
   )
 );
 
@@ -95,7 +95,7 @@ const handleReject = async (orderId) => {
 
 onMounted(() => {
   driverStore.fetchOrders();
-  driverStore.fetchDriverProfile(); 
+  driverStore.fetchDriverProfile();
 });
 </script>
 

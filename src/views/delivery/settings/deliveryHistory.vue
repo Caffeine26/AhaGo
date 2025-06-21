@@ -30,8 +30,9 @@ const completedOrders = computed(() => {
   return driverStore.orders.filter(
     (order) =>
       order.status === "completed" &&
-      order.driver_id === driverStore.user?.driver_id 
-  )});
+      order.driver_id === driverStore.user?.driver_id
+  );
+});
 const driverStore = useDriverStore();
 onMounted(async () => {
   await driverStore.fetchOrders();

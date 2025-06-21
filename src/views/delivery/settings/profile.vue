@@ -48,21 +48,20 @@
           <div class="personal">
             <Text class="head" text="Personal Information" />
             <GeneralButton
-  v-if="!isEditing"
-  title="Edit"
-  btnColor="#9a0404"
-  titleColor="#ffffff"
-  @click="startEditing"
-/>
+              v-if="!isEditing"
+              title="Edit"
+              btnColor="#9a0404"
+              titleColor="#ffffff"
+              @click="startEditing"
+            />
 
-<GeneralButton
-  v-else
-  title="Save"
-  btnColor="#9a0404"
-  titleColor="#ffffff"
-  @click="saveChanges"
-/>
-
+            <GeneralButton
+              v-else
+              title="Save"
+              btnColor="#9a0404"
+              titleColor="#ffffff"
+              @click="saveChanges"
+            />
           </div>
 
           <div class="input">
@@ -71,14 +70,10 @@
                 v-if="isEditing"
                 label="First Name"
                 :modelValue="localUser.firstname"
-                @update:modelValue="val => localUser.firstname = val"
+                @update:modelValue="(val) => (localUser.firstname = val)"
                 placeholder="Enter your first name"
               />
-              <Information
-                v-else
-                label="First Name"
-                :value="user.firstname"
-              />
+              <Information v-else label="First Name" :value="user.firstname" />
             </div>
 
             <div class="text">
@@ -89,11 +84,7 @@
                 @update:modelValue="(val) => (localUser.lastname = val)"
                 placeholder="Enter your last name"
               />
-              <Information
-                v-else
-                label="Last Name"
-                :value="user.lastname"
-              />
+              <Information v-else label="Last Name" :value="user.lastname" />
             </div>
           </div>
 
@@ -106,11 +97,7 @@
                 @update:modelValue="(val) => (localUser.email = val)"
                 placeholder="Enter your email address"
               />
-              <Information
-                v-else
-                label="Email Address"
-                :value="user.email"
-              />
+              <Information v-else label="Email Address" :value="user.email" />
             </div>
 
             <div class="text">
@@ -121,11 +108,7 @@
                 @update:modelValue="(val) => (localUser.phone = val)"
                 placeholder="Enter your phone number"
               />
-              <Information
-                v-else
-                label="Phone Number"
-                :value="user.phone"
-              />
+              <Information v-else label="Phone Number" :value="user.phone" />
             </div>
           </div>
 

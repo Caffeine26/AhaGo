@@ -17,10 +17,6 @@
             <p class="label">Bonuses</p>
             <p class="value">${{ bonuses.toFixed(2) }}</p>
           </div>
-          <div class="summary-item">
-            <p class="label">Tips</p>
-            <p class="value">${{ tips.toFixed(2) }}</p>
-          </div>
         </div>
 
         <BarChart
@@ -29,7 +25,6 @@
           :dataValues="chartValues"
         />
 
-        <!-- Aggregated Earnings List by Type -->
         <!-- Aggregated Earnings List by Type -->
         <ButtonFilter
           class="filter"
@@ -55,7 +50,6 @@
             <div>{{ summary.count }}</div>
             <div>${{ summary.total.toFixed(2) }}</div>
             <div>${{ summary.total.toFixed(2) }}</div>
-            <!-- Same as today's for now -->
           </div>
         </Box>
       </div>
@@ -64,49 +58,89 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useDriverStore } from "@/stores/driverStore";
 import BarChart from "@/components/admin/BarChart.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import ButtonFilter from "@/components/ButtonFilter.vue";
 
+const driverStore = useDriverStore();
+
 const chartLabels = ref(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
 const chartValues = ref([10, 20, 15, 30, 25, 5, 12]);
 
 const selectedFilter = ref("Today");
-
 const filterOptions = [
   { value: "Today", label: "Today" },
   { value: "This Week", label: "This Week" },
   { value: "Last Month", label: "Last Month" },
 ];
 
-// Summary data
-const totalEarnings = ref(345.0);
-const completedOrders = ref(23);
-const bonuses = ref(25.0);
-const tips = ref(30.0);
+// Computed list of completed orders
+const completedOrderList = computed(() =>
+  driverStore.orders.filter(
+    (order) =>
+      order.status === "completed" &&
+      order.driver_id === driverStore.user?.driver_id
+  )
+);
 
-// Earnings list
-const earnings = ref([
-  { id: 1, date: "2025-06-10", source: "Delivery", amount: 25.0 },
-  { id: 2, date: "2025-06-10", source: "Tip", amount: 5.0 },
-  { id: 3, date: "2025-06-09", source: "Bonus", amount: 10.0 },
-  { id: 4, date: "2025-06-08", source: "Delivery", amount: 20.0 },
-  { id: 5, date: "2025-06-08", source: "Tip", amount: 14.0 },
-]);
+// Count of completed orders
+const completedOrders = computed(() => completedOrderList.value.length);
 
+// Per order delivery earning
+const deliveryEarningPerOrder = 0.75;
+
+// Dynamic bonus: $1 for every 5 completed orders
+const bonuses = computed(() => {
+  const bonusCount = Math.floor(completedOrders.value / 5);
+  return bonusCount * 1.0;
+});
+
+// Total earnings
+const totalEarnings = computed(
+  () => completedOrders.value * deliveryEarningPerOrder + bonuses.value
+);
+
+// Earnings list ($0.75 per completed order)
+const earnings = computed(() =>
+  completedOrderList.value.map((order) => ({
+    id: order.id,
+    date: order.updated_at || order.created_at,
+    source: "Delivery",
+    amount: deliveryEarningPerOrder,
+  }))
+);
+
+// Earnings summary by type
 const earningsSummary = computed(() => {
-  const map = new Map();
+  const summary = new Map();
+
   for (const e of earnings.value) {
-    if (!map.has(e.source)) {
-      map.set(e.source, { source: e.source, count: 0, total: 0 });
+    if (!summary.has(e.source)) {
+      summary.set(e.source, { source: e.source, count: 0, total: 0 });
     }
-    const item = map.get(e.source);
+    const item = summary.get(e.source);
     item.count += 1;
     item.total += e.amount;
   }
-  return Array.from(map.values());
+
+  if (bonuses.value > 0) {
+    summary.set("Bonuses", {
+      source: "Bonuses",
+      count: Math.floor(completedOrders.value / 5),
+      total: bonuses.value,
+    });
+  }
+
+  return Array.from(summary.values());
+});
+
+// Fetch data on mount
+onMounted(async () => {
+  await driverStore.fetchDriverProfile();
+  await driverStore.fetchOrders();
 });
 </script>
 
@@ -149,7 +183,6 @@ const earningsSummary = computed(() => {
   display: flex;
   justify-content: end;
 }
-/* 🔽 Added Styles Below */
 .summary {
   display: flex;
   justify-content: space-between;

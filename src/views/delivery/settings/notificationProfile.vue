@@ -74,7 +74,6 @@ onMounted(async () => {
   await driverStore.fetchDriverProfile();
   await driverStore.fetchNotifications();
 });
-
 </script>
 
 <style scoped>
