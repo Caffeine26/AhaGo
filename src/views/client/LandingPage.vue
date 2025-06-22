@@ -14,7 +14,16 @@
             <input
               type="text"
               placeholder="Search for restaurant, cuisine or a dish"
+              v-model="searchTerm"
             />
+            <button 
+              v-if="searchTerm" 
+              @click="clearSearch" 
+              class="clear-search-btn"
+              type="button"
+            >
+              ✕
+            </button>
           </div>
         </div>
       </div>
@@ -37,7 +46,11 @@
       <div class="inspiration-section">
         <h2>
           {{
-            selectedCategory ? `${selectedCategory} Stores` : "Popular Stores"
+            searchTerm.trim() 
+              ? `Search Results for "${searchTerm}"` 
+              : selectedCategory 
+                ? `${selectedCategory} Stores` 
+                : "Popular Stores"
           }}
         </h2>
         <div class="products-grid">
@@ -55,6 +68,9 @@
             @toggle-favorite="handleToggleFavorite"
             @click="goToStoreDetails(store.name)"
           />
+        </div>
+        <div v-if="searchTerm.trim() && filteredStores.length === 0" class="no-results">
+          <p>No restaurants found for "{{ searchTerm }}". Try a different search term.</p>
         </div>
       </div>
 
@@ -88,6 +104,7 @@ const favoritesStore = useFavoritesStore();
 const { favoriteProducts } = storeToRefs(favoritesStore);
 
 const selectedCategory = ref("Food");
+const searchTerm = ref("");
 
 const favoriteIds = computed(() => favoriteProducts.value.map(p => p.id));
 
@@ -263,12 +280,23 @@ const stores = ref([
 ]);
 
 const filteredStores = computed(() => {
-  if (!selectedCategory.value) {
-    return stores.value;
+  let filtered = stores.value;
+  
+  // Filter by category if selected
+  if (selectedCategory.value) {
+    filtered = filtered.filter(store => store.category === selectedCategory.value);
   }
-  return stores.value.filter(
-    (store) => store.category === selectedCategory.value
-  );
+  
+  // Filter by search term if provided
+  if (searchTerm.value.trim()) {
+    const searchLower = searchTerm.value.toLowerCase().trim();
+    filtered = filtered.filter(store => 
+      store.name.toLowerCase().includes(searchLower) ||
+      store.category.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  return filtered;
 });
 
 const selectCategory = (category) => {
@@ -294,6 +322,10 @@ const handleToggleFavorite = (productId) => {
     };
     favoritesStore.toggleFavorite(product);
   }
+};
+
+const clearSearch = () => {
+  searchTerm.value = "";
 };
 </script>
 
@@ -344,11 +376,13 @@ const handleToggleFavorite = (productId) => {
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  position: relative;
 }
 
 .search-input input {
   width: 100%;
   padding: 1rem;
+  padding-right: 2.5rem;
   border: none;
   outline: none;
   font-size: 1rem;
@@ -363,6 +397,24 @@ const handleToggleFavorite = (productId) => {
 
 .search-input input::placeholder {
   color: #9ca3af;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clear-search-btn:hover {
+  background-color: #f3f4f6;
+  color: #6b7280;
 }
 
 .categories-section {
@@ -385,6 +437,17 @@ const handleToggleFavorite = (productId) => {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 @media (max-width: 1024px) {
