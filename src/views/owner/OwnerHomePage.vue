@@ -29,7 +29,10 @@ it5="Profile"
 ></TrendingMenus>
 
 
-<PieChart></PieChart>
+<PieChart
+:labels="topCategories.categories"
+:data="topCategories.quantities"
+></PieChart>
 <!-- <RestaurantBanner
 :image-src="imageSrc"
 :name="name"
@@ -143,6 +146,10 @@ export default {
         transactionStore.getRecentTransactions(2)
         this.recentTransactions = transactionStore.recentTransactions
 
+        // fetch data of top categories
+        orderStore.fetchTopCategories()
+        this.topCategories = orderStore.topCategories
+
 
     },
     methods: {
@@ -158,6 +165,7 @@ export default {
             recentOrdersData: null,
             topsolds: null,
             recentTransactions: null,
+            topCategories: null,
             dish: [
                 {
                     imageSrc: 'src/assets/owner/img/pleasachko.jpg',

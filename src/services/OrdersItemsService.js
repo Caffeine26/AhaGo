@@ -6,6 +6,9 @@ export default {
   getAll() {
     return axios.get(`${API_URL}`)
   },
+  getTopCats() {
+    return axios.get(`${API_URL}/topCategories`)
+  },
   get(id) {
     return axios.get(`${API_URL}/${id}`)
   },

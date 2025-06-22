@@ -7,6 +7,7 @@ export const useOrdersStore = defineStore('orders', {
         orders: [],
         ordersItems: [],
         recentOrders: {},
+        topCategories: {},
     }),
     persist: true,
     actions: {
@@ -38,6 +39,11 @@ export const useOrdersStore = defineStore('orders', {
             const response = await OrderService.getRecentOrders(restId)
             this.recentOrders = response.data
             console.log('recent orders=', this.recentOrders)    // obj of arrays dates and orders
+        },
+        async fetchTopCategories() {
+            const response = await OrderItemsService.getTopCats()
+            this.topCategories = response.data
+            console.log('topCategories=', this.topCategories)    // obj of arrays dates and orders
         }
     }
 })
