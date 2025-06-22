@@ -6,20 +6,25 @@
       </div>
 
       <div class="content">
-        <Box v-for="order in driverStore.orders" :key="order.id" class="box">
-          <div class="head"> Order #{{ order.id || "Delivery Request" }}</div>
+        <Box v-for="order in pendingOrders" :key="order.id" class="box">
+          <div class="head">Order #{{ order.id || "Delivery Request" }}</div>
 
           <div class="location">
             <p v-if="order.restaurant?.name" class="text">
-            Pick up: {{ order.restaurant.name }}
-          </p>
-          <p class="text">||</p>
-          <p v-if="order.customer.address" class="text">
-            Destination: {{ order.customer.address }}
-          </p>
+              Pick up: {{ order.restaurant.name }}
+            </p>
+            <p class="text">||</p>
+            <p v-if="order.customer?.user?.address" class="text">
+              Destination: {{ order.customer.user.address }}
+            </p>
           </div>
-          <p v-if="order.customer_profile?.name" class="text">
-            Customer: {{ order.customer_profile.name }}
+          <p v-if="order.customer" class="text">
+            Customer:
+            {{
+              (order.customer.first_name || "") +
+              " " +
+              (order.customer.last_name || "")
+            }}
           </p>
 
           <p class="link">Remark: {{ order.remark }}</p>
@@ -47,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useDriverStore } from "@/stores/driverStore";
 import Title from "@/components/delivery/title.vue";
@@ -58,45 +63,23 @@ const router = useRouter();
 const driverStore = useDriverStore();
 const isProcessing = ref(false);
 
-const handleAccept = (orderId) => {
-  updateOrderStatus(orderId, "accepted");
-};
+const pendingOrders = computed(() =>
+  driverStore.orders.filter((order) => order.status === "pending")
+);
 
-const handleReject = (orderId) => {
-  updateOrderStatus(orderId, "rejected");
-};
-
-const updateOrderStatus = async (id, status) => {
-  if (isProcessing.value) return;
-
-  if (
-    status === "rejected" &&
-    !confirm("Are you sure you want to reject this order?")
-  ) {
-    return;
-  }
-
-  isProcessing.value = true;
-
+const handleAccept = async (orderId) => {
   try {
-    await fetch(`http://localhost:8300/api/orders/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+    await driverStore.updateOrderStatus(orderId, "preparing");
+  } catch {
+    alert("Failed to accept order. Please try again.");
+  }
+};
 
-    const order = driverStore.orders.find((o) => o.id === id);
-
-    if (status === "accepted") {
-      router.push({ name: "mapOrder", params: { id: order.id } });
-    } else {
-      await driverStore.fetchOrders(); // refresh orders after rejection
-    }
-  } catch (error) {
-    console.error("Failed to update order status:", error);
-    alert("Something went wrong. Please try again.");
-  } finally {
-    isProcessing.value = false;
+const handleReject = async (orderId) => {
+  try {
+    await driverStore.updateOrderStatus(orderId, "cancelled");
+  } catch {
+    alert("Failed to reject order. Please try again.");
   }
 };
 

@@ -9,9 +9,9 @@ export const useOrdersStore = defineStore('orders', {
     }),
     persist: true,
     actions: {
-        async fetchOrders() {
+        async fetchOrders(id) {
             try {
-                const response = await OrderService.getAll();
+                const response = await OrderService.getAllByRest(id);
                 this.orders = response.data;
                 console.log('orders = ', this.orders)
             } catch (err) {
@@ -26,6 +26,12 @@ export const useOrdersStore = defineStore('orders', {
             } catch (err) {
                 console.log(err)
             }
+        },
+        async updateOrderStatus(orderId, newStatus) {
+            await OrderService.update(orderId, { 'status': newStatus })
+            const order = this.orders.find(o => o.id === orderId)
+            if(order) order.status = newStatus
+
         }
     }
 })

@@ -3,9 +3,9 @@
     <h3>{{ category }}</h3>
     <div class="order-items">
       <div v-for="item in items" :key="item.id" class="order-item">
-        <img :src="item.image" class="item-img" />
+        <img :src="item.img_url" class="item-img" />
         <div class="item-details">
-          <div class="item-name">{{ item.title }}</div>
+          <div class="item-name">{{ item.name }}</div>
           <div class="item-quantity">x{{ item.quantity }}</div>
         </div>
         <div class="item-price">

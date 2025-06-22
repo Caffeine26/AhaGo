@@ -17,7 +17,6 @@
                 <tr>
                     <th>No.</th>
                     <th>Item</th>
-                    <th>Size</th>
                     <th>Unit</th>
                     <th>Subtotal</th>
                 </tr>
@@ -25,18 +24,16 @@
                 <tr v-for="(item, index) in orderItems">
                     <td>{{ index+1 }}</td>
                     <td>{{ item.name }}</td>
-                    <td>{{ item.size }}</td>
-                    <td>{{ item.unit }}</td>
-                    <td>${{ item.subtotal }}</td>
+                    <td>{{ item.pivot.quantity }}</td>
+                    <td>${{ item.pivot.price }}</td>
                 </tr>
             </table>
 
             <div class="total">
                 <div>Total: </div>
                 <div>
-                    <span>${{ totalPrice }} </span>
-                    <span v-if="paid"> (PAID)</span>
-                    <span v-else>(UNPAID)</span>
+                    <span>${{ amount }} </span>
+                    <span>({{ paid }})</span>
                 </div>
             </div>
 
@@ -44,7 +41,7 @@
                 <div>Status:</div>
                 <div>
                     <StatusAction
-                    :status-id="orderStatus"
+                    :status="orderStatus"
                     ></StatusAction>
                 </div>
             </div>
@@ -69,20 +66,13 @@ export default {
         StatusAction
     },
     props: {
-        orderId: String,
+        orderId: Number,
         orderDate: String,
-        paid: Boolean,
-        orderStatus: Number,
+        paid: String,
+        orderStatus: String,
         orderItems: Array,
-    },
-    computed: {
-        totalPrice() {
-            let res = 0;
-            for(let i=0; i<this.orderItems.length; i++) {
-                res = res + this.orderItems[i].subtotal
-            }
-            return res
-        }
+        amount: String,
+        remark: String,
     },
     methods: {
         goToPrevious() {

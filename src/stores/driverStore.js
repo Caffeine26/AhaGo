@@ -1,125 +1,137 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import router from '@/router'
-import axios from 'axios'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import router from "@/router";
+import axios from "axios";
 
-export const useDriverStore = defineStore('driver', () => {
-  // Signup/Login form state
-  const firstName = ref('')
-  const lastName = ref('')
-  const email = ref('')
-  const password = ref('')
-  const confirmPassword = ref('')
+const api = axios.create({
+  baseURL: "http://localhost:8300/api",
+});
 
-  // Dashboard data
-  const sections = ref([])
-  const buttons = ref([])
-  const orders = ref([])
+export const useDriverStore = defineStore("driver", () => {
+  const firstName = ref("");
+  const lastName = ref("");
+  const email = ref("");
+  const password = ref("");
+  const confirmPassword = ref("");
 
-  // Sign up function
+  const sections = ref([]);
+  const buttons = ref([]);
+  const orders = ref([]);
+  const notifications = ref([]);
+
   async function handleSignUp() {
     try {
-      const response = await axios.post('http://localhost:8300/api/signup', {
+      const response = await api.post("/signup", {
         name: `${firstName.value} ${lastName.value}`,
         email: email.value,
         password: password.value,
         password_confirmation: confirmPassword.value,
-        role: 'driver',
+        role: "driver",
         first_name: firstName.value,
         last_name: lastName.value,
-      })
+      });
 
-      alert('Signup successful! Please login.')
-      router.push('/driver/login')
+      alert("Signup successful!");
+      router.push("/delivery/overview");
     } catch (error) {
-      console.error('Signup failed:', error.response?.data || error.message)
-      alert('Signup failed: ' + (error.response?.data?.message || 'Unknown error'))
+      console.error("Signup failed:", error.response?.data || error.message);
+      alert(
+        "Signup failed: " + (error.response?.data?.message || "Unknown error")
+      );
     }
   }
 
-  // Login function
   async function handleLogin() {
-    const loginUrl = `http://localhost:8300/api/driver/login`
-
     try {
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value,
-        }),
-      })
+      const { data } = await api.post("/driver/login", {
+        email: email.value,
+        password: password.value,
+      });
 
-      const data = await response.json()
-
-      if (response.ok && data.user) {
-        alert(`Welcome, ${data.user.name}`)
-        localStorage.setItem('user', JSON.stringify(data.user))
-        localStorage.setItem('role', 'driver')
-        router.push('/delivery/overview')
+      if (data.user) {
+        alert(`Welcome, ${data.user.name}`);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("role", "driver");
+        router.push("/delivery/overview");
       } else {
-        alert(data.message || 'Login failed.')
+        alert(data.message || "Login failed.");
       }
     } catch (error) {
-      console.error('Login error:', error)
-      alert('Unable to connect. Please try again.')
+      console.error("Login error:", error.response?.data || error.message);
+      alert("Unable to connect. Please try again.");
     }
   }
 
-  // Fetch driver guide sections
   async function fetchSections() {
     try {
-      const res = await fetch('http://localhost:8300/api/driver-sections')
-      if (!res.ok) throw new Error('Failed to fetch')
-
-      const data = await res.json()
-      sections.value = data.map(section => ({
+      const { data } = await api.get("/driver-sections");
+      sections.value = data.map((section) => ({
         ...section,
         linkTo: section.link_to,
-        buttons: section.buttons.map(btn => ({
+        buttons: section.buttons.map((btn) => ({
           ...btn,
           imageSrc: btn.img_src,
         })),
-      }))
-    } catch (e) {
-      console.error('Error fetching sections:', e)
+      }));
+    } catch (error) {
+      console.error(
+        "Error fetching sections:",
+        error.response?.data || error.message
+      );
     }
   }
 
-  // Fetch all buttons
   async function fetchButtons() {
     try {
-      const res = await fetch('http://localhost:8300/api/driver-buttons')
-      if (!res.ok) throw new Error('Failed to fetch')
-
-      const data = await res.json()
-      buttons.value = data
-    } catch (e) {
-      console.error('Error fetching buttons:', e)
+      const { data } = await api.get("/driver-buttons");
+      buttons.value = data;
+    } catch (error) {
+      console.error(
+        "Error fetching buttons:",
+        error.response?.data || error.message
+      );
     }
   }
 
-  // Fetch orders (all or filtered by status)
   async function fetchOrders(status = null) {
     try {
-      let url = 'http://localhost:8300/api/orders'
-      if (status) url += `?status=${status}`
-
-      const res = await fetch(url)
-      if (!res.ok) throw new Error('Failed to fetch')
-
-      orders.value = await res.json()
-    } catch (e) {
-      console.error('Error fetching orders:', e)
+      const url = status ? `/orders?status=${status}` : "/orders";
+      const { data } = await api.get(url);
+      orders.value = data;
+    } catch (error) {
+      console.error(
+        "Error fetching orders:",
+        error.response?.data || error.message
+      );
     }
   }
 
+  async function updateOrderStatus(id, status) {
+    try {
+      await api.patch(`/orders/${id}`, { status });
+
+      // Remove the order from local list immediately
+      orders.value = orders.value.filter((order) => order.id !== id);
+    } catch (error) {
+      console.error(
+        "Failed to update order status:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+  async function fetchNotifications(driverId) {
+    try {
+      const { data } = await api.get(`/notifications`);
+      notifications.value = data;
+    } catch (error) {
+      console.error(
+        "Error fetching notifications:",
+        error.response?.data || error.message
+      );
+    }
+  }
   return {
-    // state
     firstName,
     lastName,
     email,
@@ -128,12 +140,13 @@ export const useDriverStore = defineStore('driver', () => {
     sections,
     buttons,
     orders,
-
-    // actions
+    notifications,
     handleSignUp,
     handleLogin,
     fetchSections,
     fetchButtons,
     fetchOrders,
-  }
-})
+    updateOrderStatus,
+    fetchNotifications,
+  };
+});

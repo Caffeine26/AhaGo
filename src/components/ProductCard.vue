@@ -4,11 +4,11 @@
 
         <div class="dishInfo">
             <div class="title">
-                <span>{{ name }}</span>
+                <span>{{ title }}</span>
                 <span><b>${{ price }}</b></span>
             </div>
             <div class="description">
-                {{ desc }}
+                {{ description }}
             </div>
 
             <div class="status">

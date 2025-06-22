@@ -11,7 +11,7 @@
       </div>
       <div class="content">
         <Box
-          v-for="notification in notifications"
+          v-for="notification in driverStore.notifications"
           :key="notification.id"
           class="box"
         >
@@ -53,16 +53,15 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import axios from "axios";
 import { useRouter } from "vue-router";
-
+import { useDriverStore } from "@/stores/driverStore";
 import ButtonFilter from "@/components/ButtonFilter.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 
 const router = useRouter();
-
+const driverStore = useDriverStore();
 const selectedFilter = ref("Today");
 
 const filterOptions = [
@@ -71,52 +70,9 @@ const filterOptions = [
   { value: "Last Month", label: "Last Month" },
 ];
 
-const notifications = ref([]);
-
-const fetchNotifications = async () => {
-  try {
-    const { data } = await axios.get(
-      "http://localhost:4000/api/notifications",
-      {
-        params: { filter: selectedFilter.value },
-      }
-    );
-    notifications.value = data;
-  } catch (error) {
-    console.error("Failed to fetch notifications:", error);
-  }
-};
-
-const updateNotificationStatus = async (id, status) => {
-  try {
-    await axios.patch(`http://localhost:4000/api/notifications/${id}`, {
-      status,
-    });
-
-    const notification = notifications.value.find((n) => n.id === id);
-
-    if (status === "accepted") {
-      router.push({
-        name: "mapOrder",
-        query: {
-          orderId: notification.id,
-          restaurantLat: notification.details.restaurantLocation.lat,
-          restaurantLng: notification.details.restaurantLocation.lng,
-          clientLat: notification.details.clientLocation.lat,
-          clientLng: notification.details.clientLocation.lng,
-        },
-      });
-    } else {
-      fetchNotifications();
-    }
-  } catch (error) {
-    console.error("Failed to update notification:", error);
-    alert("Something went wrong. Please try again.");
-  }
-};
-
-watch(selectedFilter, fetchNotifications);
-onMounted(fetchNotifications);
+onMounted(() => {
+  driverStore.fetchNotifications();
+});
 </script>
 
 <style scoped>

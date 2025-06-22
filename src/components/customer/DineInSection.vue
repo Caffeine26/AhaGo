@@ -67,7 +67,7 @@ export default {
       this.loading = true;
       try {
         // Emit the form data to parent for backend connection
-        await this.$emit('make-reservation', { ...this.form });
+         this.$emit('make-reservation', { ...this.form });
         this.success = true;
       } catch (e) {
         this.error = e?.message || 'Failed to submit reservation.';

@@ -1,10 +1,10 @@
 <template>
-    <div class="container" :style="{ backgroundColor: btnColor }">
+    <button class="container" :style="{ backgroundColor: btnColor }" :type="type" @click="$emit('click')">
         <span v-if="imgUrl">
             <img id="imgUrl" v-bind:src="imgUrl" alt="image">
         </span>
         <span :style="{ color: titleColor }">{{ title }}</span>
-    </div>
+    </button>
 </template>
 
 <script>
@@ -16,7 +16,10 @@ export default {
             required: true
         },
         btnColor: String,
-        titleColor: String,
+        titleColor: String,type: {
+        type: String,
+        default: 'button', 
+        },
     },
     data() {
         return {
@@ -39,5 +42,7 @@ export default {
     font-weight: 500;
     margin: 10px;
     cursor: pointer;
+    border: none;
+    font-size: 16px;
 }
 </style>

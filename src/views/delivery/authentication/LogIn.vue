@@ -6,7 +6,11 @@
         <h2>Log In</h2>
         <form @submit.prevent="login">
           <InputText v-model="email" type="email" placeholder="Email Address" />
-          <InputText v-model="password" type="password" placeholder="Password" />
+          <InputText
+            v-model="password"
+            type="password"
+            placeholder="Password"
+          />
 
           <div class="link small">Forgot your password?</div>
 
@@ -32,9 +36,9 @@
 import InputText from "@/components/all/inputText.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import { ref } from "vue";
-import { useDriverStore } from '@/stores/driverStore'
+import { useDriverStore } from "@/stores/driverStore";
 
-const driverStore = useDriverStore()
+const driverStore = useDriverStore();
 
 const email = ref("");
 const password = ref("");
@@ -47,8 +51,8 @@ async function login() {
   }
 
   // Set the store refs for login
-  driverStore.email = email.value
-  driverStore.password = password.value
+  driverStore.email = email.value;
+  driverStore.password = password.value;
 
   await driverStore.handleLogin();
 }
@@ -58,7 +62,6 @@ async function login() {
 .container {
   display: flex;
   height: 91.6vh;
-  font-family: Arial, sans-serif;
 }
 
 .image-section {

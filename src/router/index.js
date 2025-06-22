@@ -97,7 +97,7 @@ const router = createRouter({
       component: () => import('@/views/client/LandingPage.vue')
     },
     {
-      path: '/store/:brandName',
+      path: '/restaurant/:brandName',
       name: 'StoreDetails',
       component: () => import('@/views/client/StoreDetailsPage.vue')
     },
@@ -256,7 +256,7 @@ const router = createRouter({
       component: MenuEditPage
     },
     {
-      path: "/owner/order",
+      path: "/owner/:restId/orders",
       component: OrdersPage,
     },
     {
@@ -268,8 +268,8 @@ const router = createRouter({
       component: InvoicePage,
     },
     {
-      path: "/owner/transactions",
-      component: TransactionPage,
+      path: "/owner/:restId/transactions",
+      component: TransactionPage
     },
     {
       path: "/owner/profile/:restId",

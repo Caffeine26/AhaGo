@@ -62,6 +62,7 @@ import invoice from '@/assets/owner/svg/invoice.svg';
 import Invoice from '@/components/Invoice.vue';
 import backarrow from '@/assets/owner/svg/backarrow.svg'
 import html2pdf from 'html2pdf.js';
+import { useTransactionStore } from '@/stores/transactionStore';
 
 export default {
     components: {
@@ -72,21 +73,24 @@ export default {
         AppFooter
     },
     created() {
-        const orderId = this.$route.params.orderId;
-        const order = this.orders.find( item => item.orderId = orderId );
+        const invoice = useTransactionStore()
+        this.orderId = parseInt(this.$route.params.orderId);
+        // get order for invoice
+        this.order = invoice.transactions.find( item => item.order_id === this.orderId );
+        console.log('invoice order=', this.order)
         
-        this.orderId = order.orderId;
-        this.orderDate = order.orderDate;
-        this.clientName = order.clientName;
-        this.clientEmail = order.clientEmail;
-        this.clientTel = order.clientTel;
-        this.clientLocation = order.clientLocation;
-        this.restName = order.restName;
-        this.restEmail = order.restEmail;
-        this.restTel = order.restTel;
-        this.remark = order.remark;
-        this.payMethod = order.payMethod;
-        this.orderItems = order.orderItems;
+        this.orderId = this.order.order_id;
+        this.orderDate = this.order.created_at;
+        this.clientName = this.order.customer.city;
+        this.clientEmail = this.order.customer.user.email;
+        this.clientTel = this.order.customer.user.phone_number;
+        this.clientLocation = this.order.customer.city;
+        this.restName = this.order.restaurant.name;
+        this.restEmail = this.order.restaurant.user.email;
+        this.restTel = this.order.restaurant.user.phone_number;
+        this.remark = this.order.order.remark;
+        this.payMethod = this.order.payment;
+        this.orderItems = this.order.order.food_items;
     },
     methods: {
         downloadAsPDF() {
@@ -102,7 +106,9 @@ export default {
             invoice: invoice,
             backarrow: backarrow,
 
-            orderId: 0,
+            orderId: null,
+            order: null,
+
             orderDate: '',
             clientName: '',
             clientEmail: '',
