@@ -122,6 +122,16 @@ const router = createRouter({
       name: 'ProfileSettings',
       component: () => import('@/views/client/ProfileSettings.vue')
     },
+    {
+      path: '/history',
+      name: 'History',
+      component: () => import('@/views/client/HistoryPage.vue')
+    },
+    {
+      path: '/review/:orderId',
+      name: 'ClientReview',
+      component: () => import('@/views/client/ReviewPage.vue')
+    },
       ]
     },
     {

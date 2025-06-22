@@ -64,12 +64,14 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 const defaultPhoto = 'https://via.placeholder.com/120x120?text=Photo'
 const cities = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville']
 
 const userStore = useUserStore()
 const { profile } = storeToRefs(userStore)
+const router = useRouter()
 
 const fileInput = ref(null)
 
@@ -91,6 +93,7 @@ function onPhotoChange(e) {
 function saveProfile() {
   userStore.updateProfile(profile.value)
   alert('Profile saved!')
+  router.push('/')
 }
 </script>
 

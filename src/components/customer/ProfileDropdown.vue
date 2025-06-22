@@ -3,6 +3,7 @@
     <ul>
       <li @click="goTo('/profile-settings')">Profile</li>
       <li @click="goTo('/favorite')">Favorite</li>
+      <li @click="goTo('/history')">History</li>
       <li @click="logout">Log out</li>
     </ul>
   </div>
