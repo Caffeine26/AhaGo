@@ -62,20 +62,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 const defaultPhoto = 'https://via.placeholder.com/120x120?text=Photo'
 const cities = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville']
 
-const profile = ref({
-  photo: '',
-  firstName: 'Skibidi',
-  lastName: 'Toilet',
-  email: 'Skibidi@gmail.com',
-  phone: '012-345-678',
-  address: 'Skibidi',
-  country: 'Cambodia',
-  city: 'Phnom Penh'
-})
+const userStore = useUserStore()
+const { profile } = storeToRefs(userStore)
+const router = useRouter()
 
 const fileInput = ref(null)
 
@@ -95,8 +91,9 @@ function onPhotoChange(e) {
 }
 
 function saveProfile() {
-  // Here you would send `profile.value` to your backend
-  alert('Profile saved! (implement backend call here)')
+  userStore.updateProfile(profile.value)
+  alert('Profile saved!')
+  router.push('/')
 }
 </script>
 
@@ -170,6 +167,8 @@ label {
   font-size: 1.1rem;
 }
 input, select {
+  width: 100%;
+  box-sizing: border-box;
   border: 1.5px solid #b91c1c;
   border-radius: 8px;
   padding: 0.6rem 1rem;
