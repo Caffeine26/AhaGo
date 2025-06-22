@@ -47,6 +47,9 @@ import Review from "@/views/Admin/Review.vue";
 import Inventory from "@/views/Admin/Inventory.vue";
 import Login from "@/views/Admin/Login.vue";
 import Signup from "@/views/Admin/Signup.vue";
+import FavoritePage from "@/views/client/FavoritePage.vue";
+import ProfileSettings from "@/views/client/ProfileSettings.vue";
+import OwnerHomePage from "@/views/owner/OwnerHomePage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,6 +66,16 @@ const router = createRouter({
       path: "/splash",
       name: "Splash",
       component: HomePage,
+    },
+    {
+      path: "/favorite",
+      name: "favorite",
+      component: FavoritePage,
+    },
+    {
+      path: "/prf",
+      name: "prf",
+      component: ProfileSettings,
     },
     {
       path: "/login",
@@ -290,6 +303,10 @@ const router = createRouter({
     {
       path: "/owner/signup",
       component: OwnerSignup,
+    },
+    {
+      path: "/owner/home",
+      component: OwnerHomePage,
     },
     {
       path: "/admin/dashboard",

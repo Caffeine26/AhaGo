@@ -106,7 +106,7 @@
 <script>
 import Sidebar from '@/components/admin/Sidebar.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
-import OrderLineChart from '@/components/admin/OrderLineChart.vue';
+import OrderLineChart from '@/components/admin/RevenueLineChart.vue';
 import OrderDonutChart from '@/components/admin/OrderDonutChart.vue';
 import DashboardWidgets from '@/components/admin/DashboardWidgets.vue';
 

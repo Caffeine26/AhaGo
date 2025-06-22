@@ -7,15 +7,15 @@
     <Doughnut :data="chartData" :options="chartOptions" />
     <div class="legend">
       <div
-        v-for="(item, index) in legendItems"
+        v-for="(item, index) in labels"
         :key="index"
         class="legend-item"
       >
         <div
-          :style="{ backgroundColor: item.color }"
+          :style="{ backgroundColor: backgroundColor[index] }"
           class="legend-color"
         ></div>
-        <span>{{ item.label }}</span>
+        <span>{{ item }}</span>
       </div>
     </div>
     <button class="see-more">See more</button>
@@ -28,16 +28,23 @@ import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from "chart.js";
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
+const props = defineProps({
+  labels: Array,
+  data: Array
+})
+
 const chartData = {
-  labels: ["Sea Food", "Beverage", "China Food", "Pizza", "Khmer Food"],
+  labels: props.labels,
   datasets: [
     {
-      data: [30, 20, 20, 15, 15],
+      data: props.data,
       backgroundColor: ["#FFB6B6", "#FFA500", "#7B2CBF", "#2CA58D", "#FF0000"],
       borderWidth: 0,
     },
   ],
 };
+
+const backgroundColor = ["#FFB6B6", "#FFA500", "#7B2CBF", "#2CA58D", "#FF0000"];
 
 const chartOptions = {
   cutout: "50%", // for donut style

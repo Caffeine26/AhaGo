@@ -21,6 +21,9 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 export default {
   name: 'BarChart',
   components: { Bar },
+  props: {
+    ordersData: Object
+  },
   data() {
     return {
       staticData: {
@@ -32,10 +35,10 @@ export default {
   computed: {
     chartData() {
       return {
-        labels: this.staticData.labels,
+        labels: this.ordersData.dates,
         datasets: [{
           label: 'Orders',
-          data: this.staticData.values,
+          data: this.ordersData.orders,
           backgroundColor: '#FF0000',
           borderRadius: 12,
           barThickness: 40

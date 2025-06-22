@@ -12,12 +12,18 @@ import {
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
 
+// define props for the chart
+const props = defineProps({
+  labels: Array,
+  data: Array
+})
+
 const chartData = {
-  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  labels: props.labels,
   datasets: [
     {
-      label: 'Orders',
-      data: [50, 150, 320, 160, 350, 420, 330],
+      label: 'Income',
+      data: props.data,
       borderColor: '#b73225',
       borderWidth: 2,
       fill: false,

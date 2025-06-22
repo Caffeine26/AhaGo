@@ -46,6 +46,7 @@
   const toggleFavorite = (product) => {
     favoritesStore.toggleFavorite(product)
   }
+
   </script>
   
   <style scoped>
