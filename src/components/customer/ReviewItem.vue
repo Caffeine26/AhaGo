@@ -14,7 +14,7 @@
     <RateStar
       :modelValue="review.rating"
       :totalStars="5"
-      @update:modelValue="noop"
+      :static="true"
     />
 
     <div class="review-comment">{{ review.comment }}</div>
@@ -39,10 +39,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  methods: {
-    // No operation on update — reviews display is static, no rating change allowed here.
-    noop() {},
   },
 };
 </script>

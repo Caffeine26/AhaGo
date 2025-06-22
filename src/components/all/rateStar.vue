@@ -1,11 +1,11 @@
 <template>
-  <div class="star-rating">
+  <div class="star-rating" :class="{ static: static }">
     <svg
       v-for="index in totalStars"
       :key="index"
-      @click="setRating(index)"
-      @mouseover="hoverRating = index"
-      @mouseleave="hoverRating = 0"
+      @click="!static && setRating(index)"
+      @mouseover="!static && (hoverRating = index)"
+      @mouseleave="!static && (hoverRating = 0)"
       class="star"
       :class="{ filled: (hoverRating || rating) >= index }"
       width="40"
@@ -33,6 +33,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  static: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -59,6 +63,10 @@ const setRating = (value) => {
   cursor: pointer;
   color: lightgray;
   transition: color 0.2s;
+}
+
+.static .star {
+  cursor: default;
 }
 
 .star.filled {

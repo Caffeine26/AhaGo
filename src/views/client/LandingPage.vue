@@ -14,7 +14,16 @@
             <input
               type="text"
               placeholder="Search for restaurant, cuisine or a dish"
+              v-model="searchTerm"
             />
+            <button 
+              v-if="searchTerm" 
+              @click="clearSearch" 
+              class="clear-search-btn"
+              type="button"
+            >
+              ✕
+            </button>
           </div>
         </div>
       </div>
@@ -37,24 +46,31 @@
       <div class="inspiration-section">
         <h2>
           {{
-            selectedCategory ? `${selectedCategory} Stores` : "Popular Stores"
+            searchTerm.trim() 
+              ? `Search Results for "${searchTerm}"` 
+              : selectedCategory 
+                ? `${selectedCategory} Stores` 
+                : "Popular Stores"
           }}
         </h2>
         <div class="products-grid">
           <ProductCard
-            v-for="restaurant in filteredRestaurants"
-            :key="restaurant.id"
-            :title="restaurant.title"
-            :image="restaurant.image"
-            :price="restaurant.price"
-            :category="restaurant.category"
-            :delivery-time="restaurant.deliveryTime"
-            :delivery-price="restaurant.deliveryPrice"
-            :rating="restaurant.rating"
-            :product-id="restaurant.id"
-            @click="goToRestaurantDetails(restaurant.title)"
-
+            v-for="store in filteredStores"
+            :key="store.id"
+            :title="store.name"
+            :image="store.logo"
+            :price="store.rating"
+            :category="store.category"
+            :delivery-time="store.deliveryTime"
+            :delivery-price="store.deliveryPrice"
+            :productId="store.id"
+            :favorites="favoriteIds"
+            @toggle-favorite="handleToggleFavorite"
+            @click="goToStoreDetails(store.name)"
           />
+        </div>
+        <div v-if="searchTerm.trim() && filteredStores.length === 0" class="no-results">
+          <p>No restaurants found for "{{ searchTerm }}". Try a different search term.</p>
         </div>
       </div>
 
@@ -74,60 +90,244 @@
   </div>
 </template>
 
-<script>
-import { useRestaurantStore } from "@/stores/restaurantStore";
+<script setup>
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useFavoritesStore } from '@/stores/favorites';
+import { storeToRefs } from 'pinia';
 import CategoryCard from "@/components/product_cards/CategoryCard.vue";
 import ProductCard from "@/components/product_cards/ProductCard.vue";
 import BrandHighlight from "@/components/BrandHighlight.vue";
 
-export default {
-  name: "LandingPage",
-  components: {
-    CategoryCard,
-    ProductCard,
-    BrandHighlight,
-  },
-  data() {
-    return {
-      selectedCategory: "Food",
-      categories: [
-        { id: 1, title: "Food", image: "/src/assets/client/food.png" },
-        { id: 2, title: "Dessert", image: "/src/assets/client/dessert.png" },
-        { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
-      ],
-    };
-  },
-  computed: {
-    restaurantStore() {
-      return useRestaurantStore();
-    },
-    filteredRestaurants() {
-    return this.restaurantStore.restaurants.map((restaurant) => ({
-      id: restaurant.id,
-      title: restaurant.name || 'Unnamed Restaurant',
-      image: restaurant.user?.img_src || '/placeholder.png',
-      price: restaurant.rating || 0,
-      category: restaurant.category || 'Uncategorized',
-      deliveryTime: restaurant.deliveryTime || '20-30 min',
-      deliveryPrice: restaurant.deliveryPrice || 0.0,
-      rating: restaurant.rating || 4.5,
-    }));
+const router = useRouter();
+const favoritesStore = useFavoritesStore();
+const { favoriteProducts } = storeToRefs(favoritesStore);
+
+const selectedCategory = ref("Food");
+const searchTerm = ref("");
+
+const favoriteIds = computed(() => favoriteProducts.value.map(p => p.id));
+
+const categories = ref([
+  { id: 1, title: "Food", image: "/src/assets/client/food.png" },
+  { id: 2, title: "Dessert", image: "/src/assets/client/dessert.png" },
+  { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
+]);
+
+const stores = ref([
+  {
+          id: 1,
+          name: "KFC",
+          logo: "/src/assets/client/kfc1.png",
+          rating: 4.5,
+          category: "Food",
+          deliveryTime: "20-35 min",
+          deliveryPrice: 0.75,
+        },
+        {
+          id: 2,
+          name: "The Pizza Company",
+          logo: "/src/assets/client/pizza_company.png",
+          rating: 4.2,
+          category: "Food",
+          deliveryTime: "25-40 min",
+          deliveryPrice: 0.85,
+        },
+        {
+          id: 3,
+          name: "Cafe Amazon",
+          logo: "/src/assets/client/amazon.png",
+          rating: 4.4,
+          category: "Drink",
+          deliveryTime: "15-25 min",
+          deliveryPrice: 0.5,
+        },
+        {
+          id: 4,
+          name: "Krispy Kreme Cambodia",
+          logo: "/src/assets/client/krispy_kreme.png",
+          rating: 4.6,
+          category: "Food",
+          deliveryTime: "30-45 min",
+          deliveryPrice: 1.0,
+        },
+        {
+          id: 5,
+          name: "Carl's Jr Cambodia",
+          logo: "/src/assets/client/carlsjr.png",
+          rating: 4.3,
+          category: "Food",
+          deliveryTime: "20-30 min",
+          deliveryPrice: 0.6,
+        },
+        {
+          id: 6,
+          name: "Starbucks",
+          logo: "/src/assets/client/starbucks.png",
+          rating: 4.7,
+          category: "Drink",
+          deliveryTime: "15-20 min",
+          deliveryPrice: 0.45,
+        },
+        {
+          id: 7,
+          name: "KOI",
+          logo: "/src/assets/client/koi.png",
+          rating: 4.5,
+          category: "Drink",
+          deliveryTime: "20-30 min",
+          deliveryPrice: 0.55,
+        },
+        {
+          id: 8,
+          name: "Pong Cambodia",
+          logo: "/src/assets/client/pong.png",
+          rating: 4.4,
+          category: "Food",
+          deliveryTime: "25-35 min",
+          deliveryPrice: 0.8,
+        },
+        {
+          id: 9,
+          name: "Brown",
+          logo: "/src/assets/client/brown.png",
+          rating: 4.6,
+          category: "Drink",
+          deliveryTime: "15-25 min",
+          deliveryPrice: 0.5,
+        },
+        {
+          id: 10,
+          name: "Tube Coffee",
+          logo: "/src/assets/client/tube.png",
+          rating: 4.3,
+          category: "Drink",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.4,
+        },
+        {
+          id: 17,
+          name: "Coffee Corner",
+          logo: "/src/assets/client/coffee_corner.png",
+          rating: 4.2,
+          category: "Drink",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.4,
+        },
+        {
+          id: 11,
+          name: "Burger King",
+          logo: "/src/assets/client/burgerking.png",
+          rating: 4.5,
+          category: "Food",
+          deliveryTime: "20-35 min",
+          deliveryPrice: 0.75,
+        },
+        {
+          id: 12,
+          name: "Dairy Queen",
+          logo: "/src/assets/client/dairyqueen.png",
+          rating: 4.3,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.4,
+        },
+        {
+          id: 13,
+          name: "Mixue",
+          logo: "/src/assets/client/mixue.png",
+          rating: 4.3,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.6,
+        },
+        {
+          id: 14,
+          name: "21 Bakery",
+          logo: "/src/assets/client/21bakery.png",
+          rating: 4,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 1,
+        },
+        {
+          id: 15,
+          name: "Swensens",
+          logo: "/src/assets/client/swensens.png",
+          rating: 4.1,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 1.5,
+        },
+        {
+          id: 16,
+          name: "Cats Cake",
+          logo: "/src/assets/client/catscake.png",
+          rating: 4.5,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.6,
+        },
+        {
+          id: 17,
+          name: "Bing Chun",
+          logo: "/src/assets/client/bingchun.png",
+          rating: 4.2,
+          category: "Dessert",
+          deliveryTime: "10-20 min",
+          deliveryPrice: 0.4,
+        },
+]);
+
+const filteredStores = computed(() => {
+  let filtered = stores.value;
+  
+  // Filter by category if selected
+  if (selectedCategory.value) {
+    filtered = filtered.filter(store => store.category === selectedCategory.value);
   }
-  },
-  created() {
-    this.restaurantStore.fetchRestaurants();
-  },
-  methods: {
-    selectCategory(category) {
-      this.selectedCategory = category;
-    },
-    goToRestaurantDetails(brandName) {
-      this.$router.push({ name: "StoreDetails", params: { brandName } });
-    },
-  },
+  
+  // Filter by search term if provided
+  if (searchTerm.value.trim()) {
+    const searchLower = searchTerm.value.toLowerCase().trim();
+    filtered = filtered.filter(store => 
+      store.name.toLowerCase().includes(searchLower) ||
+      store.category.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  return filtered;
+});
+
+const selectCategory = (category) => {
+  selectedCategory.value = category;
+};
+
+const goToStoreDetails = (brandName) => {
+  router.push(`/store/${brandName}`);
+};
+
+const handleToggleFavorite = (productId) => {
+  const store = stores.value.find(s => s.id === productId);
+  if (store) {
+    const product = {
+      id: store.id,
+      title: store.name,
+      image: store.logo,
+      price: store.rating, 
+      category: store.category,
+      deliveryTime: store.deliveryTime,
+      deliveryPrice: store.deliveryPrice,
+      rating: store.rating,
+    };
+    favoritesStore.toggleFavorite(product);
+  }
+};
+
+const clearSearch = () => {
+  searchTerm.value = "";
 };
 </script>
-
 
 <style scoped>
 .landing-page {
@@ -176,11 +376,13 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 1rem;
+  position: relative;
 }
 
 .search-input input {
   width: 100%;
   padding: 1rem;
+  padding-right: 2.5rem;
   border: none;
   outline: none;
   font-size: 1rem;
@@ -195,6 +397,24 @@ export default {
 
 .search-input input::placeholder {
   color: #9ca3af;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clear-search-btn:hover {
+  background-color: #f3f4f6;
+  color: #6b7280;
 }
 
 .categories-section {
@@ -217,6 +437,17 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 @media (max-width: 1024px) {

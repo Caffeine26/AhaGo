@@ -112,6 +112,26 @@ const router = createRouter({
       name: 'AddLocation',
       component: () => import('@/views/client/AddLocationPage.vue')
     },
+    {
+      path: '/favorite',
+      name: 'Favorite',
+      component: () => import('@/views/client/FavoritePage.vue')
+    },
+    {
+      path: '/profile-settings',
+      name: 'ProfileSettings',
+      component: () => import('@/views/client/ProfileSettings.vue')
+    },
+    {
+      path: '/history',
+      name: 'History',
+      component: () => import('@/views/client/HistoryPage.vue')
+    },
+    {
+      path: '/review/:orderId',
+      name: 'ClientReview',
+      component: () => import('@/views/client/ReviewPage.vue')
+    },
       ]
     },
     {
