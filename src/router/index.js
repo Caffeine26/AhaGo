@@ -354,10 +354,12 @@ const router = createRouter({
       component: MaketingPage,
     },
     {
-      path: "/admin/order-tracking",
+      path: "/admin/order-tracking/:orderId",
       name: "OrderTracking",
       component: OrderTracking,
+      props: true,
     },
+
     {
       path: "/admin/account",
       name: "Account",

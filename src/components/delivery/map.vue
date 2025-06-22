@@ -9,7 +9,7 @@ const props = defineProps({
   driverProfilePicUrl: String,
   useGeolocation: Boolean,
   routePoints: Array,
-  enableClickSelection: Boolean, // <-- NEW: only for customer location pick
+  enableClickSelection: Boolean,
 })
 
 const emit = defineEmits(["location-updated", "map-clicked"])
@@ -27,8 +27,9 @@ function loadGoogleMaps() {
   return new Promise((resolve, reject) => {
     if (window.google?.maps) return resolve(window.google)
     const script = document.createElement("script")
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA68FNc7213c8aFqrpOVjtDYW1Y_0Olpvw`
+    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0VVNQgbQMrubye9JTzDfEvKjC69opu9I"
     script.async = true
+    script.defer = true
     script.onload = () => resolve(window.google)
     script.onerror = reject
     document.head.appendChild(script)
@@ -78,32 +79,31 @@ function initMap(google, coords) {
   })
 
   if (props.enableClickSelection) {
-  map.addListener("click", (e) => {
-    const coords = {
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    }
+    map.addListener("click", (e) => {
+      const coords = {
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+      }
 
-    // Hide driverMarker (blue pin) when user clicks new location
-    if (driverMarker) {
-      driverMarker.setMap(null)
-      driverMarker = null
-    }
+      // Hide driverMarker when user clicks new location
+      if (driverMarker) {
+        driverMarker.setMap(null)
+        driverMarker = null
+      }
 
-    if (!clickedMarker) {
-      clickedMarker = new google.maps.Marker({ map })
-    }
-    clickedMarker.setPosition(coords)
-    map.panTo(coords)
+      if (!clickedMarker) {
+        clickedMarker = new google.maps.Marker({ map })
+      }
+      clickedMarker.setPosition(coords)
+      map.panTo(coords)
 
-    const geocoder = new google.maps.Geocoder()
-    geocoder.geocode({ location: coords }, (results, status) => {
-      const address = status === "OK" && results[0] ? results[0].formatted_address : ""
-      emit("map-clicked", { coords, address })
+      const geocoder = new google.maps.Geocoder()
+      geocoder.geocode({ location: coords }, (results, status) => {
+        const address = status === "OK" && results[0] ? results[0].formatted_address : ""
+        emit("map-clicked", { coords, address })
+      })
     })
-  })
-}
-
+  }
 }
 
 function updateDriverLocation(position) {
