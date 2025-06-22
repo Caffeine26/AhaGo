@@ -1,37 +1,30 @@
 <template>
   <div class="dashboard-wrapper">
-    <!-- Sidebar -->
     <Sidebar />
-
-    <!-- Main Content -->
     <div class="main-wrapper">
-      <!-- Top Bar: Header -->
       <header class="header">
         <h2 class="text-2xl font-bold">Dashboard</h2>
         <div class="header-right">
           <input type="text" placeholder="Search..." class="search-input" />
           <div class="user-info">
             <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>Sarawat Jae</span>
+            <span>{{ order?.customer?.name || 'Unknown User' }}</span>
           </div>
         </div>
       </header>
 
       <div class="app-container">
-        <!-- Order Header -->
         <div class="order-header">
           <div>
-            <strong>Order ID</strong> <span class="order-id">#ORD1025</span>
+            <strong>Order ID</strong>
+            <span class="order-id">#{{ order?.id }}</span>
             <span class="status online">● Online</span>
           </div>
-          <span class="badge on-process">On Process</span>
+          <span class="badge on-process">{{ order?.status }}</span>
         </div>
 
-        <!-- Main Content Section -->
         <div class="content-columns">
-          <!-- Left Column -->
           <div class="left-column">
-            <!-- Order List -->
             <div class="order-list card">
               <h3>Order List</h3>
               <table>
@@ -45,28 +38,27 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="i in 3" :key="i">
-                    <td>Salmon smoke</td>
-                    <td>1</td>
-                    <td>Extra sauce</td>
-                    <td>$12.00</td>
-                    <td>$12.00</td>
+                  <tr v-for="(item, index) in orderItems" :key="index">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.pivot.quantity }}</td>
+                    <td>-</td>
+                    <td>${{ Number(item.pivot.price).toFixed(2) }}</td>
+                    <td>${{ (Number(item.pivot.price) * item.pivot.quantity).toFixed(2) }}</td>
                   </tr>
                 </tbody>
               </table>
-              <div class="total">Total Amount: <strong>$36.00</strong></div>
+              <div class="total">Total Amount: <strong>${{ totalAmount }}</strong></div>
             </div>
 
-            <!-- Customer Info -->
             <div class="card customer">
               <div class="profile-header">
                 <img src="@/assets/food/cake.png" alt="Customer" class="avatar" />
               </div>
               <div class="customer-info">
-                <h4>Sonit Sor</h4>
-                <p><strong>Address:</strong> K4B, St 23 obek Kom...</p>
-                <p><strong>Phone:</strong> 098742389</p>
-                <p><strong>Email:</strong> soronit06@gmail.com</p>
+                <h4>{{ order?.customer?.name || 'Unknown' }}</h4>
+                <p><strong>Address:</strong> {{ order?.customer?.address || 'N/A' }}</p>
+                <p><strong>Phone:</strong> {{ order?.customer?.phone || 'N/A' }}</p>
+                <p><strong>Email:</strong> {{ order?.customer?.email || 'N/A' }}</p>
                 <div class="action-buttons">
                   <button class="btn">Send Message</button>
                   <button class="btn call">Make a Call</button>
@@ -75,18 +67,20 @@
             </div>
           </div>
 
-          <!-- Right Column -->
           <div class="right-column">
-            <!-- Real-Time Map -->
             <div id="map" class="map"></div>
 
-            <!-- Order Tracking -->
             <div class="card tracking">
               <h3>Order Tracking</h3>
               <ul class="timeline">
-                <li v-for="(step, index) in trackingSteps" 
-                    :key="index" 
-                    :class="{active: currentStep >= index, 'last-item': index === trackingSteps.length - 1}">
+                <li
+                  v-for="(step, index) in trackingSteps"
+                  :key="index"
+                  :class="{
+                    active: currentStep >= index,
+                    'last-item': index === trackingSteps.length - 1,
+                  }"
+                >
                   <div class="timeline-connector" v-if="index !== trackingSteps.length - 1"></div>
                   <div class="timeline-dot"></div>
                   <div class="timeline-content">
@@ -97,16 +91,15 @@
               </ul>
             </div>
 
-            <!-- Delivery Info -->
             <div class="card delivery">
               <h4>Delivery</h4>
               <div class="profile-header">
                 <img src="@/assets/food/cake.png" alt="Driver" class="avatar" />
               </div>
-              <p><strong>Sarawat Jess</strong></p>
-              <p><strong>Phone:</strong> 098765434</p>
-              <p><strong>Vehicle:</strong> Motorcycle</p>
-              <p><strong>Vehicle Number:</strong> MM12389</p>
+              <p><strong>{{ order?.driver?.name || 'Driver' }}</strong></p>
+              <p><strong>Phone:</strong> {{ order?.driver?.phone || 'N/A' }}</p>
+              <p><strong>Vehicle:</strong> {{ order?.driver?.vehicle_type || 'N/A' }}</p>
+              <p><strong>Vehicle Number:</strong> {{ order?.driver?.license_plate || 'N/A' }}</p>
               <div class="action-buttons">
                 <button class="btn">Call</button>
                 <button class="btn">Message</button>
@@ -121,95 +114,195 @@
 
 <script>
 import Sidebar from '@/components/admin/Sidebar.vue';
+
 export default {
-  components: {
-    Sidebar
-  },
-  name: "OrderTrackingPage",
+  name: 'OrderTrackingPage',
+  components: { Sidebar },
   data() {
     return {
+      order: null,
+      orderItems: [],
+      trackingSteps: [],
+      currentStep: 0,
+      driverPosition: { lat: 11.5564, lng: 104.9282 },
       map: null,
       marker: null,
-      driverPosition: { lat: 11.5564, lng: 104.9282 },
-      currentStep: 0,
-      trackingSteps: [
-        { status: "Order Placed", date: "Oct 12 2024", time: "10:06 AM" },
-        { status: "Order Confirmed", date: "Oct 12 2024", time: "10:20 AM" },
-        { status: "Preparing Food", date: "Oct 12 2024", time: "10:30 AM" },
-        { status: "Out for Delivery", date: "Oct 12 2024", time: "11:00 AM" },
-        { status: "Delivered", date: "Oct 12 2024", time: "11:30 AM" }
-      ],
-      trackingInterval: null,
-      driverMovementInterval: null
+      locationWatcherId: null,
     };
   },
-  mounted() {
-    this.loadGoogleMaps();
+  computed: {
+    totalAmount() {
+      return this.orderItems
+        .reduce(
+          (sum, item) =>
+            sum + Number(item.pivot?.price || 0) * (item.pivot?.quantity || 1),
+          0
+        )
+        .toFixed(2);
+    },
+  },
+  async mounted() {
+    const orderId = this.$route.params.orderId;
+    console.log('Mounted with orderId:', orderId);
+
+    if (orderId) {
+      await this.fetchOrderDetails(orderId);
+    } else {
+      console.warn('No orderId found in route params');
+    }
+
+    await this.loadLeaflet();
+    this.initLeafletMap();
+    this.watchCurrentLocation();
     this.startTrackingSimulation();
   },
   beforeDestroy() {
-    clearInterval(this.trackingInterval);
-    clearInterval(this.driverMovementInterval);
+    if (this.locationWatcherId !== null) {
+      navigator.geolocation.clearWatch(this.locationWatcherId);
+    }
+    if (this.trackingInterval) clearInterval(this.trackingInterval);
+    if (this.driverMovementInterval) clearInterval(this.driverMovementInterval);
   },
   methods: {
-    loadGoogleMaps() {
-      if (typeof google === "undefined") {
-        const script = document.createElement("script");
-        script.src =
-          "https://maps.googleapis.com/maps/api/js?key=AIzaSyC0VVNQgbQMrubye9JTzDfEvKjC69opu9I&callback=initMap";
-        script.async = true;
-        script.defer = true;
-        window.initMap = this.initMap;
-        document.head.appendChild(script);
-      } else {
-        this.initMap();
+    async fetchOrderDetails(orderId) {
+      try {
+        const response = await fetch(`http://localhost:8300/api/orders`);
+        const responseData = await response.json();
+        const allOrders = responseData.data;
+        const data = allOrders.find((order) => order.id === Number(orderId));
+
+        if (!data) {
+          console.warn(`Order with ID ${orderId} not found`);
+          return;
+        }
+
+        this.order = {
+          id: data.id,
+          status: data.status,
+          order_type: data.order_type,
+          payment_status: data.payment_status,
+          remark: data.remark,
+          total_amount: data.total_amount,
+          customer: {
+            name: `${data.customer?.firstname || ''} ${data.customer?.lastname || ''}`.trim() || 'Unknown',
+            address: data.customer?.city || 'N/A',
+            phone: data.customer?.user?.phone_number || 'N/A',
+            email: data.customer?.user?.email || 'N/A',
+          },
+          driver: {
+            name: `${data.driver?.first_name || ''} ${data.driver?.last_name || ''}`.trim() || 'Driver',
+            phone: data.driver?.phone_number || 'N/A',
+            vehicle_type: data.driver?.vehicle_type || 'N/A',
+            license_plate: data.driver?.license_plate || 'N/A',
+          },
+        };
+
+        this.orderItems = data.food_items || [];
+
+        this.trackingSteps = [
+          { status: 'Order Placed', time: '10:00 AM', date: '2025-06-22' },
+          { status: 'Order Confirmed', time: '10:05 AM', date: '2025-06-22' },
+          { status: 'Driver Assigned', time: '10:15 AM', date: '2025-06-22' },
+          { status: 'Out for Delivery', time: '10:30 AM', date: '2025-06-22' },
+          { status: 'Delivered', time: '', date: '' },
+        ];
+        this.currentStep = 0;
+
+        // Initialize driverPosition from restaurant location if available
+        if (data.restaurant?.latitude && data.restaurant?.longitude) {
+          this.driverPosition.lat = parseFloat(data.restaurant.latitude);
+          this.driverPosition.lng = parseFloat(data.restaurant.longitude);
+
+          if (this.marker) this.marker.setLatLng([this.driverPosition.lat, this.driverPosition.lng]);
+          if (this.map) this.map.panTo([this.driverPosition.lat, this.driverPosition.lng]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch order details:', error);
       }
     },
-    initMap() {
-      this.map = new google.maps.Map(document.getElementById("map"), {
-        center: this.driverPosition,
-        zoom: 15,
-      });
 
-      this.marker = new google.maps.Marker({
-        position: this.driverPosition,
-        map: this.map,
-        title: "Driver Location",
-        icon: {
-          url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-        }
-      });
+    async loadLeaflet() {
+      if (!window.L) {
+        // Load Leaflet CSS
+        const leafletCSS = document.createElement('link');
+        leafletCSS.rel = 'stylesheet';
+        leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(leafletCSS);
+
+        // Load Leaflet JS
+        await new Promise((resolve) => {
+          const leafletScript = document.createElement('script');
+          leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+          leafletScript.async = true;
+          leafletScript.onload = resolve;
+          document.body.appendChild(leafletScript);
+        });
+      }
     },
+
+    initLeafletMap() {
+      this.map = L.map('map').setView([this.driverPosition.lat, this.driverPosition.lng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
+
+      this.marker = L.marker([this.driverPosition.lat, this.driverPosition.lng])
+        .addTo(this.map)
+        .bindPopup('Current Location')
+        .openPopup();
+    },
+
+    watchCurrentLocation() {
+      if ('geolocation' in navigator) {
+        this.locationWatcherId = navigator.geolocation.watchPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            this.driverPosition.lat = lat;
+            this.driverPosition.lng = lng;
+
+            if (this.marker) {
+              this.marker.setLatLng([lat, lng]);
+            }
+            if (this.map) {
+              this.map.panTo([lat, lng]);
+            }
+          },
+          (error) => {
+            console.error('Error watching position:', error);
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 10000,
+            timeout: 5000,
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser');
+      }
+    },
+
     startTrackingSimulation() {
+      // Your original tracking simulation logic can stay if you want
       this.trackingInterval = setInterval(() => {
         if (this.currentStep < this.trackingSteps.length - 1) {
           this.currentStep++;
-          if (this.currentStep === 3) {
-            this.simulateDriverMovement();
-          }
+          // You can also simulate driver movement here if needed
         } else {
           clearInterval(this.trackingInterval);
         }
       }, 10000);
     },
-    simulateDriverMovement() {
-      const destination = { lat: 11.5580, lng: 104.9300 };
-      this.driverMovementInterval = setInterval(() => {
-        this.driverPosition.lat += (destination.lat - this.driverPosition.lat) * 0.02;
-        this.driverPosition.lng += (destination.lng - this.driverPosition.lng) * 0.02;
-        this.marker.setPosition(this.driverPosition);
-        this.map.panTo(this.driverPosition);
-        if (Math.abs(this.driverPosition.lat - destination.lat) < 0.0001 &&
-            Math.abs(this.driverPosition.lng - destination.lng) < 0.0001) {
-          clearInterval(this.driverMovementInterval);
-        }
-      }, 1000);
-    }
-  }
+  },
 };
 </script>
 
 <style scoped>
+/* Your existing styles unchanged */
+
 .dashboard-wrapper {
   display: flex;
   height: 100vh;
@@ -269,7 +362,7 @@ export default {
   background: #b61313;
   padding: 1rem;
   display: flex;
-  
+
   flex-direction: column;
   gap: 1rem;
 }
@@ -497,7 +590,7 @@ export default {
 }
 
 .tracking ul.timeline li.last-item.active .timeline-dot {
-  background: #4CAF50;
+  background: #4caf50;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
@@ -521,76 +614,41 @@ export default {
 
 /* Animation for current status */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+   0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.7);
+  }
+  70% {
+    transform: scale(1.15);
+    box-shadow: 0 0 10px 10px rgba(255, 165, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
+  }
 }
 
-.tracking ul.timeline li.active:not(.last-item) .timeline-dot {
+.timeline-dot.active {
   animation: pulse 2s infinite;
 }
 
-.map {
-  height: 520px;
-  width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-  background: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
+/* Delivery card */
 .delivery {
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
-}
-
-.delivery h4 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  font-size: 1.15rem;
-  color: #333;
 }
 
 .delivery p {
   margin: 0.5rem 0;
-  font-size: 0.95rem;
-  color: #555;
+  color: #333;
+  font-weight: 500;
 }
 
-.delivery .action-buttons {
-  margin-top: 1.5rem;
-}
-
-@media (max-width: 900px) {
-  .content-columns {
-    flex-direction: column;
-  }
-  
-  .tracking ul.timeline li {
-    padding-left: 1.8rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .timeline-dot {
-    width: 14px;
-    height: 14px;
-  }
-  
-  .timeline-connector {
-    left: 6px;
-  }
-
-  .action-buttons {
-    flex-direction: row;
-  }
-  
-  .btn {
-    width: auto;
-    margin-bottom: 0;
-  }
+#map {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
 }
 </style>

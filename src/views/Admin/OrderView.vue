@@ -67,28 +67,30 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="order in paginatedOrders" :key="order.id"
-                @click="goToTracking(order.id)"
-                class="clickable-row"
-              >
-                <td class="clickable-id">{{ order.id }}</td>
-                <td>{{ order.id }}</td>
-                <td>{{ order.date }}</td>
-                <td>{{ order.customer }}</td>
-                <td>{{ order.orderType }}</td>
-                <td>{{ order.address }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>${{ order.amount.toFixed(2) }}</td>
-                <td>
-                  <span :class="['badge', order.status.toLowerCase().replace(' ', '')]">
-                    {{ order.status }}
-                  </span>
-                </td>
-                <td>
-                  <button @click="deleteOrder(order.id)" class="delete-button">Delete</button>
-                </td>
-              </tr>
-            </tbody>
+              <tr v-for="order in paginatedOrders" :key="order.id" @click="goToTracking(order.id)" class="clickable-row">
+              <td class="clickable-id">{{ order.id }}</td>
+              <td>{{ order.date }}</td>
+              <td>{{ order.customer }}</td>
+              <td>{{ order.orderType }}</td>
+              <td>{{ order.address }}</td>
+              <td>{{ order.quantity }}</td>
+              <td>${{ order.amount.toFixed(2) }}</td>
+              <td>
+                <span :class="['badge', order.status.toLowerCase().replace(' ', '')]">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>
+                <button
+                  @click.stop="deleteOrder(order.id)"
+                  class="delete-button"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+
           </table>
         </div>
 
@@ -102,8 +104,8 @@
     </div>
   </div>
 </template>
-
 <script>
+import axios from 'axios';
 import Sidebar from '@/components/admin/Sidebar.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderLineChart from '@/components/admin/RevenueLineChart.vue';
@@ -117,53 +119,11 @@ export default {
     PaginationComponent,
     OrderLineChart,
     OrderDonutChart,
-    DashboardWidgets
+    DashboardWidgets,
   },
   data() {
     return {
-      orders: [
-        {
-          id: 'ORD1025',
-          date: '2025-01-23',
-          customer: 'Sonita Yakom',
-          orderType: 'Dine In',
-          address: 'K4B 47 Z3, Obok keami...',
-          quantity: 7,
-          amount: 23.0,
-          status: 'On Process',
-        },
-        {
-          id: 'ORD1026',
-          date: '2025-01-22',
-          customer: 'John Doe',
-          orderType: 'Dine In',
-          address: '123 Main St...',
-          quantity: 2,
-          amount: 15.5,
-          status: 'Completed',
-        },
-        {
-          id: 'ORD1027',
-          date: '2025-01-25',
-          customer: 'Alice Smith',
-          orderType: 'Takeaway',
-          address: '456 Elm St...',
-          quantity: 4,
-          amount: 30.0,
-          status: 'Pending',
-        },
-        {
-          id: 'ORD1028',
-          date: '2025-01-26',
-          customer: 'Bob Johnson',
-          orderType: 'Delivery',
-          address: '789 Pine St...',
-          quantity: 1,
-          amount: 10.0,
-          status: 'Cancelled',
-        },
-        // Add more orders as needed
-      ],
+      orders: [],
       currentPage: 1,
       ordersPerPage: 5,
       searchQuery: '',
@@ -175,22 +135,24 @@ export default {
     filteredOrders() {
       let result = this.orders;
 
-      // Search
+      // Search filter (on customer name and order id)
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         result = result.filter(
           (order) =>
             order.customer.toLowerCase().includes(query) ||
-            order.id.toLowerCase().includes(query)
+            order.id.toString().toLowerCase().includes(query)
         );
       }
 
-      // Filter by status
+      // Status filter
       if (this.selectedStatus) {
-        result = result.filter((order) => order.status === this.selectedStatus);
+        result = result.filter(
+          (order) => order.status.toLowerCase() === this.selectedStatus.toLowerCase()
+        );
       }
 
-      // Sort
+      // Sorting
       if (this.sortBy === 'date') {
         result = result.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
       } else if (this.sortBy === 'amount') {
@@ -212,15 +174,42 @@ export default {
       this.currentPage = page;
     },
     deleteOrder(orderId) {
+      // Call your backend delete API here (optional)
       this.orders = this.orders.filter((order) => order.id !== orderId);
     },
     goToTracking(orderId) {
-  this.$router.push({ name: 'OrderTracking', params: { id: orderId } });
-},
+      this.$router.push({ name: 'OrderTracking', params: { orderId } });
+    },
+    async fetchOrders() {
+      try {
+        const response = await axios.get('http://localhost:8300/api/orders');
+        const apiOrders = response.data.data;
 
+        // Map backend order data to frontend format
+        this.orders = apiOrders.map((order) => ({
+          id: order.id,
+          date: new Date(order.created_at).toISOString().split('T')[0], // Format: YYYY-MM-DD
+          customer: order.customer && order.customer.user ? order.customer.user.email : 'N/A',
+          orderType: order.order_type || 'N/A',
+          address: order.customer && order.customer.city ? order.customer.city : 'N/A',
+          quantity: order.food_items.length, // assuming food_items array length as quantity
+          amount: parseFloat(order.total_amount) || 0,
+          status: order.status || 'Unknown',
+        }));
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchOrders();
   },
 };
 </script>
+
+
+
+
 
 <style scoped>
 .clickable-row {
