@@ -25,14 +25,25 @@
       <!-- Row 2: StockGraph + (PieChart & OrderTypeGraph) -->
       <section class="section row-grid">
         <div class="chart-container">
-          <StockGraph class="stock" />
+          <StockGraph class="stock"
+          :total-food-items="totalItems"
+          :in-stock="instock"
+          :out-of-stock="outstock"
+          ></StockGraph>
           <div class="bar-chart-wrapper">
-            <BarChart />
+            <BarChart
+            :orders-data="recentOrdersData"
+            ></BarChart>
           </div>
         </div>
         <div class="right-column">
-          <PieChart />
-          <OrderTypeGraph :order-data="orderTypeData" />
+          <PieChart
+          :labels="topCategories.categories"
+          :data="topCategories.quantities"
+          ></PieChart>
+          <OrderTypeGraph 
+          :total-orders="totalOrders"
+          :order-data="orderTypes" />
         </div>
       </section>
 
@@ -45,7 +56,7 @@
         <h1 class="trending-title">Item Grid</h1>
         <ButtonFilter :options="filters" v-model="selectedFilter" />
       </div>
-      <ItemGrid :items="menus" :starImg="starImg" />
+      <ItemGrid :items="topSellers" :starImg="starImg" />
 
 
       </section>
@@ -67,6 +78,11 @@ import cakeImg from '@/assets/food/cake.png'
 import saladImg from '@/assets/food/salad.png'
 import cucumberImg from '@/assets/food/cucumber.png'
 import ItemGrid from '@/components/admin/ItemGrid.vue'
+import { useOrdersStore } from '@/stores/ordersStore'
+import { useTransactionStore } from '@/stores/transactionStore'
+import { useCategoryStore } from '@/stores/categoryStore'
+import { useRestStore } from '@/stores/restStore'
+import { useCustomerStore } from '@/stores/customerStore'
 
 
 
@@ -83,13 +99,76 @@ export default {
     ItemGrid,
     ButtonFilter
   },
+  created() {
+    const orderStore = useOrdersStore()
+    const transactionStore = useTransactionStore()
+    const foodItemStore = useCategoryStore()
+    const customerStore = useCustomerStore()
+
+    // get length of all orders
+    orderStore.fetchAllOrdersCount()
+    this.totalOrders = orderStore.ordersCount
+    this.stats[0].value = orderStore.ordersCount
+
+    // get customers count
+    customerStore.fetchTotalCustomers()
+    this.stats[1].value = customerStore.totalCustomers
+
+    // getAllGeneratedRevenue
+    transactionStore.getAllGeneratedRevenue()
+    this.stats[2].value = `\$ ${transactionStore.adminRevenue}`
+
+    // get #fooditems and stock levels
+    foodItemStore.getStock()
+    foodItemStore.getFoodItemsCount()
+    this.instock = foodItemStore.stock[0].total
+    this.outstock = foodItemStore.stock[1].total
+    this.totalItems = foodItemStore.foodItemsCount
+
+    // get orderTypes and their amount
+    orderStore.getOrderTypes()
+    this.orderTypes = orderStore.orderTypes
+
+    // get data of amount of orders of the last 7 days for restaurant id 2
+    orderStore.fetchRecentOrders(2)
+    this.recentOrdersData = orderStore.recentOrders
+
+    // get data of the top 3 sold food items
+    foodItemStore.getTopSolds()
+    this.topsolds = foodItemStore.topSellers
+
+    // fetch data of transactions of the last 7 days for restaurant id 2
+    transactionStore.getRecentTransactions(2)
+    this.recentTransactions = transactionStore.recentTransactions
+
+    // fetch data of top categories
+    orderStore.fetchTopCategories()
+    this.topCategories = orderStore.topCategories
+
+    // get top sellers
+    foodItemStore.getTopSolds()
+    this.topSellers = foodItemStore.topSellers
+  },
   data() {
     return {
+      totalOrders: 0,
+      totalCustomers: 0,
+      recentOrdersData: null,
+      topsolds: null,
+      recentTransactions: null,
+      topCategories: null,
+      instock: 0,
+      outstock: 0,
+      totalItems: 0,
+      orderTypes: null,
+      recentOrders: [],
+      topSellers: null,
+
       starImg,
       stats: [
-        { label: 'Total Orders', value: 1008, trend: 3, icon: 'fas fa-shopping-cart' },
-        { label: 'Total Customers', value: 1248, trend: 5, icon: 'fas fa-users' },
-        { label: 'Total Revenue', value: '$12,480', trend: 2, icon: 'fas fa-dollar-sign' }
+        { label: 'Total Orders', value: 0, trend: 3, icon: 'fas fa-shopping-cart' },
+        { label: 'Total Customers', value: 0, trend: 5, icon: 'fas fa-users' },
+        { label: 'Total Revenue', value: 0, trend: 2, icon: 'fas fa-dollar-sign' }
       ],
       menus: [
         { id: 1, name: 'Pizza', price: 9.99, image: cakeImg },
@@ -99,7 +178,7 @@ export default {
         { id: 5, name: 'Burger', price: 6.49, image: saladImg },
         { id: 6, name: 'Sushi', price: 11.25, image: cucumberImg }
       ],
-          orders: [
+      orders: [
       {
         id: 1,
         photo: cakeImg,

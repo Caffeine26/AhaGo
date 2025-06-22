@@ -4,20 +4,20 @@
         <h3>Review</h3>
         <div class="sort-options">
           <span>Sort by:</span>
-          <ButtonFilter :options="sortOptions" v-model="selectedSortOption" @change="sortReviews" />
+          <ButtonFilter :options="sortOptions" v-model="selectedSortOption" @update-value="sortReviews" />
         </div>
       </div>
   
       <div class="review-card" v-for="(review, index) in reviews" :key="review.id">
-        <img :src="review.avatar" alt="User" class="avatar" />
+        <img :src="avatar" alt="User" class="avatar" />
         <div class="review-content">
           <div class="review-user">
-            <h4>{{ review.name }}</h4>
-            <span class="review-count">{{ review.reviewCount }} Reviews</span>
+            <h4>{{ review.customer.city }}</h4>
+            <!-- <span class="review-count">{{ review.reviewCount }} Reviews</span> -->
           </div>
           <div class="review-meta">
             <span class="delivery">comment on: </span>
-            <span class="time">{{ formatTime(review.time) }}</span>
+            <span class="time">{{ formatTime(review.created_at) }}</span>
           </div>
           <div class="rating">
             <span
@@ -60,11 +60,11 @@
           </div>
   
           <!-- Display Replies -->
-          <div v-if="review.replies.length" class="replies">
+          <!-- <div v-if="review.replies.length" class="replies">
             <div class="reply" v-for="(reply, rIndex) in review.replies" :key="rIndex">
               <strong>You:</strong> {{ reply }}
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -79,44 +79,62 @@
   import down from '@/assets/down.png';
   import Mymelody from '@/assets/Mymelody.jpg';
   import Kuromi from '@/assets/Kuromi.jpg';
+import { useRestStore } from '@/stores/restStore';
+import { useCategoryStore } from '@/stores/categoryStore';
   
   export default {
     name: 'ReviewSection',
     components: {
       ButtonFilter,
     },
+    // props: {
+    //   reviewsArray: Array
+    // },
+    async created() {
+        const categoryStore = useCategoryStore()
+        this.foodItemId = parseInt(this.$route.params.foodItemId)
+
+        // fetch reviews by food item id
+        console.log('food id=', this.foodItemId)
+        this.reviews = await categoryStore.getReviewsbyFoodId(this.foodItemId)
+        console.log('food page review=', this.reviews)
+    },
     data() {
       return {
-        reviews: [
-          {
-            id: 1,
-            name: 'Garima',
-            avatar: Mymelody,
-            reviewCount: 4,
-            time: '2025-04-30T12:30:00',
-            rating: 5,
-            comment:
-              'Absolutely delicious! The shrimp is perfectly cooked, bursting with flavor, and seasoned to perfection.',
-            isHeartFilled: false,
-            showCommentInput: false,
-            newReply: '',
-            replies: [],
-          },
-          {
-            id: 2,
-            name: 'Cheegy',
-            avatar: Kuromi,
-            reviewCount: 4,
-            time: '2025-04-29T14:30:00',
-            rating: 5,
-            comment:
-              'Whether grilled, buttered, or in a spicy sauce, their shrimp dishes are simply irresistible!',
-            isHeartFilled: false,
-            showCommentInput: false,
-            newReply: '',
-            replies: [],
-          },
-        ],
+        reviews: null,
+        avatar: Mymelody,
+        reviews: null,
+        foodItemId: null,
+        // reviews: [
+        //   {
+        //     id: 1,
+        //     name: 'Garima',
+        //     // avatar: Mymelody,
+        //     // reviewCount: 4,
+        //     time: '2025-04-30T12:30:00',
+        //     rating: 5,
+        //     comment:
+        //       'Absolutely delicious! The shrimp is perfectly cooked, bursting with flavor, and seasoned to perfection.',
+        //     // isHeartFilled: false,
+        //     // showCommentInput: false,
+        //     // newReply: '',
+        //     // replies: [],
+        //   },
+        //   {
+        //     id: 2,
+        //     name: 'Cheegy',
+        //     avatar: Kuromi,
+        //     reviewCount: 4,
+        //     time: '2025-04-29T14:30:00',
+        //     rating: 5,
+        //     comment:
+        //       'Whether grilled, buttered, or in a spicy sauce, their shrimp dishes are simply irresistible!',
+        //     isHeartFilled: false,
+        //     showCommentInput: false,
+        //     newReply: '',
+        //     replies: [],
+        //   },
+        // ],
         heart1,
         heart2,
         commentIcon: comment,
@@ -124,22 +142,24 @@
         downIcon: down,
         selectedSortOption: 'newest',
         sortOptions: [
-          { value: 'all', label: 'All Reviews' },
+          { value: 'oldest', label: 'Oldest Reviews' },
           { value: 'newest', label: 'New Reviews' },
         ],
         originalReviews: [],
       };
     },
-    created() {
-      this.originalReviews = [...this.reviews];
-      this.sortReviews(); // Initial sort
-    },
+    // created() {
+    //   this.originalReviews = [...this.reviews];
+    //   this.sortReviews(); // Initial sort
+    // },
     methods: {
-      sortReviews() {
-        if (this.selectedSortOption === 'newest') {
-          this.reviews.sort((a, b) => new Date(b.time) - new Date(a.time));
-        } else {
-          this.reviews = [...this.originalReviews];
+      sortReviews(selectedOption) {
+        // console.log(selectedOption)
+        if (selectedOption === 'newest') {
+          this.reviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        } else if (selectedOption === 'oldest'){
+          // this.reviews = [...this.originalReviews];
+          this.reviews.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         }
       },
       toggleHeart(review) {
@@ -165,10 +185,17 @@
         });
       },
     },
+    formatDate(timestamp) {
+      if (!timestamp) return '';
+      return new Date(timestamp).toISOString().split('T')[0]; // "YYYY-MM-DD"
+    }
   };
   </script>
   
   <style scoped>
+  * {
+    font-family: 'Raleway';
+  }
   .review-section {
     max-width: 700px;
     margin: 0 auto;

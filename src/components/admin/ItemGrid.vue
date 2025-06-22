@@ -7,14 +7,14 @@
       class="item-card-link"
     >
       <div class="item-card">
-        <img :src="item.image" alt="item image" class="item-image" />
+        <img :src="item.img_url" alt="item image" class="item-image" />
 
         <h3 class="item-name">{{ item.name }}</h3>
 
         <p class="item-description">{{ item.description }}</p>
 
         <div class="item-bottom">
-          <p class="item-price">Price: {{ item.price }}</p>
+          <p class="item-price">Price: ${{ item.price }}</p>
           <div class="stars">
             <span v-for="star in 5" :key="star" class="star-img">
               <img

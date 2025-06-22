@@ -6,6 +6,12 @@ export default {
   getAll() {
     return axios.get(`${API_URL}`)
   },
+  getStock() {
+    return axios.get(`${API_URL}/stock`)
+  },
+  getCount() {
+    return axios.get(`${API_URL}/count`)
+  },
   getTopSellers() {
     return axios.get(`${API_URL}/top`)
   },

@@ -1,7 +1,9 @@
 <template>
+    
     <div class="card">
-        <img id="dishImg" :src="imageSrc" alt="Dish Image">
-
+        <RouterLink :to="'/owner/' + restId + '/menu/' + itemId">
+            <img id="dishImg" :src="imageSrc" alt="Dish Image">
+        </RouterLink>
         <div class="dishInfo">
             <div class="title">
                 <span>{{ title }}</span>
@@ -29,6 +31,7 @@
         </div>
         
     </div>
+    
 </template>
 
 <script>

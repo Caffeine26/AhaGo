@@ -10,23 +10,23 @@
           Help
         </ul>
         <div class="acc">
-    <ul v-if="!userLoggedIn" @click="goToLogin">
-      Login
-    </ul>
-    <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
-      Sign Up
-    </ul>
-    <div v-if="userLoggedIn" class="user-section" @click="toggleDropdown">
-      <img :src="profile.photo" alt="User" class="user-avatar" />
-      <span class="user-name">{{ profile.firstName }}</span>
-      <img
-        src="@/assets/down.png"
-        alt="arrow"
-        :class="['arrow-icon', { 'is-open': showDropdown }]"
-      />
-      <ProfileDropdown v-if="showDropdown" :logout="logout" />
-    </div>
-  </div>
+          <ul v-if="!userLoggedIn" @click="goToLogin">
+            Login
+          </ul>
+          <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
+            Sign Up
+          </ul>
+          <div v-if="userLoggedIn" class="user-section" @click="toggleDropdown">
+            <img :src="profile.photo" alt="User" class="user-avatar" />
+            <span class="user-name">{{ profile.firstName }}</span>
+            <img
+              src="@/assets/down.png"
+              alt="arrow"
+              :class="['arrow-icon', { 'is-open': showDropdown }]"
+            />
+            <ProfileDropdown v-if="showDropdown" :logout="logout" />
+          </div>
+        </div>
   
       </div>
     </div>
@@ -38,7 +38,7 @@
   import ProfileDropdown from './ProfileDropdown.vue';
   import { useUserStore } from '@/stores/userStore';
   import { storeToRefs } from 'pinia';
-  
+
   const userStore = useUserStore();
   const { profile } = storeToRefs(userStore);
   

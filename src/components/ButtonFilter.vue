@@ -33,8 +33,8 @@
     },
     methods: {
       handleChange() {
-        this.$emit('update:value', this.selectedOption); // Ensure v-model binding works
-        this.$emit('change'); // Emit custom change event
+        this.$emit('updateValue', this.selectedOption); // Ensure v-model binding works
+        // this.$emit('change'); // Emit custom change event
       },
     },
   };
