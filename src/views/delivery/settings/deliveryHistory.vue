@@ -25,13 +25,20 @@ import Order from "@/components/OrderCard02.vue";
 import { onMounted, computed } from "vue";
 import Title from "@/components/delivery/title.vue";
 import { useDriverStore } from "@/stores/driverStore";
-
+import { useAuthStore } from "@/stores/authenticationStore";
 const completedOrders = computed(() => {
-  return driverStore.orders.filter((order) => order.status === "completed");
+  return driverStore.orders.filter(
+    (order) =>
+      order.status === "completed" &&
+      order.driver_id === driverStore.user?.driver_id
+  );
 });
 const driverStore = useDriverStore();
+const authStore = useAuthStore();
 onMounted(async () => {
   await driverStore.fetchOrders();
+  driverStore.user = authStore.user;
+  await authStore.fetchProfile();
 });
 </script>
 

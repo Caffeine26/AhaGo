@@ -8,30 +8,27 @@
           <div class="name-fields">
             <div class="input-wrapper">
               <InputText
-                v-model="driverStore.firstName"
+                v-model="authStore.firstName"
                 placeholder="First Name"
               />
             </div>
             <div class="input-wrapper">
-              <InputText
-                v-model="driverStore.lastName"
-                placeholder="Last Name"
-              />
+              <InputText v-model="authStore.lastName" placeholder="Last Name" />
             </div>
           </div>
 
           <InputText
-            v-model="driverStore.email"
+            v-model="authStore.email"
             type="email"
             placeholder="Email Address"
           />
           <InputText
-            v-model="driverStore.password"
+            v-model="authStore.password"
             type="password"
             placeholder="Password"
           />
           <InputText
-            v-model="driverStore.confirmPassword"
+            v-model="authStore.confirmPassword"
             type="password"
             placeholder="Confirm Password"
           />
@@ -65,10 +62,9 @@
 import InputText from "@/components/all/inputText.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import { ref } from "vue";
-import { useDriverStore } from "@/stores/driverStore";
 import { useRouter } from "vue-router";
-
-const driverStore = useDriverStore();
+import { useAuthStore } from "@/stores/authenticationStore";
+const authStore = useAuthStore();
 const router = useRouter();
 
 // Local reactive ref for terms checkbox
@@ -84,21 +80,22 @@ const submit = async () => {
 
   // Validate all fields filled
   if (
-    !driverStore.firstName ||
-    !driverStore.lastName ||
-    !driverStore.email ||
-    !driverStore.password ||
-    !driverStore.confirmPassword
+    !authStore.firstName ||
+    !authStore.lastName ||
+    !authStore.email ||
+    !authStore.password ||
+    !authStore.confirmPassword
   ) {
     alert("Please fill in all fields.");
     return;
   }
 
   // Validate password confirmation
-  if (driverStore.password !== driverStore.confirmPassword) {
+  if (authStore.password !== authStore.confirmPassword) {
     alert("Passwords do not match.");
     return;
   }
+  await authStore.handleSignUp("driver");
 };
 </script>
 

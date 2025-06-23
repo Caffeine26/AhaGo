@@ -50,7 +50,7 @@
             ></RegisterInputBox>
 
             <div class="agree">
-                <input type="checkbox">
+                <input type="checkbox" v-model="agreed">
                 <label for="">I have read and agreed to the terms and conditions in Terms of Use and Privacy Policy.</label>
 
             </div>
@@ -78,7 +78,9 @@
 </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '@/stores/authenticationStore';
 import Header from '@/components/all/header.vue';
 import RegisterInputBox from '@/components/RegisterInputBox.vue';
 
@@ -87,67 +89,67 @@ import mail from '@/assets/owner/svg/mail.svg';
 import eye from '@/assets/owner/svg/eye.svg';
 import restImg from '@/assets/owner/img/loginImg.png';
 
-export default {
-    components: {
-        Header,
-        RegisterInputBox
-    },
-    methods: {
-        handleName(data) {
-            this.name = data
-            console.log('this.name = ', this.name)
-        },
-        handleAddress(data) {
-            this.address = data
-            console.log('this.address = ', this.address)
-        },
-        handleTel(data) {
-            this.tel = data
-            console.log('this.tel = ', this.tel)
-        },
-        handleEmail(data) {
-            this.email = data
-            console.log('this.email = ', this.email)
-        },
-        handlePassword(data) {
-            this.password = data
-            console.log('this.password = ', this.password)
-        },
-        getSignupInfo() {
-            const signupInfo = {
-                'name': this.name,
-                'address': this.address,
-                'tel': this.tel,
-                'email': this.email,
-                'pass': this.password
-            }
-            console.log(signupInfo)
-        },
-        goToNext() {
-            this.page2 = !this.page2
-        },
-        goToPrev() {
-            this.page2 = !this.page2
-        }
-    },
-    data() {
-        return {
-            ownerUrl: true,
-            restImg: restImg,
-            mail: mail,
-            eye: eye,
-            google: google,
-            addIcon: false,
-            addIcon2: true,
-            page2: false,
+const authStore = useAuthStore();
+const page2 = ref(false);
 
-            name: '',
-            address: '',
-            tel: '',
-            email: '',
-            password: '',
-        }
-    }
+const ownerUrl = true;
+const addIcon = false;
+const addIcon2 = true;
+const agreed = ref(false);
+
+const address = ref('');
+const tel = ref('');
+
+function handleName(name) {
+  authStore.firstName = name; 
+}
+
+function handleAddress(data) {
+  address.value = data;
+}
+
+function handleTel(data) {
+  tel.value = data;
+}
+
+function handleEmail(email) {
+  authStore.email = email;
+}
+
+function handlePassword(password) {
+  authStore.password = password;
+  authStore.confirmPassword = password;
+}
+
+function goToNext() {
+  if (!authStore.firstName || !address.value || !tel.value) {
+    alert("Please fill in all the fields.");
+    return;
+  }
+  page2.value = true;
+}
+
+function goToPrev() {
+  page2.value = false;
+}
+
+function getSignupInfo() {
+  if (!authStore.email || !authStore.password) {
+    alert("Email and password are required.");
+    return;
+  }
+
+  if (!agreed.value) {
+    alert("You must agree to the Terms of Use and Privacy Policy.");
+    return;
+  }
+
+  authStore.handleSignUp("restaurant", {
+  restaurant_profile: {},               
+  address: address.value,
+  phone_number: tel.value,
+});
+
 }
 </script>
 

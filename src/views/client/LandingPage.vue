@@ -55,18 +55,18 @@
         </h2>
         <div class="products-grid">
           <ProductCard
-            v-for="store in filteredStores"
-            :key="store.id"
-            :title="store.name"
-            :image="store.logo"
-            :price="store.rating"
-            :category="store.category"
-            :delivery-time="store.deliveryTime"
-            :delivery-price="store.deliveryPrice"
-            :productId="store.id"
+            v-for="restaurant in filteredStores"
+            :key="restaurant.id"
+            :title="restaurant.name"
+            :image="restaurant.logo"
+            :price="restaurant.rating"
+            :category="restaurant.category"
+            :delivery-time="restaurant.deliveryTime"
+            :delivery-price="restaurant.deliveryPrice"
+            :productId="restaurant.id"
             :favorites="favoriteIds"
             @toggle-favorite="handleToggleFavorite"
-            @click="goToStoreDetails(store.name)"
+            @click="goToStoreDetails(restaurant.name)"
           />
         </div>
         <div v-if="searchTerm.trim() && filteredStores.length === 0" class="no-results">
@@ -91,22 +91,22 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useFavoritesStore } from '@/stores/favorites';
 import { storeToRefs } from 'pinia';
 import CategoryCard from "@/components/product_cards/CategoryCard.vue";
 import ProductCard from "@/components/product_cards/ProductCard.vue";
-import BrandHighlight from "@/components/BrandHighlight.vue";
+import { useFavoritesStore } from '@/stores/favorites';
+import { useRestaurantStore } from "@/stores/restaurantStore";
 
 const router = useRouter();
 const favoritesStore = useFavoritesStore();
+const restaurantStore = useRestaurantStore();
 const { favoriteProducts } = storeToRefs(favoritesStore);
+const { restaurants } = storeToRefs(restaurantStore);
 
 const selectedCategory = ref("Food");
 const searchTerm = ref("");
-
-const favoriteIds = computed(() => favoriteProducts.value.map(p => p.id));
 
 const categories = ref([
   { id: 1, title: "Food", image: "/src/assets/client/food.png" },
@@ -114,219 +114,77 @@ const categories = ref([
   { id: 3, title: "Drink", image: "/src/assets/client/drink.png" },
 ]);
 
-const stores = ref([
-  {
-          id: 1,
-          name: "KFC",
-          logo: "/src/assets/client/kfc1.png",
-          rating: 4.5,
-          category: "Food",
-          deliveryTime: "20-35 min",
-          deliveryPrice: 0.75,
-        },
-        {
-          id: 2,
-          name: "The Pizza Company",
-          logo: "/src/assets/client/pizza_company.png",
-          rating: 4.2,
-          category: "Food",
-          deliveryTime: "25-40 min",
-          deliveryPrice: 0.85,
-        },
-        {
-          id: 3,
-          name: "Cafe Amazon",
-          logo: "/src/assets/client/amazon.png",
-          rating: 4.4,
-          category: "Drink",
-          deliveryTime: "15-25 min",
-          deliveryPrice: 0.5,
-        },
-        {
-          id: 4,
-          name: "Krispy Kreme Cambodia",
-          logo: "/src/assets/client/krispy_kreme.png",
-          rating: 4.6,
-          category: "Food",
-          deliveryTime: "30-45 min",
-          deliveryPrice: 1.0,
-        },
-        {
-          id: 5,
-          name: "Carl's Jr Cambodia",
-          logo: "/src/assets/client/carlsjr.png",
-          rating: 4.3,
-          category: "Food",
-          deliveryTime: "20-30 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 6,
-          name: "Starbucks",
-          logo: "/src/assets/client/starbucks.png",
-          rating: 4.7,
-          category: "Drink",
-          deliveryTime: "15-20 min",
-          deliveryPrice: 0.45,
-        },
-        {
-          id: 7,
-          name: "KOI",
-          logo: "/src/assets/client/koi.png",
-          rating: 4.5,
-          category: "Drink",
-          deliveryTime: "20-30 min",
-          deliveryPrice: 0.55,
-        },
-        {
-          id: 8,
-          name: "Pong Cambodia",
-          logo: "/src/assets/client/pong.png",
-          rating: 4.4,
-          category: "Food",
-          deliveryTime: "25-35 min",
-          deliveryPrice: 0.8,
-        },
-        {
-          id: 9,
-          name: "Brown",
-          logo: "/src/assets/client/brown.png",
-          rating: 4.6,
-          category: "Drink",
-          deliveryTime: "15-25 min",
-          deliveryPrice: 0.5,
-        },
-        {
-          id: 10,
-          name: "Tube Coffee",
-          logo: "/src/assets/client/tube.png",
-          rating: 4.3,
-          category: "Drink",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 17,
-          name: "Coffee Corner",
-          logo: "/src/assets/client/coffee_corner.png",
-          rating: 4.2,
-          category: "Drink",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 11,
-          name: "Burger King",
-          logo: "/src/assets/client/burgerking.png",
-          rating: 4.5,
-          category: "Food",
-          deliveryTime: "20-35 min",
-          deliveryPrice: 0.75,
-        },
-        {
-          id: 12,
-          name: "Dairy Queen",
-          logo: "/src/assets/client/dairyqueen.png",
-          rating: 4.3,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-        {
-          id: 13,
-          name: "Mixue",
-          logo: "/src/assets/client/mixue.png",
-          rating: 4.3,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 14,
-          name: "21 Bakery",
-          logo: "/src/assets/client/21bakery.png",
-          rating: 4,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 1,
-        },
-        {
-          id: 15,
-          name: "Swensens",
-          logo: "/src/assets/client/swensens.png",
-          rating: 4.1,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 1.5,
-        },
-        {
-          id: 16,
-          name: "Cats Cake",
-          logo: "/src/assets/client/catscake.png",
-          rating: 4.5,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.6,
-        },
-        {
-          id: 17,
-          name: "Bing Chun",
-          logo: "/src/assets/client/bingchun.png",
-          rating: 4.2,
-          category: "Dessert",
-          deliveryTime: "10-20 min",
-          deliveryPrice: 0.4,
-        },
-]);
+const favoriteIds = computed(() => favoriteProducts.value.map(p => p.id));
 
 const filteredStores = computed(() => {
-  let filtered = stores.value;
-  
-  // Filter by category if selected
-  if (selectedCategory.value) {
-    filtered = filtered.filter(store => store.category === selectedCategory.value);
-  }
-  
-  // Filter by search term if provided
-  if (searchTerm.value.trim()) {
-    const searchLower = searchTerm.value.toLowerCase().trim();
-    filtered = filtered.filter(store => 
-      store.name.toLowerCase().includes(searchLower) ||
-      store.category.toLowerCase().includes(searchLower)
-    );
-  }
-  
-  return filtered;
+  return restaurants.value.map((restaurant) => {
+    const name = restaurant.name || 'Unnamed Restaurant';
+    const logo = restaurant.user?.img_src || '/placeholder.png';
+    const category = restaurant.categories?.map(c => c.name) || [];
+    const deliveryTime = restaurant.delivery_time || '20-30 min';
+    const deliveryPrice = restaurant.delivery_price ?? 0;
+    const rating = restaurant.rating ?? 4.5;
+
+    return {
+      id: restaurant.id,
+      name,
+      logo,
+      category,
+      deliveryTime,
+      deliveryPrice,
+      rating,
+    };
+  }).filter((store) => {
+    const categoryMatch = selectedCategory.value
+      ? store.category.some(
+          name => name.toLowerCase() === selectedCategory.value.toLowerCase()
+        )
+      : true;
+
+    const searchMatch = searchTerm.value.trim()
+      ? store.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+        store.category.some(
+          name => name.toLowerCase().includes(searchTerm.value.toLowerCase())
+        )
+      : true;
+
+    return categoryMatch && searchMatch;
+  });
 });
 
 const selectCategory = (category) => {
   selectedCategory.value = category;
 };
 
-const goToStoreDetails = (brandName) => {
-  router.push(`/store/${brandName}`);
+const goToStoreDetails = (name) => {
+  router.push(`/restaurant/${name}`);
 };
 
-const handleToggleFavorite = (productId) => {
-  const store = stores.value.find(s => s.id === productId);
-  if (store) {
-    const product = {
-      id: store.id,
-      title: store.name,
-      image: store.logo,
-      price: store.rating, 
-      category: store.category,
-      deliveryTime: store.deliveryTime,
-      deliveryPrice: store.deliveryPrice,
-      rating: store.rating,
-    };
-    favoritesStore.toggleFavorite(product);
-  }
+const handleToggleFavorite = (restaurantId) => {
+  const restaurant = filteredStores.value.find(r => r.id === restaurantId);
+  if (!restaurant) return;
+
+  const product = {
+    id: restaurant.id,
+    title: restaurant.name,
+    image: restaurant.logo,
+    price: restaurant.rating,
+    category: restaurant.category,
+    deliveryTime: restaurant.deliveryTime,
+    deliveryPrice: restaurant.deliveryPrice,
+    rating: restaurant.rating,
+  };
+
+  favoritesStore.toggleFavorite(product);
 };
 
 const clearSearch = () => {
   searchTerm.value = "";
 };
+
+onMounted(() => {
+  restaurantStore.fetchRestaurants();
+});
 </script>
 
 <style scoped>

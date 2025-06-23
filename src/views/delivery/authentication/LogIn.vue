@@ -36,10 +36,8 @@
 import InputText from "@/components/all/inputText.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import { ref } from "vue";
-import { useDriverStore } from "@/stores/driverStore";
-
-const driverStore = useDriverStore();
-
+import { useAuthStore } from "@/stores/authenticationStore";
+const authStore = useAuthStore();
 const email = ref("");
 const password = ref("");
 
@@ -51,10 +49,10 @@ async function login() {
   }
 
   // Set the store refs for login
-  driverStore.email = email.value;
-  driverStore.password = password.value;
+  authStore.email = email.value;
+  authStore.password = password.value;
 
-  await driverStore.handleLogin();
+  await authStore.handleLogin("driver");
 }
 </script>
 

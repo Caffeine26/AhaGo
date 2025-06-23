@@ -1,93 +1,68 @@
-<template>
+  <template>
     <div class="container">
       <div class="Logo" @click="goToOverview" style="cursor: pointer">
         <img class="logo" src="@/assets/main/logo.png" alt="Logo" />
         <div class="title" v-html="title"></div>
       </div>
-  
+
       <div class="nav">
-        <ul>
-          Help
-        </ul>
+        <ul>Help</ul>
         <div class="acc">
-    <ul v-if="!userLoggedIn" @click="goToLogin">
-      Login
-    </ul>
-    <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
-      Sign Up
-    </ul>
-    <div v-if="userLoggedIn" class="user-section" @click="toggleDropdown">
-      <img :src="profile.photo" alt="User" class="user-avatar" />
-      <span class="user-name">{{ profile.firstName }}</span>
-      <img
-        src="@/assets/down.png"
-        alt="arrow"
-        :class="['arrow-icon', { 'is-open': showDropdown }]"
-      />
-      <ProfileDropdown v-if="showDropdown" :logout="logout" />
-    </div>
-  </div>
-  
+          <ul v-if="!userLoggedIn" @click="goToLogin">Login</ul>
+          <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">Sign Up</ul>
+
+          <div v-if="userLoggedIn" class="user-section" @click.stop="toggleDropdown">
+            <img :src="authUser.img_src || defaultAvatar" alt="User" class="user-avatar" />
+            <span class="user-name">{{ authUser.firstname || authUser.firstName || 'User' }}</span>
+            <img
+              src="@/assets/down.png"
+              alt="arrow"
+              :class="['arrow-icon', { 'is-open': showDropdown }]"
+            />
+            <ProfileDropdown v-if="showDropdown" :logout="logout" class="dropdown" />
+          </div>
+        </div>
       </div>
     </div>
   </template>
-  
+
   <script setup>
   import { useRouter } from "vue-router";
-  import { defineProps, ref } from "vue";
+  import { defineProps, ref, computed } from "vue";
   import ProfileDropdown from './ProfileDropdown.vue';
-  import { useUserStore } from '@/stores/userStore';
-  import { storeToRefs } from 'pinia';
-  
-  const userStore = useUserStore();
-  const { profile } = storeToRefs(userStore);
-  
+  import { useAuthStore } from '@/stores/authenticationStore';
+
+  const authStore = useAuthStore();
+
   const props = defineProps({
-    title: {
-      type: String,
-      default: "",
-    },
-    ownerUrl: {
-      type: Boolean,
-      default: false
-    },
+    title: { type: String, default: "" },
+    ownerUrl: { type: Boolean, default: false },
     goToAccount: Function,
-    userLoggedIn: {
-      type: Boolean,
-      required: true,
-    },
+    userLoggedIn: { type: Boolean, required: true },
     logout: Function,
-  basePath: {
-    type: String,
-    default: "", // Default to root for customer panel
-  }
-  
+    basePath: { type: String, default: "" }
   });
-  
+
+  const router = useRouter();
   const showDropdown = ref(false);
-  
+
   const toggleDropdown = () => {
     showDropdown.value = !showDropdown.value;
   };
-  
-  const router = useRouter();
+
   const buildRoute = (path) => {
     return props.basePath ? `/${props.basePath}/${path}` : `/${path}`;
   };
-  
-  const goToLogin = () => {
-    router.push(buildRoute("login"));
-  };
-  
-  const goToSignup = () => {
-    router.push(buildRoute("signup"));
-  };
-  
-  const goToOverview = () => {
-    router.push(buildRoute(""));
-  };
+
+  const goToLogin = () => router.push(buildRoute("login"));
+  const goToSignup = () => router.push(buildRoute("signup"));
+  const goToOverview = () => router.push(buildRoute(""));
+
+  // Use a computed to get reactive user data from authStore.user
+  const authUser = computed(() => authStore.user || {});
+
   </script>
-  
+
   <style scoped>
   .container {
     width: 100vw;
@@ -97,7 +72,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
     box-sizing: border-box;
     position: sticky;
     top: 0;

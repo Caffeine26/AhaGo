@@ -10,22 +10,11 @@
       />
 
       <form class="location-form">
-        <InputText
-          v-model="address"
-          label="Delivery Address"
-          placeholder="Enter delivery address"
-        />
-        <InputText
-          v-model="addressLabel"
-          label="Address"
-          placeholder="e.g. Home"
-        />
+        <InputText v-model="address" label="Delivery Address" placeholder="Enter delivery address" />
+        <InputText v-model="addressLabel" label="Address" placeholder="e.g. Home" />
 
         <div class="form-group">
-          <label class="label"
-            >Delivery Service
-            <span class="note">(For Takeaway Orders Only)</span></label
-          >
+          <label class="label">Delivery Service <span class="note">(For Takeaway Orders Only)</span></label>
           <select class="select" v-model="deliveryService" required>
             <option disabled value="">Please select delivery service</option>
             <option>Downstairs pick-up</option>
@@ -33,35 +22,18 @@
           </select>
         </div>
 
-        <InputText
-          v-model="customerName"
-          label="Customer Name"
-          placeholder="Enter your name"
-        />
+        <InputText v-model="customerName" label="Customer Name" placeholder="Enter your name" />
 
         <div class="form-group">
           <label class="label">Gender</label>
           <div class="radio-group">
-            <label
-              ><input type="radio" value="Mr." v-model="gender" /> Mr.</label
-            >
-            <label
-              ><input type="radio" value="Ms." v-model="gender" /> Ms.</label
-            >
+            <label><input type="radio" value="Mr." v-model="gender" /> Mr.</label>
+            <label><input type="radio" value="Ms." v-model="gender" /> Ms.</label>
           </div>
         </div>
 
-        <InputText
-          v-model="contact"
-          label="Contact"
-          placeholder="Phone number"
-          type="tel"
-        />
-        <InputText
-          v-model="telegram"
-          label="Telegram"
-          placeholder="Telegram username"
-        />
+        <InputText v-model="contact" label="Contact" placeholder="Phone number" type="tel" />
+        <InputText v-model="telegram" label="Telegram" placeholder="Telegram username" />
 
         <div class="form-group">
           <label class="label">Label</label>
@@ -79,17 +51,13 @@
         </div>
 
         <div class="form-group">
-          <label class="label"
-            >Photo <span class="sample-photo">Sample Photo</span></label
-          >
+          <label class="label">Photo <span class="sample-photo">Sample Photo</span></label>
           <input type="file" @change="onPhotoChange" accept="image/*" />
           <div v-if="photoUrl" class="photo-preview">
             <img :src="photoUrl" alt="Preview" />
           </div>
           <small class="photo-desc">
-            Please upload photo of your house number, doorway, and its
-            surroundings to help the delivery man to deliver your meal in no
-            time.
+            Please upload photo of your house number, doorway, and its surroundings to help the delivery man deliver your meal in no time.
           </small>
         </div>
 
@@ -108,34 +76,55 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import GeneralButton from "@/components/GeneralButton.vue";
-import InputText from "@/components/all/inputText.vue";
+import { useAuthStore } from "@/stores/authenticationStore";
+
 import Map from "@/components/delivery/map.vue";
+import InputText from "@/components/all/inputText.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
 
 const router = useRouter();
+const authStore = useAuthStore();
 
-// Form fields
-const address = ref("");
-const addressLabel = ref("Home");
-const deliveryService = ref("");
-const customerName = ref("");
-const gender = ref("Ms.");
-const contact = ref("");
-const telegram = ref("");
-const label = ref("Home");
 const photo = ref(null);
 const photoUrl = ref("");
-const customerCoords = ref({ lat: null, lng: null });
 
-// Handle map click event
+const address = computed({
+  get: () => authStore.user?.address || "",
+  set: (val) => (authStore.user.address = val),
+});
+
+const customerName = computed({
+  get: () => `${authStore.user?.firstname || ""} ${authStore.user?.lastname || ""}`,
+  set: (val) => {
+    const [first = "", ...rest] = val.split(" ");
+    authStore.user.firstname = first;
+    authStore.user.lastname = rest.join(" ");
+  },
+});
+
+const gender = computed({
+  get: () => authStore.user?.gender || "",
+  set: (val) => (authStore.user.gender = val),
+});
+
+const contact = computed({
+  get: () => authStore.user?.phone || "",
+  set: (val) => (authStore.user.phone = val),
+});
+
+const telegram = ref(""); // not saved to backend yet
+const deliveryService = ref(""); // optional field
+const label = ref("Home");
+const addressLabel = ref("Home");
+
 function onMapClick({ coords, address: resolvedAddress }) {
   address.value = resolvedAddress;
-  customerCoords.value = coords;
+  authStore.user.latitude = coords.lat;
+  authStore.user.longitude = coords.lng;
 }
 
-// Handle photo file upload
 function onPhotoChange(e) {
   const file = e.target.files[0];
   if (file) {
@@ -144,38 +133,36 @@ function onPhotoChange(e) {
   }
 }
 
-// Save the location to localStorage and go back
-function saveLocation() {
-  if (
-    !address.value ||
-    !customerCoords.value.lat ||
-    !customerCoords.value.lng
-  ) {
-    alert("Please click on the map to select your delivery location.");
+async function saveLocation() {
+  if (!address.value || !authStore.user.latitude || !authStore.user.longitude) {
+    alert("Please select your delivery location on the map.");
     return;
   }
 
-  const locationData = {
-    address: address.value,
-    addressLabel: addressLabel.value,
-    deliveryService: deliveryService.value,
-    customerName: customerName.value,
-    gender: gender.value,
-    contact: contact.value,
-    telegram: telegram.value,
-    label: label.value,
-    photoUrl: photoUrl.value,
-    coords: customerCoords.value,
-  };
+  try {
+    if (photo.value) {
+      await authStore.uploadPhoto(photo.value);
+    }
 
-  localStorage.setItem("savedLocation", JSON.stringify(locationData));
-  router.back();
+    await authStore.saveUserProfile();
+    router.back();
+  } catch (error) {
+    console.error("Failed to save:", error);
+    alert("Failed to save your location.");
+  }
 }
 
-// Cancel/back button
 function goBack() {
   router.back();
 }
+
+onMounted(() => {
+  if (!authStore.user) {
+    authStore.fetchProfile();
+  } else {
+    photoUrl.value = authStore.user?.img_src || "";
+  }
+});
 </script>
 
 <style scoped>

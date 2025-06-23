@@ -16,9 +16,9 @@
               </div>
               <form @submit.prevent="handleLogin">
                 <InputText
-                  v-model="loginForm.phone"
-                  placeholder="Phone number"
-                  type="tel"
+                  v-model="loginForm.email"
+                  placeholder="Email address"
+                  type="email"
                 />
                 <InputText
                   v-model="loginForm.password"
@@ -140,6 +140,90 @@
     </div>
   </div>
 </template>
+<script setup>
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/authenticationStore';
+import Header2 from '@/components/delivery/header2.vue';
+import InputText from '@/components/all/inputText.vue';
+
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+
+function getPanelFromRoute(path) {
+  if (path.includes('signup')) return 'register';
+  if (path.includes('forgot')) return 'forgot';
+  return 'login';
+}
+
+const activePanel = ref(getPanelFromRoute(route.path));
+const loginForm = ref({
+  email: '',
+  password: ''
+});
+const signupForm = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+});
+const verificationCode = ref(['', '', '', '']);
+
+watch(
+  () => route.path,
+  (newPath) => {
+    activePanel.value = getPanelFromRoute(newPath);
+  }
+);
+
+function handleCodeInput(event, index) {
+  const input = event.target;
+  if (input.value.length === 1 && index < 3) {
+    input.nextElementSibling?.focus();
+  }
+}
+
+function handleVerification() {
+  const code = verificationCode.value.join('');
+  console.log('Verification Code:', code);
+}
+
+async function handleLogin() {
+  authStore.email = loginForm.value.email;
+  authStore.password = loginForm.value.password;
+  await authStore.handleLogin("customer");
+}
+
+async function handleSignup() {
+  if (signupForm.value.password !== signupForm.value.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+  authStore.firstName = signupForm.value.firstName;
+  authStore.lastName = signupForm.value.lastName;
+  authStore.email = signupForm.value.email;
+  authStore.password = signupForm.value.password;
+  authStore.confirmPassword = signupForm.value.confirmPassword;
+  await authStore.handleSignUp("customer");
+}
+
+function navigateToSignIn() {
+  router.push('/login');
+}
+function navigateToSignUp() {
+  router.push('/signup');
+}
+function navigateToForgotPassword() {
+  router.push('/forgot-password');
+}
+
+// Resend code stub
+function handleResendCode() {
+  alert("Resend code clicked!");
+}
+</script>
 
 <style scoped>
 .auth-container {
@@ -491,78 +575,3 @@ input::placeholder {
   background: #b91c1c;
 }
 </style>
-
-<script>
-import Header2 from '@/components/delivery/header2.vue'
-import InputText from '@/components/all/inputText.vue'
-export default {
-  name: 'AuthPanel',
-  components: { Header2, InputText },
-  props: {
-    defaultPanel: {
-      type: String,
-      default: 'login'
-    }
-  },
-  data() {
-    return {
-      activePanel: this.defaultPanel,
-      loginForm: {
-        phone: '',
-        password: ''
-      },
-      signupForm: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      },
-      verificationCode: ['', '', '', '']
-    }
-  },
-  watch: {
-    defaultPanel(newValue) {
-      this.activePanel = newValue
-    }
-  },
-  methods: {
-    handleLogin() {
-      this.$emit('login', this.loginForm)
-    },
-    handleSignup() {
-      if (this.signupForm.password !== this.signupForm.confirmPassword) {
-        alert('Passwords do not match')
-        return
-      }
-      this.$emit('signup', this.signupForm)
-    },
-    handleCodeInput(event, index) {
-      const input = event.target
-      const value = input.value
-      
-      if (value.length === 1 && index < 3) {
-        this.$refs.codeInputs[index + 1].focus()
-      }
-    },
-    handleVerification() {
-      const code = this.verificationCode.join('')
-      this.$emit('verify-code', code)
-    },
-    handleResendCode() {
-      // TODO: Implement resend logic here
-      alert('Resend code clicked!');
-    },
-    // Navigation methods
-    navigateToSignIn() {
-      this.$router.push('/signin')
-    },
-    navigateToSignUp() {
-      this.$router.push('/signup')
-    },
-    navigateToForgotPassword() {
-      this.$router.push('/forgot-password')
-    }
-  }
-}
-</script>

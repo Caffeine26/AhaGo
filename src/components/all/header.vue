@@ -10,15 +10,22 @@
         Help
       </ul>
       <div class="acc">
-  <ul v-if="!userLoggedIn" @click="goToLogin">
-    Login
-  </ul>
-  <ul v-if="!userLoggedIn" class="sign" @click="goToSignup">
-    Sign Up
-  </ul>
-  <ul v-if="userLoggedIn" @click="goToAccount" class="account">
-    <img src="@/assets/delivery/images/image1.png" alt="Account" />
-  </ul>
+  <div class="acc">
+  <template v-if="userLoggedIn">
+    <ul class="account" @click="$emit('go-to-account')">
+      <img
+        :src="userProfileImg"
+        alt="Account"
+        @error="(e) => e.target.src = require('@/assets/delivery/images/image1.png')"
+      />
+    </ul>   
+  </template>
+  <template v-else>
+    <ul @click="goToLogin">Login</ul>
+    <ul class="sign" @click="goToSignup">Sign Up</ul>
+  </template>
+</div>
+
 </div>
 
     </div>
@@ -46,6 +53,10 @@ const props = defineProps({
 basePath: {
   type: String,
   default: "", // Default to root for customer panel
+},
+userProfileImg: {
+  type: String,
+  default: "@/assets/delivery/images/image1.png", 
 }
 
 });
@@ -66,6 +77,7 @@ const goToSignup = () => {
 const goToOverview = () => {
   router.push(buildRoute(""));
 };
+
 </script>
 
 <style scoped>
