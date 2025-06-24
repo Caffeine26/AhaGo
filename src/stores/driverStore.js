@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import router from "@/router";
 import axios from "axios";
 
 const api = axios.create({

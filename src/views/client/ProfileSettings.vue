@@ -18,32 +18,26 @@
       <div class="form-row">
         <div class="form-group">
           <label>First Name</label>
-          <input v-model="user.firstname" required />
+          <input v-model="user.firstname" />
         </div>
         <div class="form-group">
           <label>Last Name</label>
-          <input v-model="user.lastname" required />
+          <input v-model="user.lastname" />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Email Address</label>
-          <input v-model="user.email" type="email" required />
+          <input v-model="user.email" type="email" />
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input v-model="user.phone" required />
+          <input v-model="user.phone" />
         </div>
       </div>
       <div class="form-group">
         <label>Address</label>
-        <input v-model="user.address" required />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>City/Province</label>
-          <input v-model="user.city" required />
-        </div>
+        <input v-model="user.address" />
       </div>
       <button class="edit-btn" type="submit">Save</button>
     </form>
@@ -60,8 +54,6 @@ const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
 const router = useRouter()
 
-// const defaultPhoto = 'https://via.placeholder.com/120x120?text=Photo'
-const cities = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville']
 const fileInput = ref(null)
 
 function triggerFileInput() {
@@ -83,7 +75,6 @@ async function onPhotoChange(e) {
 async function saveProfile() {
   try {
     await authStore.saveUserProfile()
-    alert('Profile saved!')
     router.push('/')
   } catch (error) {
     alert('Failed to save user.')

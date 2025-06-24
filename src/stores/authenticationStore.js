@@ -155,7 +155,6 @@ export const useAuthStore = defineStore("auth", () => {
           address: currentUser.address,
           img_src: currentUser.img_src,
           customer_id: currentUser.customer_profile?.id,
-          city: currentUser.city,
           gender: currentUser.gender,
           latitude: currentUser.latitude,
           longitude: currentUser.longitude,
@@ -190,31 +189,39 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (currentRole === "driver") {
         profileFields.driver_profile = {
-          first_name: user.value.firstname,
-          last_name: user.value.lastname,
-          id_card: user.value.idCard,
-          vehicle_type: user.value.vehicleType,
-          vehicle_name: user.value.vehicleName,
-          vehicle_color: user.value.vehicleColor,
-          license_plate: user.value.licensePlate,
+          first_name: user.value.firstname || "",
+          last_name: user.value.lastname || "",
+          id_card: user.value.idCard || null,
+          vehicle_type: user.value.vehicleType || null,
+          vehicle_name: user.value.vehicleName || null,
+          vehicle_color: user.value.vehicleColor || null,
+          license_plate: user.value.licensePlate || null,
         };
       } else if (currentRole === "restaurant") {
         profileFields.restaurant_profile = {
-          name: user.value.name,
-          address: user.value.address,
-          phone_number: user.value.phone,
+          name: user.value.name || "",
+          address: user.value.address || "",
+          phone_number: user.value.phone || "",
         };
       } else if (currentRole === "customer") {
-        profileFields.customer_profile = {
-        first_name: user.value.firstname || "",
-        last_name: user.value.lastname || "",
-        gender: user.value.gender || "unspecified",
-        latitude: String(user.value.latitude || 0),
-        longitude: String(user.value.longitude || 0),
-        city: user.value.city || "",
+        const custProfile = {
+          first_name: user.value.firstname || "",
+          last_name: user.value.lastname || "",
+          gender: user.value.gender || "unspecified",
+        };
+        
+        if (user.value.latitude !== null && user.value.latitude !== undefined && user.value.latitude !== "") {
+          custProfile.latitude = String(user.value.latitude);
+        }
+        
+        if (user.value.longitude !== null && user.value.longitude !== undefined && user.value.longitude !== "") {
+          custProfile.longitude = String(user.value.longitude);
+        }
+        
+        profileFields.customer_profile = custProfile;
       };
-      }
 
+      // Send the full merged payload to update endpoint
       await api.put(`/${currentRole}/profile`, {
         ...commonFields,
         ...profileFields,
@@ -229,6 +236,7 @@ export const useAuthStore = defineStore("auth", () => {
       alert("Failed to update profile.");
     }
   }
+
 
   async function uploadPhoto(file) {
     const formData = new FormData();
