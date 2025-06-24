@@ -41,15 +41,8 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Country</label>
-          <input v-model="user.country" required />
-        </div>
-        <div class="form-group">
           <label>City/Province</label>
-          <select v-model="user.city" required>
-            <option value="">Select</option>
-            <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-          </select>
+          <input v-model="user.city" required />
         </div>
       </div>
       <button class="edit-btn" type="submit">Save</button>

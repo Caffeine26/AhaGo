@@ -16,6 +16,22 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref(null);
   const role = ref("");
 
+  // Storage keys based on role
+  const getKey = (type, userRole) => `${userRole}_${type}`;
+
+  function getDashboardPath(role) {
+    switch (role) {
+      case "driver":
+        return "/delivery/overview";
+      case "restaurant":
+        return "/owner";
+      case "customer":
+        return "/";
+      default:
+        return "/login";
+    }
+  }
+
   async function handleSignUp(userRole, profileData = {}) {
     try {
       let payload = {
@@ -45,10 +61,12 @@ export const useAuthStore = defineStore("auth", () => {
       const response = await api.post("/signup", payload);
       const data = response.data;
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("role", userRole);
+      localStorage.setItem(getKey("token", userRole), data.token);
+      localStorage.setItem(getKey("user", userRole), JSON.stringify(data.user));
+      localStorage.setItem("role", userRole); // current active role
+
       role.value = userRole;
+      user.value = data.user;
 
       router.push(getDashboardPath(userRole));
     } catch (error) {
@@ -67,9 +85,10 @@ export const useAuthStore = defineStore("auth", () => {
       const data = response.data;
 
       if (data.user) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("role", userRole);
+        localStorage.setItem(getKey("token", userRole), data.token);
+        localStorage.setItem(getKey("user", userRole), JSON.stringify(data.user));
+        localStorage.setItem("role", userRole); // current active role
+
         role.value = userRole;
         user.value = data.user;
 
@@ -85,8 +104,8 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function fetchProfile() {
     try {
-      const token = localStorage.getItem("token");
       const userRole = localStorage.getItem("role");
+      const token = localStorage.getItem(getKey("token", userRole));
 
       if (!token || !userRole) {
         logout();
@@ -100,7 +119,6 @@ export const useAuthStore = defineStore("auth", () => {
 
       const currentUser = data.user;
 
-      // Normalize based on role
       if (userRole === "driver") {
         user.value = {
           id: currentUser.id,
@@ -137,7 +155,6 @@ export const useAuthStore = defineStore("auth", () => {
           address: currentUser.address,
           img_src: currentUser.img_src,
           customer_id: currentUser.customer_profile?.id,
-          country: currentUser.country,
           city: currentUser.city,
           gender: currentUser.gender,
           latitude: currentUser.latitude,
@@ -148,113 +165,99 @@ export const useAuthStore = defineStore("auth", () => {
       role.value = userRole;
     } catch (error) {
       console.error("Failed to fetch profile:", error.response?.data || error.message);
-      logout(); // force logout on invalid token
+      logout();
     }
   }
 
   async function saveUserProfile() {
-  try {
-    const token = localStorage.getItem("token");
-    const currentRole = role.value;
+    try {
+      const currentRole = role.value;
+      const token = localStorage.getItem(getKey("token", currentRole));
 
-    if (!user.value || !currentRole || !token) {
-      console.warn("Missing user, role, or token");
-      return;
-    }
+      if (!user.value || !currentRole || !token) {
+        console.warn("Missing user, role, or token");
+        return;
+      }
 
-    const commonFields = {
-      email: user.value.email,
-      phone_number: user.value.phone,
-      address: user.value.address,
-      img_src: user.value.img_src,
-    };
-
-    let profileFields = {};
-
-    if (currentRole === "driver") {
-      profileFields.driver_profile = {
-        first_name: user.value.firstname,
-        last_name: user.value.lastname,
-        id_card: user.value.idCard,
-        vehicle_type: user.value.vehicleType,
-        vehicle_name: user.value.vehicleName,
-        vehicle_color: user.value.vehicleColor,
-        license_plate: user.value.licensePlate,
-      };
-    } else if (currentRole === "restaurant") {
-      profileFields.restaurant_profile = {
-        name: user.value.name,
-        address: user.value.address,
+      const commonFields = {
+        email: user.value.email,
         phone_number: user.value.phone,
+        address: user.value.address,
+        img_src: user.value.img_src,
       };
-    } else if (currentRole === "customer") {
-      profileFields.customer_profile = {
-        first_name: user.value.firstname,
-        last_name: user.value.lastname,
-        gender: user.value.gender,
-        latitude: user.value.latitude,
-        longitude: user.value.longitude,
-        city: user.value.city,
+
+      let profileFields = {};
+
+      if (currentRole === "driver") {
+        profileFields.driver_profile = {
+          first_name: user.value.firstname,
+          last_name: user.value.lastname,
+          id_card: user.value.idCard,
+          vehicle_type: user.value.vehicleType,
+          vehicle_name: user.value.vehicleName,
+          vehicle_color: user.value.vehicleColor,
+          license_plate: user.value.licensePlate,
+        };
+      } else if (currentRole === "restaurant") {
+        profileFields.restaurant_profile = {
+          name: user.value.name,
+          address: user.value.address,
+          phone_number: user.value.phone,
+        };
+      } else if (currentRole === "customer") {
+        profileFields.customer_profile = {
+        first_name: user.value.firstname || "",
+        last_name: user.value.lastname || "",
+        gender: user.value.gender || "unspecified",
+        latitude: String(user.value.latitude || 0),
+        longitude: String(user.value.longitude || 0),
+        city: user.value.city || "",
       };
+      }
+
+      await api.put(`/${currentRole}/profile`, {
+        ...commonFields,
+        ...profileFields,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.error("Failed to save profile:", error.response?.data || error.message);
+      alert("Failed to update profile.");
     }
-
-    await api.put(`/${currentRole}/profile`, {
-      ...commonFields,
-      ...profileFields,
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    });
-
-  } catch (error) {
-    console.error("Failed to save profile:", error.response?.data || error.message);
-    alert("Failed to update profile.");
   }
-}
-async function uploadPhoto(file) {
-  const formData = new FormData();
-  formData.append("photo", file);
 
-  try {
-    const token = localStorage.getItem("token");
-    const currentRole = role.value;
+  async function uploadPhoto(file) {
+    const formData = new FormData();
+    formData.append("photo", file);
 
-    const { data } = await api.post(`/${currentRole}/photo-upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    try {
+      const currentRole = role.value;
+      const token = localStorage.getItem(getKey("token", currentRole));
 
-    if (user.value) {
-      user.value.img_src = data.img_src;
-    }
+      const { data } = await api.post(`/${currentRole}/photo-upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    return data.img_src;
-  } catch (error) {
-    console.error("Photo upload failed:", error.response?.data || error.message);
-    throw error;
-  }
-}
+      if (user.value) user.value.img_src = data.img_src;
 
-  function getDashboardPath(role) {
-    switch (role) {
-      case "driver":
-        return "/delivery/overview";
-      case "restaurant":
-        return "/owner";
-      case "customer":
-        return "/";
-      default:
-        return "/login";
+      return data.img_src;
+    } catch (error) {
+      console.error("Photo upload failed:", error.response?.data || error.message);
+      throw error;
     }
   }
 
   function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    const currentRole = role.value;
+    localStorage.removeItem(getKey("token", currentRole));
+    localStorage.removeItem(getKey("user", currentRole));
     localStorage.removeItem("role");
     user.value = null;
     role.value = "";
@@ -272,8 +275,8 @@ async function uploadPhoto(file) {
     handleSignUp,
     handleLogin,
     fetchProfile,
-    logout,
     saveUserProfile,
-    uploadPhoto
+    uploadPhoto,
+    logout,
   };
 });

@@ -3,23 +3,18 @@
     <button class="back-btn" @click="goBack">&#8592; Cancel</button>
 
     <div class="add-location-container">
-      <Map
-        :useGeolocation="false"
-        :enableClickSelection="true"
-        @map-clicked="onMapClick"
-      />
+      <Map :useGeolocation="false" :enableClickSelection="true" @map-clicked="onMapClick" />
 
-      <form class="location-form">
-        <InputText v-model="address" label="Delivery Address" placeholder="Enter delivery address" />
-        <InputText v-model="addressLabel" label="Address" placeholder="e.g. Home" />
+      <form class="location-form" @submit.prevent="saveLocation">
+        <InputText
+          v-model="address"
+          label="Delivery Address"
+          placeholder="Enter delivery address"
+          readonly
+        />
 
-        <div class="form-group">
-          <label class="label">Delivery Service <span class="note">(For Takeaway Orders Only)</span></label>
-          <select class="select" v-model="deliveryService" required>
-            <option disabled value="">Please select delivery service</option>
-            <option>Downstairs pick-up</option>
-            <option>Door delivery</option>
-          </select>
+        <div v-if="plusCode" class="plus-code-display">
+          Plus Code: <strong>{{ plusCode }}</strong>
         </div>
 
         <InputText v-model="customerName" label="Customer Name" placeholder="Enter your name" />
@@ -33,25 +28,11 @@
         </div>
 
         <InputText v-model="contact" label="Contact" placeholder="Phone number" type="tel" />
-        <InputText v-model="telegram" label="Telegram" placeholder="Telegram username" />
 
         <div class="form-group">
-          <label class="label">Label</label>
-          <div class="label-group">
-            <GeneralButton
-              v-for="option in ['Home', 'Work', 'School', 'Other']"
-              :key="option"
-              :title="option"
-              :btnColor="label === option ? '#b91c1c' : '#ffffff'"
-              :titleColor="label === option ? '#ffffff' : '#b91c1c'"
-              :border="'1px solid #b91c1c'"
-              @click="label = option"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label">Photo <span class="sample-photo">Sample Photo</span></label>
+          <label class="label">
+            Photo <span class="sample-photo">Sample Photo</span>
+          </label>
           <input type="file" @change="onPhotoChange" accept="image/*" />
           <div v-if="photoUrl" class="photo-preview">
             <img :src="photoUrl" alt="Preview" />
@@ -96,7 +77,8 @@ const address = computed({
 });
 
 const customerName = computed({
-  get: () => `${authStore.user?.firstname || ""} ${authStore.user?.lastname || ""}`,
+  get: () =>
+    `${authStore.user?.firstname || ""} ${authStore.user?.lastname || ""}`.trim(),
   set: (val) => {
     const [first = "", ...rest] = val.split(" ");
     authStore.user.firstname = first;
@@ -114,15 +96,14 @@ const contact = computed({
   set: (val) => (authStore.user.phone = val),
 });
 
-const telegram = ref(""); // not saved to backend yet
-const deliveryService = ref(""); // optional field
-const label = ref("Home");
-const addressLabel = ref("Home");
+const plusCode = ref(""); // Optional display only
 
-function onMapClick({ coords, address: resolvedAddress }) {
+function onMapClick({ coords, address: resolvedAddress, plusCode: pc }) {
   address.value = resolvedAddress;
-  authStore.user.latitude = coords.lat;
-  authStore.user.longitude = coords.lng;
+  authStore.user.latitude = String(coords.lat); // convert to string to match backend validation
+  authStore.user.longitude = String(coords.lng);
+
+  plusCode.value = pc;
 }
 
 function onPhotoChange(e) {
@@ -134,21 +115,45 @@ function onPhotoChange(e) {
 }
 
 async function saveLocation() {
-  if (!address.value || !authStore.user.latitude || !authStore.user.longitude) {
-    alert("Please select your delivery location on the map.");
+  if (!address.value) {
+    alert("Please enter or select an address.");
     return;
   }
 
   try {
-    if (photo.value) {
-      await authStore.uploadPhoto(photo.value);
-    }
+    const apiKey = "AIzaSyA68FNc7213c8aFqrpOVjtDYW1Y_0Olpvw"; // Replace with your API key
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address.value
+    )}&key=${apiKey}`;
 
-    await authStore.saveUserProfile();
-    router.back();
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === "OK" && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      const lat = location.lat;
+      const lng = location.lng;
+
+      console.log("Geocoded Lat, Lng:", lat, lng);
+
+      authStore.user.latitude = String(lat);
+      authStore.user.longitude = String(lng);
+      authStore.user.address = address.value;
+
+      if (photo.value) {
+        await authStore.uploadPhoto(photo.value);
+      }
+
+      await authStore.saveUserProfile();
+
+      router.back();
+    } else {
+      alert("Failed to convert address to coordinates. Please check the address.");
+      console.error("Geocoding failed:", data.status);
+    }
   } catch (error) {
-    console.error("Failed to save:", error);
-    alert("Failed to save your location.");
+    console.error("Error during geocoding or saving profile:", error);
+    alert("An error occurred while saving your location.");
   }
 }
 
@@ -160,6 +165,7 @@ onMounted(() => {
   if (!authStore.user) {
     authStore.fetchProfile();
   } else {
+    authStore.role = "customer";
     photoUrl.value = authStore.user?.img_src || "";
   }
 });
@@ -211,16 +217,6 @@ onMounted(() => {
   gap: 1rem;
   margin-top: 0.3rem;
 }
-.note {
-  font-size: 0.9em;
-  color: #888;
-  font-weight: 400;
-}
-.label-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
 .sample-photo {
   color: #b91c1c;
   float: right;
@@ -243,12 +239,6 @@ onMounted(() => {
 .label {
   font-size: 20px;
   color: #9a0404;
-}
-.select {
-  padding: 10px;
-  border-radius: 10px;
-  background-color: white;
-  font-size: 16px;
 }
 .button {
   display: flex;

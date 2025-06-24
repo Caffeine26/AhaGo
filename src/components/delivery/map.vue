@@ -74,9 +74,18 @@ function initMap(google, coords) {
 
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ location: coords }, (results, status) => {
-        const address =
+        const resolvedAddress =
           status === "OK" && results[0] ? results[0].formatted_address : "";
-        emit("map-clicked", { coords, address });
+
+        const plusCode = results.find(
+          (r) => r.plus_code || (r.types && r.types.includes("plus_code"))
+        )?.plus_code?.global_code || "";
+
+        emit("map-clicked", {
+          coords,
+          address: resolvedAddress,
+          plusCode,
+        });
       });
     });
   }
@@ -118,7 +127,29 @@ function drawRoute(google, points) {
   );
 }
 
-// Get full detailed path points for animation from Directions API
+function animateMarkerAlongPath(path, speed = 30) {
+  return new Promise((resolve) => {
+    if (!path || path.length < 2) return resolve();
+
+    let index = 0;
+
+    function move() {
+      if (index >= path.length) {
+        resolve(path[path.length - 1]);
+        return;
+      }
+
+      driverMarker.setPosition(path[index]);
+      map.panTo(path[index]);
+
+      index++;
+      animationTimeoutId = setTimeout(move, speed);
+    }
+
+    move();
+  });
+}
+
 function getRoutePath(google, points) {
   return new Promise((resolve, reject) => {
     const directionsService = new google.maps.DirectionsService();
@@ -165,30 +196,6 @@ onBeforeUnmount(() => {
   if (geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
   if (animationTimeoutId) clearTimeout(animationTimeoutId);
 });
-
-// Animate driverMarker along path points
-function animateMarkerAlongPath(path, speed = 30) {
-  return new Promise((resolve) => {
-    if (!path || path.length < 2) return resolve();
-
-    let index = 0;
-
-    function move() {
-      if (index >= path.length) {
-        resolve(path[path.length - 1]);
-        return;
-      }
-
-      driverMarker.setPosition(path[index]);
-      map.panTo(path[index]);
-
-      index++;
-      animationTimeoutId = setTimeout(move, speed);
-    }
-
-    move();
-  });
-}
 
 watch(
   () => props.routePoints,
