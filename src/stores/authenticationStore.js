@@ -243,21 +243,45 @@ export const useAuthStore = defineStore("auth", () => {
     formData.append("photo", file);
 
     try {
-      const currentRole = role.value;
-      const token = localStorage.getItem(getKey("token", currentRole));
+      const currentRole = role.value; // Ensure role exists
+      if (!currentRole) {
+        throw new Error("User role is not defined.");
+      }
 
-      const { data } = await api.post(`/${currentRole}/photo-upload`, formData, {
+      // Retrieve the token for the current role
+      const token = localStorage.getItem(getKey("token", currentRole));
+      if (!token) {
+        throw new Error("Authentication token not found.");
+      }
+
+      // Dynamically build the API endpoint based on the role
+      const endpoint = `/photo-upload`;
+
+      // Make the POST request to the server
+      const { data } = await api.post(endpoint, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (user.value) user.value.img_src = data.img_src;
+      // Update the user image source (if user is available)
+      if (user.value) {
+        user.value.img_src = data.img_src;
+      }
 
       return data.img_src;
     } catch (error) {
       console.error("Photo upload failed:", error.response?.data || error.message);
+
+      // Optionally, handle specific error cases here
+      if (error.response && error.response.status === 400) {
+        alert("Bad Request: " + error.response.data?.message);
+      } else {
+        alert("An error occurred while uploading the photo. Please try again.");
+      }
+
+      // Rethrow the error if needed
       throw error;
     }
   }

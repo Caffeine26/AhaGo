@@ -23,7 +23,7 @@ const toggleDropdown = () => {
 const handleLogout = () => {
   authStore.logout();
   showDropdown.value = false;
-  router.push("/");
+  router.push("/login");
 };
 
 const goToAccount = () => {

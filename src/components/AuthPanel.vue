@@ -16,12 +16,12 @@
               </div>
               <form @submit.prevent="handleLogin">
                 <InputText
-                  v-model="loginForm.email"
+                  v-model="authStore.email"
                   placeholder="Email address"
                   type="email"
                 />
                 <InputText
-                  v-model="loginForm.password"
+                  v-model="authStore.password"
                   placeholder="Enter password"
                   type="password"
                 />
@@ -57,30 +57,30 @@
               <form @submit.prevent="handleSignup">
                 <div style="display: flex; gap: 40px; padding-right: 22px;">
                   <InputText
-                    v-model="signupForm.firstName"
+                    v-model="authStore.firstName"
                     placeholder="First Name"
                     type="text"
                     style="flex: 1;"
                   />
                   <InputText
-                    v-model="signupForm.lastName"
+                    v-model="authStore.lastName"
                     placeholder="Last Name"
                     type="text"
                     style="flex: 1;"
                   />
                 </div>
                 <InputText
-                  v-model="signupForm.email"
+                  v-model="authStore.email"
                   placeholder="Email Address"
                   type="email"
                 />
                 <InputText
-                  v-model="signupForm.password"
+                  v-model="authStore.password"
                   placeholder="Password"
                   type="password"
                 />
                 <InputText
-                  v-model="signupForm.confirmPassword"
+                  v-model="authStore.confirmPassword"
                   placeholder="Confirm Password"
                   type="password"
                 />
@@ -158,17 +158,6 @@ function getPanelFromRoute(path) {
 }
 
 const activePanel = ref(getPanelFromRoute(route.path));
-const loginForm = ref({
-  email: '',
-  password: ''
-});
-const signupForm = ref({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
-});
 const verificationCode = ref(['', '', '', '']);
 
 watch(
@@ -191,21 +180,14 @@ function handleVerification() {
 }
 
 async function handleLogin() {
-  authStore.email = loginForm.value.email;
-  authStore.password = loginForm.value.password;
   await authStore.handleLogin("customer");
 }
 
 async function handleSignup() {
-  if (signupForm.value.password !== signupForm.value.confirmPassword) {
+  if (authStore.password !== authStore.confirmPassword) {
     alert("Passwords do not match");
     return;
   }
-  authStore.firstName = signupForm.value.firstName;
-  authStore.lastName = signupForm.value.lastName;
-  authStore.email = signupForm.value.email;
-  authStore.password = signupForm.value.password;
-  authStore.confirmPassword = signupForm.value.confirmPassword;
   await authStore.handleSignUp("customer");
 }
 
@@ -219,7 +201,6 @@ function navigateToForgotPassword() {
   router.push('/forgot-password');
 }
 
-// Resend code stub
 function handleResendCode() {
   alert("Resend code clicked!");
 }

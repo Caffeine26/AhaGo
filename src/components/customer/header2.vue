@@ -57,7 +57,7 @@
   const goToLogin = () => router.push(buildRoute("login"));
   const goToSignup = () => router.push(buildRoute("signup"));
   const goToOverview = () => router.push(buildRoute(""));
-
+  const logout = () => router.push(buildRoute("login"))
   // Use a computed to get reactive user data from authStore.user
   const authUser = computed(() => authStore.user || {});
 
