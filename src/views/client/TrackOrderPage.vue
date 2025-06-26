@@ -84,6 +84,9 @@
         </div>
       </div>
     </div>
+    <footer class="track-order-footer">
+      Thank you for ordering with us!
+    </footer>
   </div>
 </template>
 
@@ -106,6 +109,17 @@ import Map from '@/components/delivery/map.vue';
   border-radius: 18px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   padding: 0 0 2rem 0;
+}
+.track-order-footer {
+  margin: 2rem 1.5rem 0 1.5rem;
+  padding: 1.2rem 0;
+  text-align: center;
+  color: #fff;
+  background: var(--brand-red);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 1px 6px rgba(217,0,0,0.08);
 }
 .map-section {
   height: 300px;
