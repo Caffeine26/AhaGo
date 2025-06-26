@@ -181,13 +181,15 @@ export default {
     });
 
     const filteredMenu = computed(() => {
-      if (!search.value) return menuData.value;
+      if (!search.value) return Array.isArray(menuData.value) ? menuData.value : [];
+      if (!Array.isArray(menuData.value)) return [];
       return menuData.value.filter((item) =>
         item.name?.toLowerCase().includes(search.value.toLowerCase())
       );
     });
 
     const foodImages = computed(() => {
+      if (!Array.isArray(menuData.value)) return [];
       const itemsWithImages = menuData.value.filter((item) => item.img_url);
       return itemsWithImages.slice(0, 3).map((item) => item.img_url);
     });

@@ -34,17 +34,18 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useOrderHistoryStore } from '@/stores/orderHistoryStore';
+// import { useOrderHistoryStore } from '@/stores/orderHistoryStore';
 import { useReviewStore } from '@/stores/reviewStore';
+import { useOrderStore } from '@/stores/orderStore';
 import { useUserStore } from '@/stores/userStore';
 import ReviewCard from '@/components/customer/ReviewCard.vue';
 
 const route = useRoute();
 const router = useRouter();
-const orderHistoryStore = useOrderHistoryStore();
+// const orderHistoryStore = useOrderHistoryStore();
 const reviewStore = useReviewStore();
 const userStore = useUserStore();
-
+const orderStore = useOrderStore();
 const loading = ref(true);
 const error = ref(null);
 const reviewData = reactive({
@@ -62,30 +63,34 @@ const formatReviewDate = (dateString) => {
   return `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 };
 
-onMounted(() => {
+onMounted(async () => {
   try {
     const orderId = parseInt(route.params.orderId, 10);
     if (isNaN(orderId)) throw new Error("Invalid Order ID provided.");
 
-    const order = orderHistoryStore.orders.find(o => o.id === orderId);
+    await orderStore.fetchOrderById(orderId);
+    const order = orderStore.currentOrder;
     if (!order) throw new Error("Could not find the specified order.");
 
     reviewData.delivery = {
       name: 'D18a.Brak Pisithra',
       image: '/src/assets/delivery/images/image1.png',
-      meta: `Delivery Time: ${formatReviewDate(order.date)}`,
+      meta: `Delivery Time: ${formatReviewDate(order.createdAt)}`,
     };
+
     reviewData.restaurant = {
-      name: order.restaurant.name,
-      image: order.restaurant.logo,
+      name: order.details.restaurantName,
+      image: order.details.restaurantLogo || '/fallback.png', // optional fallback
     };
-    reviewData.orderItems = order.items.map(item => item.name);
+
+    reviewData.orderItems = order.orderItems.map(item => item.name || 'Unknown Item');
   } catch (e) {
     error.value = e.message;
   } finally {
     loading.value = false;
   }
 });
+
 
 const goBack = () => {
   router.back();

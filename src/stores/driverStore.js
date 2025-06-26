@@ -23,7 +23,9 @@ export const useDriverStore = defineStore("driver", () => {
   async function fetchSections() {
     try {
       const { data } = await api.get("/driver-sections");
-      sections.value = data.map((section) => ({
+      const sectionsArray = Array.isArray(data) ? data : data.data || data.sections || [];
+
+      sections.value = sectionsArray.map((section) => ({
         ...section,
         linkTo: section.link_to,
         buttons: section.buttons.map((btn) => ({
@@ -55,9 +57,10 @@ export const useDriverStore = defineStore("driver", () => {
     try {
       const url = status ? `/orders?status=${status}` : "/orders";
       const { data } = await api.get(url);
+      const ordersArray = Array.isArray(data) ? data : data.data || data.orders || [];
 
       // Parse coordinates as numbers to avoid map issues
-      orders.value = data.map((order) => {
+      orders.value = ordersArray.map((order) => {
         return {
           ...order,
           restaurant: {

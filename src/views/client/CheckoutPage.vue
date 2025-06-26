@@ -152,7 +152,8 @@ import cover1 from "@/assets/store_details/house.png";
 import abapayImg from '@/assets/client/abapay.png';
 import mastercardImg from '@/assets/client/mastercard.png';
 import { useAuthStore } from "@/stores/authenticationStore";
-
+import { useOrderStore } from "@/stores/orderStore";
+import axios from "axios";
 export default {
   name: "CheckoutPage",
   components: {
@@ -167,6 +168,7 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const authStore = useAuthStore();
+    const orderStore = useOrderStore();
 
     const brandName = route.params.brandName;
     const cartItems = ref(JSON.parse(route.params.cartItems || "[]"));
@@ -233,17 +235,44 @@ export default {
       }
     });
 
-    const placeOrder = () => {
-      // Collect order data and redirect (simplified)
-      const orderData = {
-        paymentMethod: selectedPayment.value,
-        remarks: remarks.value,
-        cartItems: cartItems.value,
-        deliveryAddress: savedLocation.value?.address || "",
-      };
+    const placeOrder = async () => {
+      try {
+        const { data: driversData } = await axios.get("http://localhost:8300/api/drivers");
+        const driverIds = Array.isArray(driversData) && driversData.length > 0
+          ? driversData.map(driver => driver.id)
+          : [];
+        const assignedDriverId = driverIds.length > 0
+          ? driverIds[Math.floor(Math.random() * driverIds.length)]
+          : 1;
 
-      localStorage.setItem("orderData", JSON.stringify(orderData));
-      router.push({ name: "OrderConfirmation" });
+        const orderType = route.params.orderType || "delivery";
+
+        const orderPayload = {
+          restaurant_id: cartItems.value.length > 0 ? cartItems.value[0].restaurant_id : null,
+          customer_id: authStore.user?.customer_id,
+          driver_id: orderType === "delivery" ? assignedDriverId : null,
+          status: "pending",
+          total_amount: finalTotal.value,
+          payment_status: selectedPayment.value === "card" ? "paid" : "unpaid",
+          remark: remarks.value,
+          order_type: orderType,
+          items: cartItems.value.map(item => ({
+            food_item_id: item.id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        };
+
+        const { data: orderResponse } = await axios.post(
+          "http://localhost:8300/api/orders",
+          orderPayload
+        );
+
+        console.log("Order created successfully:", orderResponse);
+
+      } catch (err) {
+        console.error("Failed to create order:", err.response?.data || err.message);
+      }
     };
 
     const goToAddLocation = () => {

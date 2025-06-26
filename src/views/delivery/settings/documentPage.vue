@@ -149,6 +149,7 @@ export default {
 <style scoped>
 .documents {
   display: flex;
+  width: 100vw;
 }
 .contain {
   padding: 80px;
@@ -162,7 +163,7 @@ export default {
 }
 .box {
   width: 120%;
-  max-width: 850px;
+  min-width: 700px;
   margin: 0 auto;
 }
 .head {

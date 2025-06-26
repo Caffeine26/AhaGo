@@ -100,9 +100,21 @@ export const useOrderStore = defineStore("order", () => {
     }
   }
 
+  async function createOrder(orderData) {
+    try {
+      const response = await api.post("/orders", orderData);
+      currentOrder.value = response.data.data;
+      return response.data.data;
+    } catch (error) {
+      console.error("Failed to create order:", error.response?.data || error.message);
+      throw error;
+    }
+  }
+
   return {
     orders,
     currentOrder,
+    createOrder,
     fetchOrders,
     fetchOrderById,
     updateOrderStatus,

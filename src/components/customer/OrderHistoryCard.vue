@@ -1,24 +1,29 @@
 <template>
   <div class="order-history-card">
     <div class="card-header">
-      <img :src="order.restaurant.logo" :alt="order.restaurant.name" class="restaurant-logo" />
+      <img
+        :src="order.restaurant?.user?.img_src || fallbackLogo"
+        :alt="order.restaurant?.name"
+        class="restaurant-logo"
+      />
       <div class="restaurant-info">
-        <h3 class="restaurant-name">{{ order.restaurant.name }}</h3>
-        <p class="order-date">{{ formatDate(order.date) }}</p>
+        <h3 class="restaurant-name">{{ order.restaurant?.name }}</h3>
+        <p class="order-date">{{ formatDate(order.created_at) }}</p>
       </div>
       <img src="@/assets/owner/svg/backarrow.svg" alt="details" class="details-arrow" />
     </div>
 
-    <div class="order-item" v-for="item in order.items" :key="item.id">
-      <img :src="item.image" :alt="item.name" class="item-image" />
+    <div class="order-item" v-for="item in order.order_items" :key="item.id">
+      <img :src="item.food_item?.img_url || fallbackImage" :alt="item.food_item?.name" class="item-image" />
       <div class="item-details">
-        <h4 class="item-name">{{ item.name }}</h4>
-        <p class="item-options">{{ item.options }}</p>
+        <h4 class="item-name">{{ item.food_item?.name }}</h4>
+        <!-- If you have options, show them here -->
+        <p class="item-options" v-if="item.options">{{ item.options }}</p>
       </div>
       <div class="item-info">
         <span class="item-quantity">x{{ item.quantity }}</span>
         <div class="item-price-section">
-          <span class="item-price">${{ item.price.toFixed(2) }}</span>
+          <span class="item-price">${{ parseFloat(item.price).toFixed(2) }}</span>
           <img src="@/assets/down.png" alt="options" class="options-arrow" />
         </div>
       </div>
@@ -27,8 +32,8 @@
     <div class="card-footer">
       <span class="order-status" :class="statusClass">{{ order.status }}</span>
       <div class="action-buttons">
-        <button v-if="order.status === 'Order Canceled'" class="re-order-btn">RE-ORDER</button>
-        <template v-if="order.status === 'Completed'">
+        <button v-if="order.status.toLowerCase().includes('cancelled')" class="re-order-btn">RE-ORDER</button>
+        <template v-if="order.status.toLowerCase().includes('completed')">
           <button class="re-order-btn">RE-ORDER</button>
           <button @click="goToReview" class="rate-us-btn">RATE US</button>
         </template>
@@ -51,7 +56,7 @@ const props = defineProps({
 const router = useRouter();
 
 const statusClass = computed(() => {
-  return props.order.status.toLowerCase().replace(' ', '-');
+  return props.order.status.toLowerCase().replace(/\s+/g, '-');
 });
 
 const formatDate = (dateString) => {
