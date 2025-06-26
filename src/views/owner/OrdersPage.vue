@@ -1,13 +1,13 @@
 <template>
 <Header></Header>
-<Header2
+<OwnerHeader
 title="Restaurant"
 it1="Home"
 it2="Orders"
-it3="Menu"
-it4="Analytics"
+it3="Transactions"
+it4="Menu"
 it5="Profile"
-></Header2>
+></OwnerHeader>
 
 <CategoryBannerV2
 title-header= "Order Management"
@@ -40,15 +40,15 @@ title-header= "Order Management"
 import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
-import Header2 from '@/components/delivery/header2.vue';
 import OrderCard from '@/components/OrderCard.vue';
 import OrderCard02 from '@/components/OrderCard02.vue';
+import OwnerHeader from '@/components/OwnerHeader.vue';
 import { useOrdersStore } from '@/stores/ordersStore';
 
 export default {
     components: {
         Header,
-        Header2,
+        OwnerHeader,
         CategoryBannerV2,
         OrderCard,
         OrderCard02,

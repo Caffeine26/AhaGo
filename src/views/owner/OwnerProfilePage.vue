@@ -1,14 +1,14 @@
 <template>
 <Header></Header>
 
-<Header2
+<OwnerHeader
 title="Restaurant"
 it1="Home"
 it2="Orders"
-it3="Menu"
-it4="Analytics"
+it3="Transactions"
+it4="Menu"
 it5="Profile"
-></Header2>
+></OwnerHeader>
 
 <CategoryBannerV2
 title-header="Malis Restaurant"
@@ -48,17 +48,17 @@ banner-btn="Edit Profile"
 import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
-import Header2 from '@/components/delivery/header2.vue';
 import { useRestStore } from '@/stores/restStore';
 import { useRoute } from 'vue-router';
 
 import edit from '@/assets/owner/svg/edit-white.svg';
 import { onMounted, computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import OwnerHeader from '@/components/OwnerHeader.vue';
 export default {
     components: {
         Header,
-        Header2,
+        OwnerHeader,
         AppFooter,
         CategoryBannerV2
     },

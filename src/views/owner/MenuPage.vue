@@ -1,14 +1,14 @@
 <template>
 <Header></Header>
 
-<Header2
+<OwnerHeader
 title="Restaurant"
 it1="Home"
 it2="Orders"
-it3="Menu"
-it4="Analytics"
+it3="Transactions"
+it4="Menu"
 it5="Profile"
-></Header2>
+></OwnerHeader>
 
 <div class="menuContainer">
 
@@ -76,18 +76,18 @@ it5="Profile"
 import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
-import Header2 from '@/components/delivery/header2.vue';
 import ProductCard from '@/components/ProductCard.vue';
 
 import add from '@/assets/owner/svg/add.svg';
 import search from '@/assets/owner/svg/search.svg';
 import { useRoute } from 'vue-router';
 import { useCategoryStore } from '@/stores/categoryStore';
+import OwnerHeader from '@/components/OwnerHeader.vue';
 
 export default {
     components: {
         Header,
-        Header2,
+        OwnerHeader,
         CategoryBannerV2,
         ProductCard,
         AppFooter
