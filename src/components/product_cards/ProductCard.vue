@@ -19,7 +19,7 @@
           <span class="rating-star">⭐</span> {{ rating }}
         </div>
       </div>
-      <p class="product-price">{{ category }} • Delivery: ${{ deliveryPrice.toFixed(2) }}</p>
+      <p class="product-price"> Delivery: ${{ deliveryPrice.toFixed(2) }}</p>
       <div class="product-delivery-info">
         <span class="delivery-time">🕒 {{ deliveryTime }}</span>
         <span class="delivery-price">🏍️ ${{ deliveryPrice.toFixed(2) }}</span>

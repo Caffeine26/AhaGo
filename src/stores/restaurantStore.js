@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
@@ -78,6 +78,9 @@ export const useRestaurantStore = defineStore("restaurant", () => {
     }
   };
 
+  const favoriteProducts = computed(() => {
+    return restaurants.value.filter(item => favorites.value.includes(item.id));
+  });
   return {
     restaurants,
     foodItems,
@@ -85,6 +88,7 @@ export const useRestaurantStore = defineStore("restaurant", () => {
     loading,
     error,
     categories,
+    favoriteProducts,
     fetchRestaurants,
     fetchFoodItems,
     toggleFavorite,

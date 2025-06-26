@@ -17,7 +17,7 @@
           v-for="product in favoriteProducts"
           :key="product.id"
           :title="product.title"
-          :image="product.image"
+          :image="product.image"           
           :price="product.price"
           :category="product.category"
           :deliveryTime="product.deliveryTime"

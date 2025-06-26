@@ -12,7 +12,7 @@
         :phoneNumber="restaurant.user?.phone_number"
       />
 
-      <ImageGallery :cover1="dynamicCover1" :cover2="dynamicCover2" :cover3="dynamicCover3" />
+      <ImageGallery v-if="restaurant" :cover1="restaurant.user?.img_src" />
 
       <div class="tabs">
         <span
