@@ -1,13 +1,18 @@
 <template>
   <div class="history-page">
     <h1>Order History</h1>
-    <div v-if="orders.length > 0" class="orders-list">
+
+    <div v-if="isLoading">Loading your order history...</div>
+    <div v-else-if="error">{{ error }}</div>
+
+    <div v-else-if="filteredOrders.length > 0" class="orders-list">
       <OrderHistoryCard 
-        v-for="order in orders" 
+        v-for="order in filteredOrders" 
         :key="order.id" 
         :order="order" 
       />
     </div>
+
     <div v-else class="empty-history">
       <h2>No past orders</h2>
       <p>Your history is empty. Start a new order to see it here.</p>
@@ -17,26 +22,42 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOrderStore } from '@/stores/orderStore';
 import OrderHistoryCard from '@/components/customer/OrderHistoryCard.vue';
 
 const router = useRouter();
 const orderStore = useOrderStore();
-const orders = computed(() => 
-  orderStore.orders.filter(o => ['completed', 'cancelled'].includes(o.status))
+
+const isLoading = ref(false);
+const error = ref(null);
+
+// Filter only completed or cancelled orders, sorted by newest first
+const filteredOrders = computed(() =>
+  orderStore.orders
+    .filter(order => ['completed', 'cancelled'].includes(order.status))
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 );
 
 const goToHome = () => {
   router.push('/');
 };
 
-onMounted(() => {
-  orderStore.fetchOrders(null, 'customer');
+onMounted(async () => {
+  isLoading.value = true;
+  error.value = null;
+
+  try {
+    await orderStore.fetchOrders(null, 'customer');
+  } catch (err) {
+    error.value = 'Failed to load order history.';
+    console.error(err);
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
-
 
 <style scoped>
 .history-page {
