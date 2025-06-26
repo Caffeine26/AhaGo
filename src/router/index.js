@@ -50,6 +50,8 @@ import Signup from "@/views/Admin/Signup.vue";
 import FavoritePage from "@/views/client/FavoritePage.vue";
 import ProfileSettings from "@/views/client/ProfileSettings.vue";
 import OwnerHomePage from "@/views/owner/OwnerHomePage.vue";
+import FoodItemPage from "@/views/owner/FoodItemPage.vue";
+import OrderDelivery from "@/views/owner/OrderDelivery.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -257,6 +259,10 @@ const router = createRouter({
       component: MenuPage
     },
     {
+      path: "/owner/:restId/menu/:foodItemId",
+      component: FoodItemPage
+    },
+    {
       path: "/owner/:restId/menu/addCategory",
       component: MenuNewCategory
     },
@@ -275,6 +281,10 @@ const router = createRouter({
     {
       path: "/owner/order/details/:orderId",
       component: OrderDetailPage,
+    },
+    {
+      path: "/owner/order/delivery",
+      component: OrderDelivery,
     },
     {
       path: "/owner/order/invoice/:orderId",
@@ -344,10 +354,12 @@ const router = createRouter({
       component: MaketingPage,
     },
     {
-      path: "/admin/order-tracking",
+      path: "/admin/order-tracking/:orderId",
       name: "OrderTracking",
       component: OrderTracking,
+      props: true,
     },
+
     {
       path: "/admin/account",
       name: "Account",

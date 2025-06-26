@@ -2,22 +2,22 @@
   <div class="order-type-graph">
     <h3 class="graph-title">Order Type Distribution</h3>
     <div
-      v-for="(type, index) in orderTypes"
-      :key="type.value"
+      v-for="(item, index) in orderData"
+      :key="item.order_type"
       class="graph-row"
-      @click="selectType(type.value)"
+      @click="selectType(item.order_type)"
     >
-      <span class="graph-label">{{ type.label }}</span>
+      <span class="graph-label">{{ item.order_type }}</span>
       <div class="graph-bar-container">
         <div
           class="graph-bar"
           :style="{
-            width: `${type.percentage}%`,
+            width: `${percentage[index]}%`,
             backgroundColor: colors[index]
           }"
         ></div>
       </div>
-      <span class="graph-percentage">{{ type.percentage }}%</span>
+      <span class="graph-percentage">{{ percentage[index] }}%</span>
     </div>
   </div>
 </template>
@@ -26,25 +26,39 @@
 export default {
   name: 'OrderTypeGraph',
   props: {
-    orderData: {
-      type: Object,
-      default: () => ({
-        walkIn: 45,
-        takeAway: 30,
-        onlineOrder: 25
-      })
+    totalOrders: Number,
+    orderData: Array,
+    // orderData: {
+    //   type: Object,
+    //   default: () => ({
+    //     walkIn: 45,
+    //     takeAway: 30,
+    //     onlineOrder: 25
+    //   })
+    // }
+  },
+  created() {
+    for(let item of this.orderData) {
+      this.percentage.push(Math.round((item.total / this.totalOrders) * 100))
     }
   },
   data() {
     return {
+      percentage: [],
       colors: ['#4CAF50', '#2196F3', '#FF9800'],
       selectedType: null
     }
   },
+  
   computed: {
-    totalOrders() {
-      return Object.values(this.orderData).reduce((sum, val) => sum + val, 0)
-    },
+    // toPercentage(amount) {
+    //   console.log('totalorders=', this.totalOrders)
+    //   console.log('amount=', amount)
+    //   return Math.round((amount / this.totalOrders) * 100)
+    // },
+    // totalOrders() {
+    //   return Object.values(this.orderData).reduce((sum, val) => sum + val, 0)
+    // },
     orderTypes() {
       return [
         {

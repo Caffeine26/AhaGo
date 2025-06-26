@@ -11,8 +11,8 @@
         <div class="widget-options">⋮</div>
       </div>
       <div class="widget-body">
-        <div class="widget-value">200</div>
-        <div class="widget-label">Total orders</div>
+        <div class="widget-value">{{ totalOrders }}</div>
+        <div class="widget-label">Total Orders</div>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
         <div class="widget-options">⋮</div>
       </div>
       <div class="widget-body">
-        <div class="widget-value">50</div>
+        <div class="widget-value">{{ onProcess }}</div>
         <div class="widget-label">On Process</div>
       </div>
     </div>
@@ -37,7 +37,7 @@
         <div class="widget-options">⋮</div>
       </div>
       <div class="widget-body">
-        <div class="widget-value">100</div>
+        <div class="widget-value">{{ completed }}</div>
         <div class="widget-label">Completed</div>
       </div>
     </div>
@@ -50,20 +50,61 @@
         <div class="widget-options">⋮</div>
       </div>
       <div class="widget-body">
-        <div class="widget-value">50</div>
-        <div class="widget-label">Cancel</div>
+        <div class="widget-value">{{ cancelled }}</div>
+        <div class="widget-label">Cancelled</div>
       </div>
     </div>
   </div>
 </template>
 
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+
+const orders = ref([])
+
+const fetchOrders = async () => {
+  try {
+    const res = await fetch('http://localhost:8300/api/orders') // update if needed
+    const json = await res.json()
+    orders.value = json.data || []
+  } catch (error) {
+    console.error('Failed to fetch orders:', error)
+  }
+}
+
+// Computed values
+const totalOrders = computed(() => orders.value.length)
+
+const onProcess = computed(() =>
+  orders.value.filter(order =>
+    ['pending', 'on-process'].includes(order.status?.toLowerCase())
+  ).length
+)
+
+const completed = computed(() =>
+  orders.value.filter(order =>
+    order.status?.toLowerCase() === 'completed'
+  ).length
+)
+
+const cancelled = computed(() =>
+  orders.value.filter(order =>
+    order.status?.toLowerCase() === 'cancelled'
+  ).length
+)
+
+onMounted(() => {
+  fetchOrders()
+})
+</script>
+
 <style scoped>
 .widget-grid {
-   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  max-width: 600px; /* Optional: constrain width */
-  margin: 0 auto; /* Center the grid */
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .widget {
@@ -115,9 +156,3 @@
   color: #555;
 }
 </style>
-
-<script>
-export default {
-  name: 'DashboardWidgets',
-}
-</script>

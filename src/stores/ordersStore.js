@@ -4,13 +4,53 @@ import { defineStore } from "pinia";
 
 export const useOrdersStore = defineStore('orders', {
     state: () => ({
+        ordersCount: 0,
         orders: [],
+        allorders: [],
+        filteredOrders: [],
         ordersItems: [],
         recentOrders: {},
         topCategories: {},
+        orderTypes: {},
     }),
     persist: true,
     actions: {
+        filterOrders(status) {
+
+            this.filteredOrders = this.orders.filter(order => order.status === status)
+
+            if(status == 'all') {
+                this.filteredOrders = this.orders
+            }
+            console.log('filteredOrders=', this.filteredOrders)
+        },
+        async fetchAllOrders() {
+            try {
+                const response = await OrderService.getAll();
+                this.allorders = response.data;
+                console.log('ALL Orders = ', this.allorders)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async fetchAllOrdersCount() {
+            try {
+                const response = await OrderService.getAllCount();
+                this.ordersCount = response.data;
+                console.log('ordersCount = ', this.ordersCount)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async getOrderTypes() {
+            try {
+                const response = await OrderService.getOrderTypes();
+                this.orderTypes = response.data;
+                console.log('orderTypes = ', this.orderTypes)
+            } catch (err) {
+                console.log(err)
+            }
+        },
         async fetchOrders(id) {
             try {
                 const response = await OrderService.getAllByRest(id);
@@ -35,6 +75,12 @@ export const useOrdersStore = defineStore('orders', {
             if(order) order.status = newStatus
 
         },
+        async updatePaymentStatus(orderId, newStatus) {
+            await OrderService.update(orderId, { 'payment_status': newStatus })
+            const order = this.orders.find(o => o.id === orderId)
+            if(order) order.payment_status = newStatus
+
+        },
         async fetchRecentOrders(restId) {
             const response = await OrderService.getRecentOrders(restId)
             this.recentOrders = response.data
@@ -44,6 +90,11 @@ export const useOrdersStore = defineStore('orders', {
             const response = await OrderItemsService.getTopCats()
             this.topCategories = response.data
             console.log('topCategories=', this.topCategories)    // obj of arrays dates and orders
-        }
+        },
+        // delete order from store only, still keep in db
+        async deleteOrder(id) {
+            this.orders = this.orders.filter(order => order.id !== id)
+            this.filteredOrders = this.filteredOrders.filter(order => order.id !== id)
+        },
     }
 })

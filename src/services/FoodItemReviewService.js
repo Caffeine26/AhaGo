@@ -1,24 +1,12 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8300/api/orders'
+const API_URL = 'http://localhost:8300/api/foodItem_reviews'
 
 export default {
   getAll() {
     return axios.get(`${API_URL}`)
   },
-  getAllCount() {
-    return axios.get(`${API_URL}/count`)
-  },
-  getOrderTypes() {
-    return axios.get(`${API_URL}/orderTypes`)
-  },
-  getAllByRest(id) {
-    return axios.get(`${API_URL}/rest/${id}`)
-  },
-  getRecentOrders(id) {
-    return axios.get(`${API_URL}/recent/${id}`)
-  },
-  get(id) {
+  getByFoodItemId(id) {
     return axios.get(`${API_URL}/${id}`)
   },
   create(data) {

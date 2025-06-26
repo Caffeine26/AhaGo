@@ -18,7 +18,7 @@ title-header= "Order Management"
 
 <div class="orders">
     <OrderCard02
-    v-for="(item, index) in filteredOrders"
+    v-for="(item, index) in ordersStore.filteredOrders"
     :key="index"
     :index="index"
     :order-id="item.id"
@@ -55,28 +55,31 @@ export default {
         AppFooter
     },
     created() {
-        const ordersStore = useOrdersStore()
+        this.ordersStore = useOrdersStore()
         
         this.restId = parseInt(this.$route.params.restId)
 
+        this.ordersStore.filteredOrders = this.ordersStore.orders
         // get orders by restId
-        this.orders = ordersStore.orders.filter(order => order.restaurant_id === this.restId)
-        this.filteredOrders = this.orders
+        // this.orders = ordersStore.orders.filter(order => order.restaurant_id === this.restId)
+        // this.filteredOrders = this.orders
     },
     methods: {
         toggleCategoryData(index) {
-            console.log('selected index = ', index)
-            this.filteredOrders = []
-            if (index === 0) {
-                this.filteredOrders = this.orders
-            }
-            else {
-                for (let i=0; i<this.orders.length; i++) {
-                    if (this.orders[i].status === this.orderStatus[index]) {
-                        this.filteredOrders.push(this.orders[i])
-                    }
-                }
-            }
+            const status = this.orderStatus[index]
+            this.ordersStore.filterOrders(status)
+            // console.log('selected index = ', index)
+            // this.filteredOrders = []
+            // if (index === 0) {
+            //     this.filteredOrders = this.orders
+            // }
+            // else {
+            //     for (let i=0; i<this.orders.length; i++) {
+            //         if (this.orders[i].status === this.orderStatus[index]) {
+            //             this.filteredOrders.push(this.orders[i])
+            //         }
+            //     }
+            // }
         },
         select(index) {
             this.selectedIndex = index;
@@ -87,6 +90,7 @@ export default {
     },
     data() {
         return {
+            ordersStore: null,
             orders: [],
             restId: null,
             filteredOrders: [],

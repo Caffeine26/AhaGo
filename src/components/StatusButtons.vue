@@ -1,12 +1,19 @@
 <template>
 <div class="status-box">
     <template v-if="status === 'cancelled'">
-        <button v-if="paid == 'paid'" class="status-btn refund">Refund</button>
-        <button v-else class="status-btn remove">Remove</button>
+        <button v-if="paid == 'paid'" class="status-btn refund" @click="toggleState('refunded')">Refund</button>
+        <div v-else-if="paid == 'refunded'" class="refundedBox">
+            <button class="refunded" >Refunded</button>
+            <button class="status-btn remove" @click="toggleState('rejected')">Remove</button>
+        </div>
+        <button v-else class="status-btn remove" @click="toggleState('rejected')">Remove</button>
     </template>
     
     <template v-else-if="status === 'pending'">
-        <button class="reject">Reject</button>
+        <button 
+        class="reject"
+        @click="toggleState('rejected')"
+        >Reject</button>
         <button 
         class="status-btn accept"
         @click="toggleState('preparing')"
@@ -28,10 +35,14 @@
     </template>
 
     <template v-else-if="status === 'delivering'">
-        <button 
-        class="status-btn viewDeliver"
-        @click="toggleState('completed')"
-        >View Delivery</button>
+        <RouterLink to="/owner/order/delivery">
+            <button 
+            class="status-btn viewDeliver"
+            @click="toggleState('completed')"
+            >View Delivery
+            </button>
+        </RouterLink>
+        
     </template>
 
     <template v-else-if="status === 'completed'">
@@ -44,6 +55,8 @@
 </template>
 
 <script>
+import { useOrdersStore } from '@/stores/ordersStore';
+
 export default {
 props: {
     status: {
@@ -53,9 +66,23 @@ props: {
     orderId: Number,
     paid: String
 },
+data() {
+    return {
+        refunded: false,
+    }
+},
 methods: {
     toggleState(newState) {
         this.$emit('change-state', newState)
+    },
+    // deleteOrder() {
+    //     const orderStore = useOrdersStore()
+    //     orderStore.deleteOrder(this.orderId)
+    // },
+    updatePayment() {
+        const ordersStore = useOrdersStore()
+        ordersStore.updatePaymentStatus(this.orderId, 'refunded')
+        this.refunded = true
     }
 },
 };
@@ -88,11 +115,21 @@ background-color: #292929;
 .accept, .refund {
 background-color: #D90000;
 }
+.refunded {
+    color: #D90000;
+    background-color: white;
+    border: none;
+    font-weight: bold;
+    font-size: medium;
+    font-family: 'Raleway';
+    padding: 8px 16px;
+}
 .reject {
     background-color: transparent;
     border: none;
     font-size: medium;
     font-family: 'Raleway';
+    cursor: pointer;
 }
 .ready {
 background-color: #FF3F00;
@@ -105,6 +142,9 @@ background-color: #F8BD00;
 }
 .view {
 background-color: #008F39;
+}
+.refundedBox {
+    display: flex;
 }
 
 

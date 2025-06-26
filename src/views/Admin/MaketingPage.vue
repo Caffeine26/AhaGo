@@ -338,7 +338,7 @@ export default {
             canvas.height = img.height;
             const ctx = canvas.getContext("2d");
             ctx.drawImage(img, 0, 0);
-            const dataURL = canvas.toDataURL("image/jpeg"); // you can change to "image/png" if needed
+            const dataURL = canvas.toDataURL("image/png"); // you can change to "image/png" if needed
             resolve(dataURL);
           } catch (e) {
             reject(e);

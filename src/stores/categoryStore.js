@@ -1,4 +1,5 @@
 import CategoryService from "@/services/CategoryService";
+import FoodItemReviewService from "@/services/FoodItemReviewService";
 import FoodItemService from "@/services/FoodItemService";
 import { defineStore } from "pinia";
 
@@ -7,9 +8,31 @@ export const useCategoryStore = defineStore('category', {
         categories: [],
         foodItems: [],
         topSellers: [],
+        foodReviews: {},
+        stock: {},
+        foodItemsCount: 0,
     }),
     persist: true,
     actions: {
+        // return obj of available or not, how many each
+        async getStock() {
+            try {
+                const response = await FoodItemService.getStock();
+                this.stock = response.data;
+                console.log('stock = ', this.stock)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async getFoodItemsCount() {
+            try {
+                const response = await FoodItemService.getCount();
+                this.foodItemsCount = response.data;
+                console.log('categories = ', this.foodItemsCount)
+            } catch (err) {
+                console.log(err)
+            }
+        },
         async fetchCategories() {
             try {
                 const response = await CategoryService.getAll();
@@ -40,11 +63,32 @@ export const useCategoryStore = defineStore('category', {
             }
             return this.foodItems[index]
         },
+        // get 10 food items most sold 
         async getTopSolds() {
             try {
                 const response = await FoodItemService.getTopSellers();
                 this.topSellers = response.data;
                 console.log('topSellers = ', this.topSellers)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async getReviewsbyFoodId(id) {
+            try {
+                const response = await FoodItemReviewService.getByFoodItemId(id);
+                const data = response.data;
+                console.log('getReviewsbyFoodId = ', data)
+                return data
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async getReviews(id) {
+            try {
+                const response = await FoodItemReviewService.getByFoodItemId(id);
+                const data = response.data;
+                console.log('getReviewsbyFoodId = ', data)
+                return data
             } catch (err) {
                 console.log(err)
             }

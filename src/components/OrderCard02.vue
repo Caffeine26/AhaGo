@@ -27,7 +27,7 @@
 
     <div class="totalBox">
         <div>Total: ${{ total }}</div>
-        <div v-if="paid === 'paid'">PAID</div>
+        <div v-if="paid === 'paid' || paid === 'refunded'">PAID</div>
         <div v-else>UNPAID</div>
     </div>
     
@@ -74,8 +74,18 @@ export default {
             // update state in store
             console.log('newstate=', newState)
             const ordersStore = useOrdersStore()
-            ordersStore.updateOrderStatus(this.orderIndex, newState)
-            console.log('toggled item=', ordersStore.orders[this.orderIndex])
+
+            if(newState == 'rejected') {
+                ordersStore.deleteOrder(this.orderIndex)    // del order from store
+            } 
+            else if(newState == 'refunded') {
+                ordersStore.updatePaymentStatus(this.orderIndex, newState)
+            }
+            else {
+                ordersStore.updateOrderStatus(this.orderIndex, newState)
+                console.log('toggled item=', ordersStore.orders[this.orderIndex])
+            }
+            
 
         }
     },

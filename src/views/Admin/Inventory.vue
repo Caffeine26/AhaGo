@@ -1,226 +1,152 @@
 <template>
-  <div class="inventory-container">
-    <LineGraph
-      :title="'Supply Overview'"
-      :value="totalSupply.toString()"
-      :data="supplyData"
-      :months="monthsToShow"
-    />
+  <div class="user-management">
+    <h1>User & Role Management</h1>
 
-    <div class="stock-level card">
-      <StockGraph />
+    <!-- Role Filter Buttons -->
+    <div class="filter-controls">
+      <button v-for="role in roles" :key="role" @click="filterByRole(role)" :class="{ active: currentRole === role }">
+        {{ role }}s
+      </button>
     </div>
 
-    <div class="inventory-header">
-      <input type="text" v-model="searchQuery" placeholder="Search anything..." />
-      <select v-model="selectedWeek">
-        <option value="this-week">This Week</option>
-        <option value="last-week">Last Week</option>
-      </select>
-    </div>
-
-    <table class="inventory-table">
+    <!-- User Table -->
+    <table class="user-table" v-if="!loading">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Status</th>
-          <th>Quantity</th>
-          <th>Quantity to Reorder</th>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>City</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, idx) in paginatedItems" :key="idx">
-          <td>{{ item.name }}</td>
-          <td>{{ item.category }}</td>
-          <td><span :class="statusClass(item.status)">{{ item.status }}</span></td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.reorderQuantity }}</td>
-          <td>
-            <button class="btn-update" @click="updateItem(item)">Update</button>
+        <tr v-for="user in filteredUsers" :key="user.id">
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.phone_number || user.admin_profile?.phone_number || '-' }}</td>
+          <td>{{ user.address || user.admin_profile?.address || '-' }}</td>
+          <td>{{ user.admin_profile?.city || '-' }}</td>
+          <td class="actions">
+            <button class="verify-btn" @click="verifyUser(user.id, user.email)">Verify</button>
+            <button class="cancel-btn" @click="cancelUser(user.id)">Cancel</button>
           </td>
-        </tr>
-        <tr v-if="paginatedItems.length === 0">
-          <td colspan="6" class="no-data">No items found.</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="pagination">
-      <PaginationComponent
-        :current-page="currentPage"
-        :total-items="filteredItems.length"
-        :items-per-page="itemsPerPage"
-        @page-changed="handlePageChange"
-      />
-    </div>
+    <div v-if="loading">Loading users...</div>
   </div>
 </template>
 
 <script>
-import StockGraph from '@/components/admin/StockGraph.vue'
-import LineGraph from '@/components/admin/LineGraph.vue'
-import PaginationComponent from '@/components/PaginationComponent.vue'
+import axios from 'axios';
 
 export default {
-  components: {
-    StockGraph,
-    LineGraph,
-    PaginationComponent
-  },
+  name: 'UserManagement',
   data() {
     return {
-      searchQuery: '',
-      selectedWeek: 'this-week',
-      currentPage: 1,
-      itemsPerPage: 5,
-      supplyData: [10, 20, 30, 40, 50],
-      monthsToShow: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-      inventoryItems: [
-        { name: 'Item A', category: 'Category 1', status: 'Active', quantity: 100, reorderQuantity: 20 },
-        { name: 'Item B', category: 'Category 2', status: 'Low', quantity: 15, reorderQuantity: 10 },
-        { name: 'Item C', category: 'Category 1', status: 'Out of Stock', quantity: 0, reorderQuantity: 50 },
-        // Add more items as needed
-      ]
-    }
+      users: [],
+      roles: ['customer', 'admin', 'driver', 'restaurant'],
+      currentRole: 'restaurant',
+      loading: false,
+    };
   },
   computed: {
-    totalSupply() {
-      return this.supplyData.reduce((sum, val) => sum + val, 0);
+    filteredUsers() {
+      return this.users.filter((user) => user.role === this.currentRole);
     },
-    filteredItems() {
-      const query = this.searchQuery.toLowerCase()
-      return this.inventoryItems.filter(item =>
-        item.name.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query) ||
-        item.status.toLowerCase().includes(query)
-      )
-    },
-    paginatedItems() {
-      const start = (this.currentPage - 1) * this.itemsPerPage
-      return this.filteredItems.slice(start, start + this.itemsPerPage)
-    }
   },
   methods: {
-    updateItem(item) {
-      alert(`Updating item: ${item.name}`)
-      // Add modal or update logic here
-    },
-    statusClass(status) {
-      switch (status.toLowerCase()) {
-        case 'active': return 'status-active'
-        case 'low': return 'status-low'
-        case 'out of stock': return 'status-out'
-        default: return ''
+    async fetchUsers() {
+      this.loading = true;
+      try {
+        const res = await axios.get('http://localhost:8300/api/users');
+        this.users = res.data;
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      } finally {
+        this.loading = false;
       }
     },
-    handlePageChange(page) {
-      this.currentPage = page
-    }
-  }
-}
+    filterByRole(role) {
+      this.currentRole = role;
+    },
+    async verifyUser(userId, email) {
+      try {
+        const res = await axios.post(`http://localhost:8300/api/users/${userId}/verify`, { email });
+        alert('✅ Verification email sent!');
+        this.fetchUsers(); // refresh the list
+      } catch (err) {
+        alert('❌ Verification failed!');
+        console.error(err);
+      }
+    },
+    async cancelUser(userId) {
+      if (!confirm('Are you sure you want to delete this user?')) return;
+
+      try {
+        await axios.delete(`http://localhost:8300/api/users/${userId}`);
+        alert('🚫 User cancelled and removed.');
+        this.fetchUsers(); // refresh the list
+      } catch (err) {
+        alert('❌ Deletion failed!');
+        console.error(err);
+      }
+    },
+  },
+  mounted() {
+    this.fetchUsers();
+  },
+};
 </script>
 
 <style scoped>
-.inventory-container {
+.user-management {
+  max-width: 1200px;
+  margin: auto;
   padding: 20px;
-  font-family: 'Arial', sans-serif;
-}
-
-.card {
-  background-color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.supply-overview h2 {
-  margin-bottom: 10px;
-}
-
-.overview-value {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.last-month {
-  color: #999;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.inventory-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.inventory-header input,
-.inventory-header select {
-  padding: 8px 12px;
-  font-size: 14px;
+  background: white;
   border-radius: 8px;
-  border: 1px solid #ccc;
 }
-
-.inventory-table {
+.filter-controls button {
+  margin: 5px;
+  padding: 8px 16px;
+  background: #ddd;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.filter-controls .active {
+  background: #4caf50;
+  color: white;
+}
+.user-table {
   width: 100%;
   border-collapse: collapse;
 }
-
-.inventory-table th,
-.inventory-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
+.user-table th, .user-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
 }
-
-.inventory-table th {
-  background-color: #f8f8f8;
+.actions button {
+  margin-right: 8px;
 }
-
-.btn-update {
-  background-color: #4CAF50;
+.verify-btn {
+  background-color: #4caf50;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 6px 10px;
+  border-radius: 5px;
 }
-
-.btn-update:hover {
-  background-color: #45a049;
-}
-
-.status-active {
-  color: green;
-  font-weight: bold;
-}
-
-.status-low {
-  color: orange;
-  font-weight: bold;
-}
-
-.status-out {
-  color: red;
-  font-weight: bold;
-}
-
-.no-data {
-  text-align: center;
-  color: #999;
-  padding: 20px 0;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
 }
 </style>

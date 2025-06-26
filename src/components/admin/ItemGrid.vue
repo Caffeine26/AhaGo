@@ -7,19 +7,24 @@
       class="item-card-link"
     >
       <div class="item-card">
-        <img :src="item.image" alt="item image" class="item-image" />
+        <img
+          :src="getImageUrl(item.img_url)"
+          alt="item image"
+          class="item-image"
+          @error="onImageError"
+        />
 
         <h3 class="item-name">{{ item.name }}</h3>
 
         <p class="item-description">{{ item.description }}</p>
 
         <div class="item-bottom">
-          <p class="item-price">Price: {{ item.price }}</p>
+          <p class="item-price">Price: ${{ item.price }}</p>
           <div class="stars">
             <span v-for="star in 5" :key="star" class="star-img">
               <img
                 :src="starImg"
-                :style="{ opacity: star <= item.rating ? 1 : 0.3 }"
+                :style="{ opacity: star <= (item.rating || 0) ? 1 : 0.3 }"
                 alt="star"
               />
             </span>
@@ -36,13 +41,33 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true
+      required: true,
     },
     starImg: {
       type: String,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
+  data() {
+    return {
+      backendBaseUrl: 'http://localhost:8300', // Adjust to your backend base URL
+      defaultImage: 'https://via.placeholder.com/400x200?text=No+Image',
+    };
+  },
+  methods: {
+    getImageUrl(imgUrl) {
+      if (!imgUrl) {
+        return this.defaultImage;
+      }
+      // Ensure the URL starts with a slash to properly concatenate
+      const path = imgUrl.startsWith('/') ? imgUrl : `/${imgUrl}`;
+      return `${this.backendBaseUrl}${path}`;
+    },
+    onImageError(event) {
+      // If image fails to load, fallback to default image
+      event.target.src = this.defaultImage;
+    },
+  },
 };
 </script>
 
