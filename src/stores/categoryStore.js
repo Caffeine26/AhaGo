@@ -8,6 +8,7 @@ export const useCategoryStore = defineStore('category', {
         categories: [],
         foodItems: [],
         topSellers: [],
+        topSellersOfRest: [],
         foodReviews: {},
         stock: {},
         foodItemsCount: 0,
@@ -69,6 +70,15 @@ export const useCategoryStore = defineStore('category', {
                 const response = await FoodItemService.getTopSellers();
                 this.topSellers = response.data;
                 console.log('topSellers = ', this.topSellers)
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async getTopSoldsOfRest(id) {
+            try {
+                const response = await FoodItemService.getTopSellersOfRest(id);
+                this.topSellersOfRest = response.data;
+                console.log('topSellersOfRest = ', this.topSellersOfRest)
             } catch (err) {
                 console.log(err)
             }

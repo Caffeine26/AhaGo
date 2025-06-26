@@ -1,5 +1,6 @@
 <template>
   <Line :data="chartData" :options="chartOptions" />
+  
 </template>
 
 <script setup>
@@ -49,3 +50,4 @@ const chartOptions = {
   },
 }
 </script>
+

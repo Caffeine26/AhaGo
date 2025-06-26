@@ -1,8 +1,8 @@
 <template>
     <div :class="{ box: true, open: isOpen }">
         <img :src="imageSrc" alt="photo" id="market">
-        <h2 @click="isOpen = !isOpen">{{ title }}</h2>
-        <div v-if="isOpen">{{ content }}</div>
+        <h2 @click="isOpen = !isOpen" id="title">{{ title }}</h2>
+        <div v-if="isOpen" >{{ content }}</div>
     </div>
 </template>
 
@@ -32,6 +32,9 @@ export default {
     margin: 40px;
     font-family: 'Raleway';
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .box div {
     margin-top: 20px;
@@ -44,5 +47,8 @@ export default {
 }
 .open {
     border-color: #D90000;
+}
+#title {
+    text-align: center;
 }
 </style>

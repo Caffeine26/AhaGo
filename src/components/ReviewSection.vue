@@ -63,6 +63,7 @@
         <div v-if="review.replies && review.replies.length" class="replies">
           <div class="reply" v-for="(reply, rIndex) in review.replies" :key="rIndex">
             <strong>You:</strong> {{ reply }}
+
           </div>
         </div>
       </div>

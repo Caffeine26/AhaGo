@@ -15,6 +15,9 @@ export default {
   getTopSellers() {
     return axios.get(`${API_URL}/top`)
   },
+  getTopSellersOfRest(restId) {
+    return axios.get(`${API_URL}/top/${restId}`)
+  },
   get(id) {
     return axios.get(`${API_URL}/${id}`)
   },

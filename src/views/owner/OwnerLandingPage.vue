@@ -23,7 +23,6 @@
             
             <img :src="pasta" alt="pasta">
         </div>
-        <div>{{ restStore.rests }}</div>
         <div id="about">
             <p class="title">About AhaGo</p>
             <div id="aboutText">
@@ -81,8 +80,23 @@ import { useUserStore } from '@/stores/userStore';
 import { useCategoryStore } from '@/stores/categoryStore';
 import { useOrdersStore } from '@/stores/ordersStore';
 import { useTransactionStore } from '@/stores/transactionStore';
+
+import burger from '@/assets/owner/img/burger.png';
+import pasta from '@/assets/owner/img/pasta.png';
+import logo from "@/assets/owner/img/ahago-logo-2.png";
+import market from "@/assets/owner/img/market.png";
+import tasty from '@/assets/owner/img/tasty.png';
+import pano from '@/assets/owner/img/pano.png';
+import burgerking from '@/assets/owner/img/burgerking.png';
+import yellowcab from '@/assets/owner/img/yellowcab.png';
+import dq from '@/assets/owner/img/dq.png';
+import plate from '@/assets/owner/img/plate.png';
+import biz from '@/assets/owner/img/online.png';
+
+
 import { useAuthStore } from '@/stores/authenticationStore';
 import { computed } from 'vue';
+
 export default {
     components: {
         Header,
@@ -119,18 +133,18 @@ export default {
     data() {
         return {
             ownerUrl: true,
-            burger: "src/assets/owner/img/burger.png",
-            pasta: "src/assets/owner/img/pasta.png",
-            logo: "src/assets/owner/img/ahago-logo-2.png",
-            market: "src/assets/owner/img/market.png",
+            burger: burger,
+            pasta: pasta,
+            logo: logo,
+            market: market,
             brands : [
-                "src/assets/owner/img/tasty.png",
-                "src/assets/owner/img/pano.png",
-                "src/assets/owner/img/burgerking.png",
-                "src/assets/owner/img/yellowcab.png",
-                "src/assets/owner/img/dq.png",
-                "src/assets/owner/img/tasty.png",
-                "src/assets/owner/img/pano.png",
+                tasty,
+                pano,
+                burgerking,
+                yellowcab,
+                dq,
+                tasty,
+                pano,
             ],
             actions: [
                 "View our Terms and Policy",
@@ -140,17 +154,17 @@ export default {
             isOpen: false,
             reasons: [
                 {
-                    imageSrc: "src/assets/owner/img/market.png",
+                    imageSrc: market,
                     title: "Expand Your Online Market",
                     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
                 },
                 {
-                    imageSrc: "src/assets/owner/img/plate.png",
+                    imageSrc: plate,
                     title: "Bring Your Menu Online",
                     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
                 },
                 {
-                    imageSrc: "src/assets/owner/img/online.png",
+                    imageSrc: biz,
                     title: "Manage Your Business Online",
                     content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
                 }
@@ -182,6 +196,9 @@ export default {
 #bannerText {
     font-size: 72px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 #bannerText :nth-child(1), #bottomBannerTitle p, #bottomBannerTitle :nth-child(3) {
     font-weight: bold;
