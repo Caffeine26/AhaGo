@@ -8,7 +8,7 @@
         </div>
       </div>
   
-      <div class="review-card" v-for="(review, index) in reviews" :key="review.id">
+      <div class="review-card" v-for="(review, index) in reviewsArray" :key="review.id">
         <img :src="avatar" alt="User" class="avatar" />
         <div class="review-content">
           <div class="review-user">
@@ -79,17 +79,17 @@
   import down from '@/assets/down.png';
   import Mymelody from '@/assets/Mymelody.jpg';
   import Kuromi from '@/assets/Kuromi.jpg';
-import { useRestStore } from '@/stores/restStore';
-import { useCategoryStore } from '@/stores/categoryStore';
+  import { useRestStore } from '@/stores/restStore';
+  import { useCategoryStore } from '@/stores/categoryStore';
   
   export default {
     name: 'ReviewSection',
     components: {
       ButtonFilter,
     },
-    // props: {
-    //   reviewsArray: Array
-    // },
+    props: {
+      reviewsArray: Array
+    },
     async created() {
         const categoryStore = useCategoryStore()
         this.foodItemId = parseInt(this.$route.params.foodItemId)
@@ -156,10 +156,10 @@ import { useCategoryStore } from '@/stores/categoryStore';
       sortReviews(selectedOption) {
         // console.log(selectedOption)
         if (selectedOption === 'newest') {
-          this.reviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          this.reviewsArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         } else if (selectedOption === 'oldest'){
           // this.reviews = [...this.originalReviews];
-          this.reviews.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          this.reviewsArray.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         }
       },
       toggleHeart(review) {

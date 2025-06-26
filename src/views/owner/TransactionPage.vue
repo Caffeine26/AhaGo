@@ -1,19 +1,17 @@
 <template>
 <Header></Header>
-<Header2
+<OwnerHeader
 title="Restaurant"
 it1="Home"
 it2="Orders"
-it3="Menu"
-it4="Analytics"
+it3="Transactions"
+it4="Menu"
 it5="Profile"
-></Header2>
+></OwnerHeader>
 
 <CategoryBannerV2
 title-header= "Transactions Records"
-
 :add-category="false"
-
 ></CategoryBannerV2>
 
 <!-- <div class="records">
@@ -80,15 +78,15 @@ title-header= "Transactions Records"
 import Header from '@/components/all/header.vue';
 import AppFooter from '@/components/AppFooter.vue';
 import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
-import Header2 from '@/components/delivery/header2.vue';
 import TransactionBox from '@/components/TransactionBox.vue';
 import { useTransactionStore } from '@/stores/transactionStore';
 
 import exportSvg from '@/assets/owner/svg/export.svg';
+import OwnerHeader from '@/components/OwnerHeader.vue';
 export default {
     components: {
         Header,
-        Header2,
+        OwnerHeader,
         CategoryBannerV2,
         TransactionBox,
         AppFooter

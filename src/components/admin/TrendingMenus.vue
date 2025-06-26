@@ -30,12 +30,14 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 10px;
+  align-items: center;
 }
 .trending-menus h3 {
   margin-bottom: 15px;
 }
 .menu-list {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 20px;
 }

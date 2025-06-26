@@ -8,7 +8,7 @@ export const useOrdersStore = defineStore('orders', {
         orders: [],
         allorders: [],
         filteredOrders: [],
-        ordersItems: [],
+        orderItems: [],
         recentOrders: {},
         topCategories: {},
         orderTypes: {},
@@ -60,11 +60,20 @@ export const useOrdersStore = defineStore('orders', {
                 console.log(err)
             }
         },
-        async fetchOrdersItems() {
+        // async fetchOrdersItems() {
+        //     try {
+        //         const response = await OrderItemsService.getAll();
+        //         this.ordersItems = response.data;
+        //         console.log('ordersItems = ', this.ordersItems)
+        //     } catch (err) {
+        //         console.log(err)
+        //     }
+        // },
+        async fetchOrdersItemsById(restId) {
             try {
-                const response = await OrderItemsService.getAll();
-                this.ordersItems = response.data;
-                console.log('ordersItems = ', this.ordersItems)
+                const response = await OrderItemsService.getAllById(restId);
+                this.orderItems = response.data;
+                console.log('orderItems = ', this.orderItems)
             } catch (err) {
                 console.log(err)
             }

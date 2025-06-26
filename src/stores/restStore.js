@@ -30,6 +30,7 @@ export const useRestStore = defineStore('rest', {
             try {
                 const response = await RestaurantReviewService.getByRestaurantId(restId);
                 this.reviews = response.data;
+                console.log('reviews=', this.reviews)
             } catch (err) {
                 console.log(err)
             }

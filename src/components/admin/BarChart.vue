@@ -89,11 +89,12 @@ export default {
 
 <style scoped>
 .chart {
-  background-color: #ffffff;
+  background-color: white;
   padding: 24px;
   border-radius: 20px;
   width: 100%;
   max-width: 750px;
   margin: 0 auto;
+  
 }
 </style>
