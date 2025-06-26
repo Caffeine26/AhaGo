@@ -118,7 +118,7 @@ export default {
         categoryStore.fetchCategories()
         categoryStore.fetchFoodItemsByRest(2)
         ordersStore.fetchOrders(2)
-        ordersStore.fetchOrdersItems()
+        // ordersStore.fetchOrdersItems()
         transactionStore.fetchTransactions(2)
 
         return { 
