@@ -10,37 +10,44 @@ export const useOrderStore = defineStore("order", () => {
   const orders = ref([]);
   const currentOrder = ref(null);
 
-    async function fetchOrders(status = null, role = null) {
+  async function fetchOrders(status = null, role = null) {
     try {
-        let url = "/orders";
-        const params = [];
+      let url = "/orders";
+      const params = [];
 
-        if (status) params.push(`status=${status}`);
-        if (role) params.push(`role=${role}`); // e.g., role=customer
+      if (status) params.push(`status=${status}`);
+      if (role) params.push(`role=${role}`);
 
-        if (params.length > 0) {
+      if (params.length > 0) {
         url += `?${params.join("&")}`;
-        }
+      }
 
-        const { data } = await api.get(url);
+      const response = await api.get(url);
+      const result = response.data.data || response.data; 
 
-        orders.value = data.map((order) => ({
+      if (!Array.isArray(result)) {
+        console.error("Expected array, got:", result);
+        orders.value = [];
+        return;
+      }
+
+      orders.value = result.map((order) => ({
         ...order,
         restaurant: {
-            ...order.restaurant,
-            latitude: parseFloat(order.restaurant.latitude),
-            longitude: parseFloat(order.restaurant.longitude),
+          ...order.restaurant,
+          latitude: parseFloat(order.restaurant.latitude),
+          longitude: parseFloat(order.restaurant.longitude),
         },
         customer: {
-            ...order.customer,
-            latitude: parseFloat(order.customer.latitude),
-            longitude: parseFloat(order.customer.longitude),
+          ...order.customer,
+          latitude: parseFloat(order.customer.latitude),
+          longitude: parseFloat(order.customer.longitude),
         },
-        }));
+      }));
     } catch (error) {
-        console.error("Error fetching orders:", error.response?.data || error.message);
+      console.error("Error fetching orders:", error.response?.data || error.message);
     }
-    }
+  }
 
   async function fetchOrderById(id) {
     try {
