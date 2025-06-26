@@ -50,7 +50,8 @@
 </div>
 </template>
 
-<script>
+<script setup>
+import { useAuthStore } from '@/stores/authenticationStore';
 import Header from '@/components/all/header.vue';
 import RegisterInputBox from '@/components/RegisterInputBox.vue';
 
@@ -59,41 +60,26 @@ import mail from '@/assets/owner/svg/mail.svg';
 import eye from '@/assets/owner/svg/eye.svg';
 import restImg from '@/assets/owner/img/loginImg.png';
 
-export default {
-    components: {
-        Header,
-        RegisterInputBox
-    },
-    methods: {
-        handleEmail(data) {
-            this.email = data
-            console.log('this.email = ', this.email)
-        },
-        handlePassword(data) {
-            this.password = data
-            console.log('this.password = ', this.password)
-        },
-        getLoginInfo() {
-            const loginInfo = {
-                'email': this.email,
-                'pass': this.password
-            }
-            console.log(loginInfo)
-        }
-    },
-    data() {
-        return {
-            ownerUrl: true,
-            restImg: restImg,
-            mail: mail,
-            eye: eye,
-            google: google,
-            addIcon: true,
+const ownerUrl = true;
+const addIcon = true;
 
-            email: '',
-            password: '',
-        }
-    }
+const authStore = useAuthStore();
+
+function handleEmail(data) {
+  authStore.email = data;
+}
+
+function handlePassword(data) {
+  authStore.password = data;
+}
+
+function getLoginInfo() {
+  if (!authStore.email || !authStore.password) {
+    alert("Email and password are required.");
+    return;
+  }
+
+  authStore.handleLogin("restaurant");
 }
 </script>
 

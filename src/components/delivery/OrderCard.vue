@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="left">
-      <img class="image" src="@/assets/delivery/images/1.png" />
+      <img class="image" :src="imgSrc" :alt="title"/>
       <div class="content">
         <p class="title">{{ title }}</p>
         <p>x{{ amount }}</p>
@@ -22,6 +22,10 @@ const props = defineProps({
   },
   price: {
     type: Number,
+    default: "",
+  },
+  imgSrc: {
+    type: String,
     default: "",
   },
 });

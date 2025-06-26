@@ -64,7 +64,7 @@ import mechanic from "@/assets/delivery/icons/mechanic.svg";
 import motor from "@/assets/delivery/icons/motor.svg";
 import pin from "@/assets/delivery/icons/pin.svg";
 import event from "@/assets/delivery/icons/event.svg";
-
+import tire from "@/assets/delivery/icons/tire.svg";
 const props = defineProps({
   section: String,
   buttonLink: String,
@@ -109,6 +109,7 @@ const iconMap = {
   motor: motor,
   pin: pin,
   event: event,
+  tire: tire
 };
 
 const sectionData = ref(null);

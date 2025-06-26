@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import router from "@/router";
 import axios from "axios";
 
 const api = axios.create({
@@ -13,55 +12,14 @@ export const useDriverStore = defineStore("driver", () => {
   const email = ref("");
   const password = ref("");
   const confirmPassword = ref("");
-
+  const user = ref(null);
   const sections = ref([]);
   const buttons = ref([]);
   const orders = ref([]);
   const notifications = ref([]);
+  const currentOrder = ref(null);
 
-  async function handleSignUp() {
-    try {
-      const response = await api.post("/signup", {
-        name: `${firstName.value} ${lastName.value}`,
-        email: email.value,
-        password: password.value,
-        password_confirmation: confirmPassword.value,
-        role: "driver",
-        first_name: firstName.value,
-        last_name: lastName.value,
-      });
-
-      alert("Signup successful!");
-      router.push("/delivery/overview");
-    } catch (error) {
-      console.error("Signup failed:", error.response?.data || error.message);
-      alert(
-        "Signup failed: " + (error.response?.data?.message || "Unknown error")
-      );
-    }
-  }
-
-  async function handleLogin() {
-    try {
-      const { data } = await api.post("/driver/login", {
-        email: email.value,
-        password: password.value,
-      });
-
-      if (data.user) {
-        alert(`Welcome, ${data.user.name}`);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("role", "driver");
-        router.push("/delivery/overview");
-      } else {
-        alert(data.message || "Login failed.");
-      }
-    } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
-      alert("Unable to connect. Please try again.");
-    }
-  }
-
+  
   async function fetchSections() {
     try {
       const { data } = await api.get("/driver-sections");
@@ -97,7 +55,23 @@ export const useDriverStore = defineStore("driver", () => {
     try {
       const url = status ? `/orders?status=${status}` : "/orders";
       const { data } = await api.get(url);
-      orders.value = data;
+
+      // Parse coordinates as numbers to avoid map issues
+      orders.value = data.map((order) => {
+        return {
+          ...order,
+          restaurant: {
+            ...order.restaurant,
+            latitude: parseFloat(order.restaurant.latitude),
+            longitude: parseFloat(order.restaurant.longitude),
+          },
+          customer: {
+            ...order.customer,
+            latitude: parseFloat(order.customer.latitude),
+            longitude: parseFloat(order.customer.longitude),
+          },
+        };
+      });
     } catch (error) {
       console.error(
         "Error fetching orders:",
@@ -106,11 +80,55 @@ export const useDriverStore = defineStore("driver", () => {
     }
   }
 
+  async function fetchOrderById(id) {
+    try {
+      const { data } = await api.get(`/orders/${id}`);
+      const order = data.data;
+
+      currentOrder.value = {
+        id: order.id,
+        status: order.status,
+        remark: order.remark,
+        totalAmount: parseFloat(order.total_amount),
+        createdAt: order.created_at,
+        orderItems: (order.order_items || []).map((item) => ({
+          id: item.id,
+          foodItemId: item.food_item_id,
+          orderId: item.order_id,
+          quantity: item.quantity,
+          price: item.price !== null ? parseFloat(item.price) : 0,
+          name: item.food_item?.name || "Unknown",
+          img_url: item.food_item?.img_url || "Unknown",
+        })),
+        details: {
+          restaurantName: order.restaurant?.name || "Restaurant",
+          restaurantAddress: order.restaurant?.user?.address || "-", // your data shows no user on restaurant, so this fallback
+          restaurantLocation: {
+            lat: parseFloat(order.restaurant?.latitude) || 0,
+            lng: parseFloat(order.restaurant?.longitude) || 0,
+          },
+          clientName:
+            `${order.customer?.first_name || ""} ${
+              order.customer?.last_name || ""
+            }`.trim() || "Customer",
+          clientAddress: order.customer?.user?.address || "-", // your data shows customer.user.address exists
+          clientLocation: {
+            lat: parseFloat(order.customer?.latitude) || 0,
+            lng: parseFloat(order.customer?.longitude) || 0,
+          },
+        },
+      };
+    } catch (error) {
+      console.error(
+        "Failed to fetch order:",
+        error.response?.data || error.message
+      );
+    }
+  }
   async function updateOrderStatus(id, status) {
     try {
       await api.patch(`/orders/${id}`, { status });
-
-      // Remove the order from local list immediately
+      // Remove locally updated order so UI refreshes correctly
       orders.value = orders.value.filter((order) => order.id !== id);
     } catch (error) {
       console.error(
@@ -120,9 +138,19 @@ export const useDriverStore = defineStore("driver", () => {
       throw error;
     }
   }
-  async function fetchNotifications(driverId) {
+
+  async function fetchNotifications() {
     try {
-      const { data } = await api.get(`/notifications`);
+      const driverId = user.value?.driver_id;
+
+      if (!driverId) {
+        console.warn("No driver ID found, cannot fetch notifications.");
+        notifications.value = [];
+        return;
+      }
+
+      const { data } = await api.get(`/notifications?driver_id=${driverId}`);
+
       notifications.value = data;
     } catch (error) {
       console.error(
@@ -131,22 +159,24 @@ export const useDriverStore = defineStore("driver", () => {
       );
     }
   }
+
   return {
     firstName,
     lastName,
     email,
     password,
     confirmPassword,
+    user,
     sections,
     buttons,
     orders,
     notifications,
-    handleSignUp,
-    handleLogin,
+    currentOrder,
     fetchSections,
     fetchButtons,
     fetchOrders,
     updateOrderStatus,
     fetchNotifications,
+    fetchOrderById,
   };
 });

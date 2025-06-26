@@ -3,12 +3,12 @@
     <div class="contain">
       <Title class="title" title="Edit Profile" />
 
-      <div class="content" v-if="user.value">
+      <div class="content" v-if="user">
         <!-- Profile Image -->
         <div class="image">
           <img
             class="pic"
-            :src="user.value.img_src || defaultPhoto"
+            :src="user.img_src || defaultPhoto"
             alt="Profile photo"
           />
           <GeneralButton
@@ -48,10 +48,19 @@
           <div class="personal">
             <Text class="head" text="Personal Information" />
             <GeneralButton
-              :title="isEditing ? 'Save' : 'Edit'"
+              v-if="!isEditing"
+              title="Edit"
               btnColor="#9a0404"
               titleColor="#ffffff"
-              @click="toggleEdit"
+              @click="startEditing"
+            />
+
+            <GeneralButton
+              v-else
+              title="Save"
+              btnColor="#9a0404"
+              titleColor="#ffffff"
+              @click="saveChanges"
             />
           </div>
 
@@ -60,30 +69,22 @@
               <InputText
                 v-if="isEditing"
                 label="First Name"
-                :modelValue="user.value.firstname"
-                @update:modelValue="(val) => (user.value.firstname = val)"
+                :modelValue="localUser.firstname"
+                @update:modelValue="(val) => (localUser.firstname = val)"
                 placeholder="Enter your first name"
               />
-              <Information
-                v-else
-                label="First Name"
-                :value="user.value.firstname"
-              />
+              <Information v-else label="First Name" :value="user.firstname" />
             </div>
 
             <div class="text">
               <InputText
                 v-if="isEditing"
                 label="Last Name"
-                :modelValue="user.value.lastname"
-                @update:modelValue="(val) => (user.value.lastname = val)"
+                :modelValue="localUser.lastname"
+                @update:modelValue="(val) => (localUser.lastname = val)"
                 placeholder="Enter your last name"
               />
-              <Information
-                v-else
-                label="Last Name"
-                :value="user.value.lastname"
-              />
+              <Information v-else label="Last Name" :value="user.lastname" />
             </div>
           </div>
 
@@ -92,30 +93,22 @@
               <InputText
                 v-if="isEditing"
                 label="Email Address"
-                :modelValue="user.value.email"
-                @update:modelValue="(val) => (user.value.email = val)"
+                :modelValue="localUser.email"
+                @update:modelValue="(val) => (localUser.email = val)"
                 placeholder="Enter your email address"
               />
-              <Information
-                v-else
-                label="Email Address"
-                :value="user.value.email"
-              />
+              <Information v-else label="Email Address" :value="user.email" />
             </div>
 
             <div class="text">
               <InputText
                 v-if="isEditing"
                 label="Phone Number"
-                :modelValue="user.value.phone"
-                @update:modelValue="(val) => (user.value.phone = val)"
+                :modelValue="localUser.phone"
+                @update:modelValue="(val) => (localUser.phone = val)"
                 placeholder="Enter your phone number"
               />
-              <Information
-                v-else
-                label="Phone Number"
-                :value="user.value.phone"
-              />
+              <Information v-else label="Phone Number" :value="user.phone" />
             </div>
           </div>
 
@@ -123,39 +116,11 @@
             <InputText
               v-if="isEditing"
               label="Address"
-              :modelValue="user.value.address"
-              @update:modelValue="(val) => (user.value.address = val)"
+              :modelValue="localUser.address"
+              @update:modelValue="(val) => (localUser.address = val)"
               placeholder="Enter your address"
             />
-            <Information v-else label="Address" :value="user.value.address" />
-          </div>
-
-          <div class="input">
-            <div class="text">
-              <InputText
-                v-if="isEditing"
-                label="Country"
-                :modelValue="user.value.country"
-                @update:modelValue="(val) => (user.value.country = val)"
-                placeholder="Enter your country"
-              />
-              <Information v-else label="Country" :value="user.value.country" />
-            </div>
-
-            <div class="text">
-              <InputText
-                v-if="isEditing"
-                label="City/Province"
-                :modelValue="user.value.city"
-                @update:modelValue="(val) => (user.value.city = val)"
-                placeholder="Enter your city"
-              />
-              <Information
-                v-else
-                label="City/Province"
-                :value="user.value.city"
-              />
-            </div>
+            <Information v-else label="Address" :value="user.address" />
           </div>
 
           <div class="input">
@@ -163,29 +128,14 @@
               <InputText
                 v-if="isEditing"
                 label="National ID card"
-                :modelValue="user.value.idCard"
-                @update:modelValue="(val) => (user.value.idCard = val)"
+                :modelValue="localUser.idCard"
+                @update:modelValue="(val) => (localUser.idCard = val)"
                 placeholder="Enter your id"
               />
               <Information
                 v-else
                 label="National ID card"
-                :value="user.value.idCard"
-              />
-            </div>
-
-            <div class="text">
-              <InputText
-                v-if="isEditing"
-                label="Passport Number"
-                :modelValue="user.value.passport"
-                @update:modelValue="(val) => (user.value.passport = val)"
-                placeholder="Enter your passport"
-              />
-              <Information
-                v-else
-                label="Passport Number"
-                :value="user.value.passport"
+                :value="user.idCard"
               />
             </div>
           </div>
@@ -202,14 +152,14 @@
               <InputText
                 v-if="isEditing"
                 label="Type of Vehicle"
-                :modelValue="user.value.vehicleType"
-                @update:modelValue="(val) => (user.value.vehicleType = val)"
+                :modelValue="localUser.vehicleType"
+                @update:modelValue="(val) => (localUser.vehicleType = val)"
                 placeholder="Enter your vehicle's type"
               />
               <Information
                 v-else
                 label="Type of Vehicle"
-                :value="user.value.vehicleType"
+                :value="user.vehicleType"
               />
             </div>
 
@@ -217,14 +167,14 @@
               <InputText
                 v-if="isEditing"
                 label="Vehicle Name"
-                :modelValue="user.value.vehicleName"
-                @update:modelValue="(val) => (user.value.vehicleName = val)"
+                :modelValue="localUser.vehicleName"
+                @update:modelValue="(val) => (localUser.vehicleName = val)"
                 placeholder="Enter your vehicle's name"
               />
               <Information
                 v-else
                 label="Vehicle Name"
-                :value="user.value.vehicleName"
+                :value="user.vehicleName"
               />
             </div>
           </div>
@@ -234,14 +184,14 @@
               <InputText
                 v-if="isEditing"
                 label="Vehicle Color"
-                :modelValue="user.value.vehicleColor"
-                @update:modelValue="(val) => (user.value.vehicleColor = val)"
+                :modelValue="localUser.vehicleColor"
+                @update:modelValue="(val) => (localUser.vehicleColor = val)"
                 placeholder="Enter your vehicle's color"
               />
               <Information
                 v-else
                 label="Vehicle Color"
-                :value="user.value.vehicleColor"
+                :value="user.vehicleColor"
               />
             </div>
 
@@ -249,30 +199,26 @@
               <InputText
                 v-if="isEditing"
                 label="Vehicle's License Plate"
-                :modelValue="user.value.licensePlate"
-                @update:modelValue="(val) => (user.value.licensePlate = val)"
+                :modelValue="localUser.licensePlate"
+                @update:modelValue="(val) => (localUser.licensePlate = val)"
                 placeholder="Enter your license plate"
               />
               <Information
                 v-else
                 label="Vehicle's License Plate"
-                :value="user.value.licensePlate"
+                :value="user.licensePlate"
               />
             </div>
           </div>
         </Box>
-      </div>
-
-      <div v-else>
-        <p>Loading profile...</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useDriverStore } from "@/stores/driverStore";
+import { ref, reactive, computed, onMounted } from "vue";
+import { useAuthStore } from "@/stores/authenticationStore";
 
 import Information from "@/components/delivery/information.vue";
 import Title from "@/components/delivery/title.vue";
@@ -282,31 +228,42 @@ import InputText from "@/components/all/inputText.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
 import photo from "@/assets/delivery/images/1.png";
 
-const driverStore = useDriverStore();
+const authStore = useAuthStore();
 
 const isEditing = ref(false);
 const uploading = ref(false);
 const defaultPhoto = photo;
 
-const user = computed(() => driverStore.user || {});
+const user = computed(() => authStore.user || {});
+const localUser = reactive({});
 
-const toggleEdit = async () => {
-  if (isEditing.value) {
-    await driverStore.saveUserProfile();
+// Start editing
+const startEditing = () => {
+  if (user.value) {
+    Object.keys(localUser).forEach((key) => delete localUser[key]);
+    Object.assign(localUser, user.value);
+    isEditing.value = true;
   }
-  isEditing.value = !isEditing.value;
 };
 
+// Save profile changes
+const saveChanges = async () => {
+  Object.assign(authStore.user, localUser);
+  await authStore.saveUserProfile?.();
+  isEditing.value = false;
+};
+
+// Dropzone handlers
 const showDropzone = () => (uploading.value = true);
 const hideDropzone = () => (uploading.value = false);
 
-const previewAndSetPhoto = (file) => {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    driverStore.user.photo = e.target.result;
-    hideDropzone();
-  };
-  reader.readAsDataURL(file);
+const previewAndSetPhoto = async (file) => {
+  try {
+    await authStore.uploadPhoto?.(file);
+  } catch (error) {
+    alert("Photo upload failed.");
+  }
+  hideDropzone();
 };
 
 const handleDrop = (event) => {
@@ -320,8 +277,9 @@ const handleFileSelect = (event) => {
   if (file) previewAndSetPhoto(file);
 };
 
+// Fetch profile on load
 onMounted(() => {
-  driverStore.fetchDriverProfile();
+  authStore.fetchProfile();
 });
 </script>
 

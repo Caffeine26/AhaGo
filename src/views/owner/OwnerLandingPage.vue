@@ -2,6 +2,9 @@
     <div class="landingContainer">
         <Header
         :ownerUrl="ownerUrl"
+        :basePath="'owner'"
+        :userLoggedIn="isLoggedIn"
+        :userProfileImg="restStore.user?.img_src"
         ></Header>
         <div id="banner">
             <img :src="burger" alt="burger">
@@ -90,6 +93,10 @@ import dq from '@/assets/owner/img/dq.png';
 import plate from '@/assets/owner/img/plate.png';
 import biz from '@/assets/owner/img/online.png';
 
+
+import { useAuthStore } from '@/stores/authenticationStore';
+import { computed } from 'vue';
+
 export default {
     components: {
         Header,
@@ -103,6 +110,8 @@ export default {
         const categoryStore = useCategoryStore()
         const ordersStore = useOrdersStore()
         const transactionStore = useTransactionStore()
+        const authStore = useAuthStore()
+        const isLoggedIn = computed(() => !!authStore.user);
 
         restStore.fetchRests()
         userStore.fetchUsers()
@@ -117,7 +126,8 @@ export default {
             userStore,
             categoryStore,
             ordersStore,
-            transactionStore
+            transactionStore,
+            isLoggedIn
         }
     },
     data() {

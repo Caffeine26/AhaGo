@@ -4,14 +4,14 @@
       id="map"
       driverProfilePicUrl="https://i.pinimg.com/736x/66/88/2c/66882c2ba53aeea6c32d3862fa656866.jpg"
       :use-geolocation="true"
-      :restaurant-coords="restaurantCoords"
-      :client-coords="clientCoords"
       :route-points="routePoints"
-      @update:driver-location="onDriverLocation"
+      @location-updated="onDriverLocation"
     />
+
     <Box class="box">
-      <h2>Order #</h2>
+      <h2>Order #{{ driverStore.currentOrder?.id }}</h2>
       <div class="line"></div>
+
       <div class="content-container">
         <div class="content">
           <div class="left">
@@ -19,14 +19,23 @@
               <img src="@/assets/delivery/icons/serve.svg" />
             </div>
             <div class="wrap2">
-              <div class="title">Tube Santhormuk</div>
-              <div class="text">Street 261, Phnom Penh 12156</div>
+              <div class="title">
+                {{
+                  driverStore.currentOrder?.details?.restaurantName ||
+                  "Restaurant"
+                }}
+              </div>
+              <div class="text">
+                {{
+                  driverStore.currentOrder?.details?.restaurantAddress || "-"
+                }}
+              </div>
             </div>
           </div>
-          <div class="right">
+          <!-- <div class="right">
             <img class="contact" src="@/assets/delivery/icons/phone.svg" />
             <img class="contact" src="@/assets/delivery/icons/chat.svg" />
-          </div>
+          </div> -->
         </div>
 
         <div class="content">
@@ -35,30 +44,46 @@
               <img src="@/assets/delivery/icons/user.svg" />
             </div>
             <div class="wrap2">
-              <div class="title">Tube Santhormuk</div>
-              <div class="text">Street 261, Phnom Penh 12156</div>
+              <div class="title">
+                {{
+                  driverStore.currentOrder?.details?.clientName || "Customer"
+                }}
+              </div>
+              <div class="text">
+                {{ driverStore.currentOrder?.details?.clientAddress || "-" }}
+              </div>
             </div>
           </div>
-          <div class="right">
+          <!-- <div class="right">
             <img class="contact" src="@/assets/delivery/icons/phone.svg" />
             <img class="contact" src="@/assets/delivery/icons/chat.svg" />
-          </div>
+          </div> -->
         </div>
       </div>
 
       <h2>Total Orders</h2>
       <div class="orders">
         <Order
-          v-for="(item, index) in orderDetails?.orderItems || []"
+          v-for="(item, index) in driverStore.currentOrder?.orderItems || []"
           :key="index"
           :title="item.name"
           :amount="item.quantity"
           :price="item.price.toFixed(2)"
+          :imgSrc="item.img_url"
         />
       </div>
 
       <div class="button">
         <GeneralButton
+          v-if="!journeyStarted"
+          btnColor="orange"
+          title="Start Journey"
+          titleColor="#FFFFFF"
+          @click="startJourney"
+        />
+
+        <GeneralButton
+          v-if="journeyStarted"
           btnColor="green"
           title="Completed Delivery"
           titleColor="#FFFFFF"
@@ -70,9 +95,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import axios from "axios";
+import { useDriverStore } from "@/stores/driverStore";
+
 import Map from "@/components/delivery/map.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
@@ -82,63 +108,123 @@ const route = useRoute();
 const router = useRouter();
 const orderId = route.params.id;
 
+const driverStore = useDriverStore();
+
 const driverLocation = ref(null);
 const restaurantCoords = ref(null);
 const clientCoords = ref(null);
 const routePoints = ref([]);
-const orderDetails = ref(null); // optional for displaying info
+const isCompleting = ref(false);
+const journeyStage = ref("");
+const journeyStarted = ref(false);
+
+onMounted(async () => {
+  await driverStore.fetchOrderById(orderId);
+  const order = driverStore.currentOrder;
+
+  if (order?.details) {
+    restaurantCoords.value = order.details.restaurantLocation;
+    clientCoords.value = order.details.clientLocation;
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        driverLocation.value = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        console.log("Driver location initialized:", driverLocation.value);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Could not get your current location.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by your browser.");
+  }
+});
 
 function onDriverLocation(coords) {
   driverLocation.value = coords;
 }
-async function fetchOrderData() {
-  try {
-    const { data } = await axios.get(
-      `http://localhost:4000/api/incoming-order/${orderId}`
-    );
-    orderDetails.value = data;
 
-    const restaurantLocation = data.details?.restaurantLocation;
-    const clientLocation = data.details?.clientLocation;
-
-    restaurantCoords.value = {
-      lat: restaurantLocation.lat,
-      lng: restaurantLocation.lng,
-    };
-
-    clientCoords.value = {
-      lat: clientLocation.lat,
-      lng: clientLocation.lng,
-    };
-  } catch (err) {
-    console.error("Failed to fetch order data", err);
-  }
+function coordsAreClose(a, b, threshold = 0.0003) {
+  return (
+    Math.abs(a.lat - b.lat) < threshold && Math.abs(a.lng - b.lng) < threshold
+  );
 }
 
-function startJourney() {
-  if (!driverLocation.value || !restaurantCoords.value || !clientCoords.value)
+async function startJourney() {
+  if (!driverLocation.value || !restaurantCoords.value || !clientCoords.value) {
+    alert("Missing coordinates.");
     return;
-  routePoints.value = [
-    driverLocation.value,
-    restaurantCoords.value,
-    clientCoords.value,
-  ];
-}
-async function markOrderCompleted() {
-  try {
-    await axios.patch(`http://localhost:8300/api/orders/${orderId}`, {
-      status: "completed",
-    });
+  }
 
-    alert("Order marked as completed!");
+  journeyStage.value = "toRestaurant";
+  routePoints.value = [driverLocation.value, restaurantCoords.value];
+
+  console.log("Routing to restaurant:", routePoints.value);
+
+  await new Promise((resolve) => {
+    const unwatch = watch(
+      () => driverLocation.value,
+      (newVal) => {
+        if (coordsAreClose(newVal, restaurantCoords.value)) {
+          console.log("Arrived at restaurant");
+          unwatch();
+          resolve();
+        }
+      },
+      { deep: true }
+    );
+  });
+
+  driverLocation.value = { ...restaurantCoords.value };
+
+  console.log("Pausing at restaurant for 3 seconds...");
+  await new Promise((r) => setTimeout(r, 3000));
+
+  journeyStage.value = "toCustomer";
+  routePoints.value = [driverLocation.value, clientCoords.value];
+
+  console.log("Routing to customer:", routePoints.value);
+
+  await new Promise((resolve) => {
+    const unwatch = watch(
+      () => driverLocation.value,
+      (newVal) => {
+        if (coordsAreClose(newVal, clientCoords.value)) {
+          console.log("Arrived at customer");
+          unwatch();
+          resolve();
+        }
+      },
+      { deep: true }
+    );
+  });
+
+  driverLocation.value = { ...clientCoords.value };
+  journeyStage.value = "";
+
+  journeyStarted.value = true;
+}
+
+async function markOrderCompleted() {
+  if (isCompleting.value) return;
+
+  try {
+    isCompleting.value = true;
+    await driverStore.updateOrderStatus(orderId, "completed");
     router.push("/delivery/settings/history");
   } catch (error) {
     console.error("Failed to complete order:", error);
     alert("Something went wrong. Please try again.");
+  } finally {
+    isCompleting.value = false;
   }
 }
-
-onMounted(fetchOrderData);
 </script>
 <style scoped>
 h2 {

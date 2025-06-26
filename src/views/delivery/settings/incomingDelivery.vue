@@ -58,20 +58,32 @@ import { useDriverStore } from "@/stores/driverStore";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
+import { useAuthStore } from "@/stores/authenticationStore";
 
 const router = useRouter();
 const driverStore = useDriverStore();
+const authStore = useAuthStore();
 const isProcessing = ref(false);
 
 const pendingOrders = computed(() =>
-  driverStore.orders.filter((order) => order.status === "pending")
+  driverStore.orders.filter(
+    (order) =>
+      order.status === "pending" &&
+      order.driver_id === driverStore.user?.driver_id
+  )
 );
 
 const handleAccept = async (orderId) => {
+  if (isProcessing.value) return; // Prevent duplicate calls
+  isProcessing.value = true;
+
   try {
     await driverStore.updateOrderStatus(orderId, "preparing");
+    router.push(`/delivery/mapOrder/${orderId}`);
   } catch {
     alert("Failed to accept order. Please try again.");
+  } finally {
+    isProcessing.value = false;
   }
 };
 
@@ -85,6 +97,9 @@ const handleReject = async (orderId) => {
 
 onMounted(() => {
   driverStore.fetchOrders();
+  driverStore.user = authStore.user;
+
+  authStore.fetchProfile();
 });
 </script>
 

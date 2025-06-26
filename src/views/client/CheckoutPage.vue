@@ -1,149 +1,140 @@
 <template>
-  <div class="page-container">
-    <div class="checkout-page">
-      <!-- Show saved location if exists -->
-      <div v-if="savedLocation" class="saved-location">
-        <h3>Delivery Location</h3>
-        <p>
-          <strong>Address:</strong> {{ savedLocation.address }} ({{
-            savedLocation.addressLabel
-          }})
-        </p>
-        <p>
-          <strong>Delivery Service:</strong> {{ savedLocation.deliveryService }}
-        </p>
-        <p>
-          <strong>Name:</strong> {{ savedLocation.gender }}
-          {{ savedLocation.customerName }}
-        </p>
-        <p><strong>Contact:</strong> {{ savedLocation.contact }}</p>
-        <p><strong>Telegram:</strong> {{ savedLocation.telegram }}</p>
-        <div v-if="savedLocation.photoUrl" class="photo-preview">
-          <img :src="savedLocation.photoUrl" alt="Location photo" />
-        </div>
+  <div class="checkout-page">
+    <!-- Show saved location from user profile if exists -->
+    <div v-if="savedLocation" class="saved-location">
+      <h3>Delivery Location</h3>
+      <p>
+        <strong>Address:</strong> {{ savedLocation.address }}
+        <span v-if="savedLocation.addressLabel">({{ savedLocation.addressLabel }})</span>
+      </p>
+      <p>
+        <strong>Name:</strong> {{ savedLocation.gender }} {{ savedLocation.customerName }}
+      </p>
+      <p><strong>Contact:</strong> {{ savedLocation.contact }}</p>
+      <div v-if="savedLocation.photoUrl" class="photo-preview">
+        <img :src="savedLocation.photoUrl" alt="Location photo" />
       </div>
+    </div>
 
-      <!-- Fallback to store info if no saved location -->
-      <Location
-        v-else
-        :cover="cover1"
-        :address="storeAddress"
-        :contact="storeContact"
-      />
+    <!-- Fallback store info if no saved location -->
+    <Location
+      v-else
+      :cover="cover1"
+      :address="storeAddress"
+      :contact="storeContact"
+    />
 
-      <GeneralButton
-        title="+ Add Location"
-        @click="goToAddLocation"
-        btnColor="#b91c1c"
-        titleColor="#fff"
-        class="add-location-btn"
-      />
+    <GeneralButton
+      title="+ Add Location"
+      @click="goToAddLocation"
+      btnColor="#b91c1c"
+      titleColor="#fff"
+      class="add-location-btn"
+    />
 
-      <OrderSummary category="Sweet Shrimp (TTP)" :items="cartItems" />
+    <OrderSummary category="Sweet Shrimp (TTP)" :items="cartItems" />
 
-      <InfoList :info="promoRows" />
+    <InfoList :info="promoRows" />
 
-      <PriceDetails :cartTotal="cartTotal" :finalTotal="finalTotal" />
+    <PriceDetails :cartTotal="cartTotal" :finalTotal="finalTotal" />
 
-      <RemarksSection v-model="remarks" />
+    <RemarksSection v-model="remarks" />
 
-      <div class="payment-card">
-        <div class="payment-title">Payment</div>
-        <div class="payment-options">
-          <label
-            v-for="method in paymentMethods"
-            :key="method.value"
-            class="payment-option"
-            :class="{ selected: selectedPayment === method.value }"
-          >
+    <div class="payment-card">
+      <div class="payment-title">Payment</div>
+      <div class="payment-options">
+        <label
+          v-for="method in paymentMethods"
+          :key="method.value"
+          class="payment-option"
+          :class="{ selected: selectedPayment === method.value }"
+        >
+          <input
+            type="radio"
+            name="payment"
+            :value="method.value"
+            v-model="selectedPayment"
+          />
+          <div class="payment-main-row">
+            <span class="payment-radio-custom"></span>
+            <span class="payment-labels">
+              <template v-if="method.value === 'card'">
+                <img :src="method.icons[0]" class="pay-icon-img" alt="Mastercard" />
+                <span class="main-label">{{ method.label }}</span>
+                <span class="visa-text">VISA</span>
+              </template>
+              <template v-else>
+                <img :src="method.icons[0]" class="pay-icon-img" alt="ABA PAY" />
+                <span class="main-label aba-label">{{ method.label }}</span>
+                <template v-if="selectedPayment === 'aba'">
+                  <span v-if="method.desc" class="desc-label">{{ method.desc }}</span>
+                </template>
+              </template>
+            </span>
+          </div>
+          <div v-if="selectedPayment === 'aba' && method.info" class="payment-info">{{ method.info }}</div>
+
+          <!-- Card form appears only if selected -->
+          <div v-if="selectedPayment === 'card' && method.value === 'card'" class="card-form-container">
             <input
-              type="radio"
-              name="payment"
-              :value="method.value"
-              v-model="selectedPayment"
+              v-model="cardForm.number"
+              class="card-input card-number"
+              type="text"
+              placeholder="Card number"
+              maxlength="19"
             />
-            <div class="payment-main-row">
-              <span class="payment-radio-custom"></span>
-              <span class="payment-labels">
-                <template v-if="method.value === 'card'">
-                  <img :src="method.icons[0]" class="pay-icon-img" alt="Mastercard" />
-                  <span class="main-label">{{ method.label }}</span>
-                  <span class="visa-text">VISA</span>
-                </template>
-                <template v-else>
-                  <img :src="method.icons[0]" class="pay-icon-img" alt="ABA PAY" />
-                  <span class="main-label aba-label">{{ method.label }}</span>
-                  <template v-if="selectedPayment === 'aba'">
-                    <span v-if="method.desc" class="desc-label">{{ method.desc }}</span>
-                  </template>
-                </template>
-              </span>
-            </div>
-            <div v-if="selectedPayment === 'aba' && method.info" class="payment-info">{{ method.info }}</div>
-
-
-            <!-- Card form appears only if this is the selected card option -->
-            <div v-if="selectedPayment === 'card' && method.value === 'card'" class="card-form-container">
+            <div class="card-row">
               <input
-                v-model="cardForm.number"
-                class="card-input card-number"
+                v-model="cardForm.expiry"
+                class="card-input card-expiry"
                 type="text"
-                placeholder="Card number"
-                maxlength="19"
+                placeholder="MM/YY"
+                maxlength="5"
               />
-              <div class="card-row">
+              <div class="card-cvc-container">
                 <input
-                  v-model="cardForm.expiry"
-                  class="card-input card-expiry"
+                  v-model="cardForm.cvc"
+                  class="card-input card-cvc"
                   type="text"
-                  placeholder="MM/YY"
-                  maxlength="5"
+                  placeholder="CVC"
+                  maxlength="4"
                 />
-                <div class="card-cvc-container">
-                  <input
-                    v-model="cardForm.cvc"
-                    class="card-input card-cvc"
-                    type="text"
-                    placeholder="CVC"
-                    maxlength="4"
-                  />
-                </div>
-              </div>
-              <input
-                v-model="cardForm.name"
-                class="card-input card-holder"
-                type="text"
-                placeholder="Name of the card holder"
-              />
-              <div class="card-save-row">
-                <input
-                  type="checkbox"
-                  v-model="cardForm.save"
-                  id="save-card"
-                  class="card-save-checkbox"
-                />
-                <label for="save-card" class="card-save-label">
-                  Save this card for a faster checkout next time
-                </label>
-              </div>
-              <div class="card-save-info">
-                By saving your card you grant us your consent to store your payment method for future orders. You can withdraw consent at any time.<br />
-                For more information, please visit the <a href="#" class="privacy-link">Privacy policy.</a>
               </div>
             </div>
-          </label>
-        </div>
+            <input
+              v-model="cardForm.name"
+              class="card-input card-holder"
+              type="text"
+              placeholder="Name of the card holder"
+            />
+            <div class="card-save-row">
+              <input
+                type="checkbox"
+                v-model="cardForm.save"
+                id="save-card"
+                class="card-save-checkbox"
+              />
+              <label for="save-card" class="card-save-label">
+                Save this card for a faster checkout next time
+              </label>
+            </div>
+            <div class="card-save-info">
+              By saving your card you grant us your consent to store your payment method for future orders. You can withdraw consent at any time.<br />
+              For more information, please visit the <a href="#" class="privacy-link">Privacy policy.</a>
+            </div>
+          </div>
+        </label>
       </div>
+    </div>
 
-      <div class="action-buttons">
-        <GeneralButton
-          title="ORDER NOW"
-          btnColor="#b91c1c"
-          titleColor="white"
-          btnClass="order-btn"
-          @click="placeOrder"
-        />
-      </div>
+    <div class="action-buttons">
+      <GeneralButton
+        title="ORDER NOW"
+        btnColor="#b91c1c"
+        titleColor="white"
+        btnClass="order-btn"
+        @click="placeOrder"
+      />
     </div>
   </div>
 </template>
@@ -160,6 +151,7 @@ import { ref, computed, onMounted } from "vue";
 import cover1 from "@/assets/store_details/house.png";
 import abapayImg from '@/assets/client/abapay.png';
 import mastercardImg from '@/assets/client/mastercard.png';
+import { useAuthStore } from "@/stores/authenticationStore";
 
 export default {
   name: "CheckoutPage",
@@ -174,6 +166,8 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const authStore = useAuthStore();
+
     const brandName = route.params.brandName;
     const cartItems = ref(JSON.parse(route.params.cartItems || "[]"));
     const remarks = ref("");
@@ -192,11 +186,8 @@ export default {
 
     const finalTotal = computed(() => cartTotal.value + 0.45);
 
-    const savedLocation = ref(null);
-
     const selectedPayment = ref('aba');
 
-    // Card form state
     const cardForm = ref({
       number: '',
       expiry: '',
@@ -205,13 +196,11 @@ export default {
       save: true,
     });
 
-
-    // Dynamic payment methods array
     const paymentMethods = [
       {
         label: 'Credit or Debit Card',
         value: 'card',
-        icons: [mastercardImg, 'visa'],
+        icons: [mastercardImg],
         desc: '',
         info: '',
       },
@@ -224,32 +213,38 @@ export default {
       },
     ];
 
-    onMounted(() => {
-      const saved = localStorage.getItem("savedLocation");
-      if (saved) {
-        savedLocation.value = JSON.parse(saved);
+    const savedLocation = ref(null);
+
+    onMounted(async () => {
+      // Fetch profile if not loaded
+      if (!authStore.user) {
+        await authStore.fetchProfile();
+      }
+
+      if (authStore.user) {
+        savedLocation.value = {
+          address: authStore.user.address || "",
+          addressLabel: authStore.user.city || "",
+          gender: authStore.user.gender || "",
+          customerName: `${authStore.user.firstname || ""} ${authStore.user.lastname || ""}`.trim(),
+          contact: authStore.user.phone || "",
+          photoUrl: authStore.user.img_src || "",
+        };
       }
     });
 
     const placeOrder = () => {
-    const orderData = {
-    pickupOption: {
-      label: "Downstairs pick-up",
-      time: "Instant (12:30)"
-    },
-    paymentMethod: {
-      label: "Cash On Delivery",
-      desc: "Pay with cash at pickup",
-      icon: "", // Optional: add icon path if needed
-      info: "Please prepare the exact amount."
-    },
-    voucher: "No available red envelopes" // Or any real value from promoRows
-  };
+      // Collect order data and redirect (simplified)
+      const orderData = {
+        paymentMethod: selectedPayment.value,
+        remarks: remarks.value,
+        cartItems: cartItems.value,
+        deliveryAddress: savedLocation.value?.address || "",
+      };
 
-  localStorage.setItem("orderData", JSON.stringify(orderData));
-
-  router.push({ name: "OrderConfirmation" });
-};
+      localStorage.setItem("orderData", JSON.stringify(orderData));
+      router.push({ name: "OrderConfirmation" });
+    };
 
     const goToAddLocation = () => {
       router.push({ name: "AddLocation" });

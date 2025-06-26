@@ -3,93 +3,42 @@
     <button class="back-btn" @click="goBack">&#8592; Cancel</button>
 
     <div class="add-location-container">
-      <Map
-        :useGeolocation="false"
-        :enableClickSelection="true"
-        @map-clicked="onMapClick"
-      />
+      <Map :useGeolocation="false" :enableClickSelection="true" @map-clicked="onMapClick" />
 
-      <form class="location-form">
+      <form class="location-form" @submit.prevent="saveLocation">
         <InputText
           v-model="address"
           label="Delivery Address"
           placeholder="Enter delivery address"
-        />
-        <InputText
-          v-model="addressLabel"
-          label="Address"
-          placeholder="e.g. Home"
+          readonly
         />
 
-        <div class="form-group">
-          <label class="label"
-            >Delivery Service
-            <span class="note">(For Takeaway Orders Only)</span></label
-          >
-          <select class="select" v-model="deliveryService" required>
-            <option disabled value="">Please select delivery service</option>
-            <option>Downstairs pick-up</option>
-            <option>Door delivery</option>
-          </select>
+        <div v-if="plusCode" class="plus-code-display">
+          Plus Code: <strong>{{ plusCode }}</strong>
         </div>
 
-        <InputText
-          v-model="customerName"
-          label="Customer Name"
-          placeholder="Enter your name"
-        />
+        <InputText v-model="customerName" label="Customer Name" placeholder="Enter your name" />
 
         <div class="form-group">
           <label class="label">Gender</label>
           <div class="radio-group">
-            <label
-              ><input type="radio" value="Mr." v-model="gender" /> Mr.</label
-            >
-            <label
-              ><input type="radio" value="Ms." v-model="gender" /> Ms.</label
-            >
+            <label><input type="radio" value="Mr." v-model="gender" /> Mr.</label>
+            <label><input type="radio" value="Ms." v-model="gender" /> Ms.</label>
           </div>
         </div>
 
-        <InputText
-          v-model="contact"
-          label="Contact"
-          placeholder="Phone number"
-          type="tel"
-        />
-        <InputText
-          v-model="telegram"
-          label="Telegram"
-          placeholder="Telegram username"
-        />
+        <InputText v-model="contact" label="Contact" placeholder="Phone number" type="tel" />
 
         <div class="form-group">
-          <label class="label">Label</label>
-          <div class="label-group">
-            <GeneralButton
-              v-for="option in ['Home', 'Work', 'School', 'Other']"
-              :key="option"
-              :title="option"
-              :btnColor="label === option ? '#b91c1c' : '#ffffff'"
-              :titleColor="label === option ? '#ffffff' : '#b91c1c'"
-              :border="'1px solid #b91c1c'"
-              @click="label = option"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="label"
-            >Photo <span class="sample-photo">Sample Photo</span></label
-          >
+          <label class="label">
+            Photo <span class="sample-photo">Sample Photo</span>
+          </label>
           <input type="file" @change="onPhotoChange" accept="image/*" />
           <div v-if="photoUrl" class="photo-preview">
             <img :src="photoUrl" alt="Preview" />
           </div>
           <small class="photo-desc">
-            Please upload photo of your house number, doorway, and its
-            surroundings to help the delivery man to deliver your meal in no
-            time.
+            Please upload photo of your house number, doorway, and its surroundings to help the delivery man deliver your meal in no time.
           </small>
         </div>
 
@@ -108,34 +57,55 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import GeneralButton from "@/components/GeneralButton.vue";
-import InputText from "@/components/all/inputText.vue";
+import { useAuthStore } from "@/stores/authenticationStore";
+
 import Map from "@/components/delivery/map.vue";
+import InputText from "@/components/all/inputText.vue";
+import GeneralButton from "@/components/GeneralButton.vue";
 
 const router = useRouter();
+const authStore = useAuthStore();
 
-// Form fields
-const address = ref("");
-const addressLabel = ref("Home");
-const deliveryService = ref("");
-const customerName = ref("");
-const gender = ref("Ms.");
-const contact = ref("");
-const telegram = ref("");
-const label = ref("Home");
 const photo = ref(null);
 const photoUrl = ref("");
-const customerCoords = ref({ lat: null, lng: null });
 
-// Handle map click event
-function onMapClick({ coords, address: resolvedAddress }) {
+const address = computed({
+  get: () => authStore.user?.address || "",
+  set: (val) => (authStore.user.address = val),
+});
+
+const customerName = computed({
+  get: () =>
+    `${authStore.user?.firstname || ""} ${authStore.user?.lastname || ""}`.trim(),
+  set: (val) => {
+    const [first = "", ...rest] = val.split(" ");
+    authStore.user.firstname = first;
+    authStore.user.lastname = rest.join(" ");
+  },
+});
+
+const gender = computed({
+  get: () => authStore.user?.gender || "",
+  set: (val) => (authStore.user.gender = val),
+});
+
+const contact = computed({
+  get: () => authStore.user?.phone || "",
+  set: (val) => (authStore.user.phone = val),
+});
+
+const plusCode = ref(""); // Optional display only
+
+function onMapClick({ coords, address: resolvedAddress, plusCode: pc }) {
   address.value = resolvedAddress;
-  customerCoords.value = coords;
+  authStore.user.latitude = String(coords.lat); // convert to string to match backend validation
+  authStore.user.longitude = String(coords.lng);
+
+  plusCode.value = pc;
 }
 
-// Handle photo file upload
 function onPhotoChange(e) {
   const file = e.target.files[0];
   if (file) {
@@ -144,38 +114,61 @@ function onPhotoChange(e) {
   }
 }
 
-// Save the location to localStorage and go back
-function saveLocation() {
-  if (
-    !address.value ||
-    !customerCoords.value.lat ||
-    !customerCoords.value.lng
-  ) {
-    alert("Please click on the map to select your delivery location.");
+async function saveLocation() {
+  if (!address.value) {
+    alert("Please enter or select an address.");
     return;
   }
 
-  const locationData = {
-    address: address.value,
-    addressLabel: addressLabel.value,
-    deliveryService: deliveryService.value,
-    customerName: customerName.value,
-    gender: gender.value,
-    contact: contact.value,
-    telegram: telegram.value,
-    label: label.value,
-    photoUrl: photoUrl.value,
-    coords: customerCoords.value,
-  };
+  try {
+    const apiKey = "AIzaSyA68FNc7213c8aFqrpOVjtDYW1Y_0Olpvw"; // Replace with your API key
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address.value
+    )}&key=${apiKey}`;
 
-  localStorage.setItem("savedLocation", JSON.stringify(locationData));
-  router.back();
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === "OK" && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      const lat = location.lat;
+      const lng = location.lng;
+
+      console.log("Geocoded Lat, Lng:", lat, lng);
+
+      authStore.user.latitude = String(lat);
+      authStore.user.longitude = String(lng);
+      authStore.user.address = address.value;
+
+      if (photo.value) {
+        await authStore.uploadPhoto(photo.value);
+      }
+
+      await authStore.saveUserProfile();
+
+      router.back();
+    } else {
+      alert("Failed to convert address to coordinates. Please check the address.");
+      console.error("Geocoding failed:", data.status);
+    }
+  } catch (error) {
+    console.error("Error during geocoding or saving profile:", error);
+    alert("An error occurred while saving your location.");
+  }
 }
 
-// Cancel/back button
 function goBack() {
   router.back();
 }
+
+onMounted(() => {
+  if (!authStore.user) {
+    authStore.fetchProfile();
+  } else {
+    authStore.role = "customer";
+    photoUrl.value = authStore.user?.img_src || "";
+  }
+});
 </script>
 
 <style scoped>
@@ -224,16 +217,6 @@ function goBack() {
   gap: 1rem;
   margin-top: 0.3rem;
 }
-.note {
-  font-size: 0.9em;
-  color: #888;
-  font-weight: 400;
-}
-.label-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
 .sample-photo {
   color: #b91c1c;
   float: right;
@@ -256,12 +239,6 @@ function goBack() {
 .label {
   font-size: 20px;
   color: #9a0404;
-}
-.select {
-  padding: 10px;
-  border-radius: 10px;
-  background-color: white;
-  font-size: 16px;
 }
 .button {
   display: flex;

@@ -1,12 +1,9 @@
 <template>
-  <div class="profile-settings">
+  <div class="profile-settings" v-if="user">
     <h1>Edit Profile</h1>
     <div class="profile-photo-section">
-      <img
-        :src="profile.photo || defaultPhoto"
-        class="profile-photo"
-        alt="Profile"
-      />
+      <img :src="user.img_src || defaultPhoto" class="profile-photo" />
+
       <input
         type="file"
         ref="fileInput"
@@ -21,39 +18,26 @@
       <div class="form-row">
         <div class="form-group">
           <label>First Name</label>
-          <input v-model="profile.firstName" required />
+          <input v-model="user.firstname" />
         </div>
         <div class="form-group">
           <label>Last Name</label>
-          <input v-model="profile.lastName" required />
+          <input v-model="user.lastname" />
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Email Address</label>
-          <input v-model="profile.email" type="email" required />
+          <input v-model="user.email" type="email" />
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input v-model="profile.phone" required />
+          <input v-model="user.phone" />
         </div>
       </div>
       <div class="form-group">
         <label>Address</label>
-        <input v-model="profile.address" required />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Country</label>
-          <input v-model="profile.country" required />
-        </div>
-        <div class="form-group">
-          <label>City/Province</label>
-          <select v-model="profile.city" required>
-            <option value="">Select</option>
-            <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-          </select>
-        </div>
+        <input v-model="user.address" />
       </div>
       <button class="edit-btn" type="submit">Save</button>
     </form>
@@ -61,16 +45,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authenticationStore'
 
-const defaultPhoto = 'https://via.placeholder.com/120x120?text=Photo'
-const cities = ['Phnom Penh', 'Siem Reap', 'Battambang', 'Sihanoukville']
-
-const userStore = useUserStore()
-const { profile } = storeToRefs(userStore)
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 const router = useRouter()
 
 const fileInput = ref(null)
@@ -79,22 +60,29 @@ function triggerFileInput() {
   fileInput.value.click()
 }
 
-function onPhotoChange(e) {
+async function onPhotoChange(e) {
   const file = e.target.files[0]
   if (file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      profile.value.photo = event.target.result
+    try {
+      const imgUrl = await authStore.uploadPhoto(file)
+      user.value.img_src = imgUrl
+    } catch (error) {
+      alert('Photo upload failed.')
     }
-    reader.readAsDataURL(file)
   }
 }
 
-function saveProfile() {
-  userStore.updateProfile(profile.value)
-  alert('Profile saved!')
-  router.push('/')
+async function saveProfile() {
+  try {
+    await authStore.saveUserProfile()
+    router.push('/')
+  } catch (error) {
+    alert('Failed to save user.')
+  }
 }
+onMounted(() => {
+  authStore.fetchProfile();
+});
 </script>
 
 <style scoped>

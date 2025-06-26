@@ -4,7 +4,9 @@
       <Header
         title="<span style='color: #9A0404;'>AhaGo</span> Delivery"
         :basePath="'driver'"
-        :userLoggedIn="false"
+        :userLoggedIn="isLoggedIn"
+        :userProfileImg="user?.img_src"
+        @go-to-account="goToAccount"
       />
       <Header2
         title="Deliver"
@@ -14,9 +16,11 @@
         it4="Contact Us"
       />
     </div>
+
     <div class="contnt">
       <router-view />
     </div>
+
     <AppFooter />
   </div>
 </template>
@@ -25,24 +29,38 @@
 import Header from "@/components/all/header.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import Header2 from "@/components/delivery/header2.vue";
+
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authenticationStore";
+import { storeToRefs } from "pinia";
 
+const authStore = useAuthStore();
+const { user, role } = storeToRefs(authStore);
+
+const isLoggedIn = ref(false);
 const router = useRouter();
-const userLoggedIn = ref(false);
-
-// Replace this with your actual auth logic
-const checkAuth = () => {
-  const token = localStorage.getItem("auth_token");
-  userLoggedIn.value = !!token; // true if token exists
-};
 
 const goToAccount = () => {
   router.push("/delivery/settings/profile");
 };
 
-onMounted(() => {
-  checkAuth();
+onMounted(async () => {
+  const storedRole = localStorage.getItem("role");
+  const token = localStorage.getItem(`${storedRole}_token`);
+
+  if (storedRole !== "driver") {
+    authStore.logout();
+    return router.push("/driver/login");
+  }
+
+  if (token) {
+    authStore.role = storedRole;
+    await authStore.fetchProfile();
+    isLoggedIn.value = !!user.value;
+  } else {
+    isLoggedIn.value = false;
+  }
 });
 </script>
 
@@ -60,7 +78,6 @@ body {
   right: 0;
   z-index: 3;
 }
-
 .contnt {
   padding-top: 136px;
 }

@@ -59,9 +59,11 @@ import ButtonFilter from "@/components/ButtonFilter.vue";
 import Title from "@/components/delivery/title.vue";
 import Box from "@/components/delivery/box.vue";
 import GeneralButton from "@/components/GeneralButton.vue";
+import { useAuthStore } from "@/stores/authenticationStore";
 
 const router = useRouter();
 const driverStore = useDriverStore();
+const authStore = useAuthStore();
 const selectedFilter = ref("Today");
 
 const filterOptions = [
@@ -70,8 +72,11 @@ const filterOptions = [
   { value: "Last Month", label: "Last Month" },
 ];
 
-onMounted(() => {
-  driverStore.fetchNotifications();
+onMounted(async () => {
+  await authStore.fetchProfile();
+  driverStore.user = authStore.user;
+
+  await driverStore.fetchNotifications();
 });
 </script>
 

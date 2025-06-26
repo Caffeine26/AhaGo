@@ -17,19 +17,26 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useOrderHistoryStore } from '@/stores/orderHistoryStore';
+import { useOrderStore } from '@/stores/orderStore';
 import OrderHistoryCard from '@/components/customer/OrderHistoryCard.vue';
 
 const router = useRouter();
-const orderHistoryStore = useOrderHistoryStore();
-const orders = computed(() => orderHistoryStore.orders);
+const orderStore = useOrderStore();
+const orders = computed(() => 
+  orderStore.orders.filter(o => ['completed', 'cancelled'].includes(o.status))
+);
 
 const goToHome = () => {
   router.push('/');
 };
+
+onMounted(() => {
+  orderStore.fetchOrders(null, 'customer');
+});
 </script>
+
 
 <style scoped>
 .history-page {

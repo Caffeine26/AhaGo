@@ -1,198 +1,188 @@
 <template>
-    <div class="dashboard-wrapper">
+  <div class="dashboard-wrapper">
     <!-- Sidebar -->
     <Sidebar />
 
     <!-- Main Content -->
     <div class="main-content">
       <!-- Top Bar: Header -->
-      <header class="header">
-        <h2 class="text-2xl font-bold">Dashboard</h2>
-        <div class="header-right">
-          <input type="text" placeholder="Search..." class="search-input" />
-          <div class="user-info">
-            <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>Sarawat Jae</span>
-          </div>
-        </div>
-      </header>
-  <div class="main-container">
-    <!-- Rating Summary Panel -->
-    <div class="rating-summary-panel">
-      <div class="rating-summary">
-        <h2>Rating</h2>
+      
+      <div class="main-container">
+        <!-- Rating Summary Panel -->
+        <div class="rating-summary-panel">
+          <div class="rating-summary">
+            <h2>Rating</h2>
 
-        <!-- Overall Rating and Stars -->
-        <div class="overall-rating">
-          <span class="rating-value">{{ overallRating }}</span>
-          <span class="stars">
-            <img
-              v-for="star in 5"
-              :key="star"
-              :src="starImage"
-              alt="star"
-              class="star-icon"
-              :class="{ active: star <= Math.round(overallRating) }"
-            />
-          </span>
-          <span class="review-count">{{ reviewCount }} reviews</span>
-        </div>
-
-        <!-- Individual Rating Details -->
-        <div class="rating-details">
-          <div
-            class="rating-item"
-            v-for="(value, key) in ratingDetails"
-            :key="key"
-          >
-            <span>{{ key }}</span>
-            <div class="rating-bar">
-              <div class="bar" :style="{ width: value + '%' }"></div>
-            </div>
-            <span>{{ value }}%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Feedback Panel -->
-    <div class="feedback-panel">
-      <!-- Filter Section -->
-      <div class="filter-section">
-        <select v-model="selectedRating">
-          <option>All Rating</option>
-          <option>5 Stars</option>
-          <option>4 Stars</option>
-          <option>3 Stars</option>
-        </select>
-        <select v-model="selectedCategory">
-          <option>All Category</option>
-          <option>Pasta</option>
-          <option>Pizza</option>
-        </select>
-        <select v-model="selectedMenu">
-          <option>All Menu</option>
-          <option>Menu 1</option>
-          <option>Menu 2</option>
-        </select>
-      </div>
-
-      <!-- Review List -->
-      <div class="review-list">
-        <div
-          class="review-item"
-          v-for="(review, index) in reviews"
-          :key="index"
-        >
-          <img :src="review.image" alt="Dish Image" class="dish-image" />
-
-          <div class="review-content">
-            <h3>{{ review.title }}</h3>
-            <div class="review-rating">
+            <!-- Overall Rating and Stars -->
+            <div class="overall-rating">
+              <span class="rating-value">{{ overallRating }}</span>
               <span class="stars">
-                <i
+                <img
                   v-for="star in 5"
                   :key="star"
-                  class="fas fa-star"
-                  :class="{ active: star <= review.rating }"
-                ></i>
+                  :src="starImage"
+                  alt="star"
+                  class="star-icon"
+                  :class="{ active: star <= Math.round(overallRating) }"
+                />
               </span>
-              <span>{{ review.rating }}/5</span>
+              <span class="review-count">{{ reviewCount }} reviews</span>
             </div>
-            <span class="review-date">{{ review.date }}</span>
-            <p>{{ review.description }}</p>
-            <span class="review-author">{{ review.author }}</span>
+
+            <!-- Individual Rating Details -->
+            <div class="rating-details">
+              <div
+                class="rating-item"
+                v-for="(value, key) in ratingDetails"
+                :key="key"
+              >
+                <span>{{ key }}</span>
+                <div class="rating-bar">
+                  <div class="bar" :style="{ width: value + '%' }"></div>
+                </div>
+                <span>{{ value }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feedback Panel -->
+        <div class="feedback-panel">
+          <!-- Filter Section -->
+          <div class="filter-section">
+            <select v-model="selectedRating">
+              <option>All Rating</option>
+              <option>5 Stars</option>
+              <option>4 Stars</option>
+              <option>3 Stars</option>
+            </select>
+            <select v-model="selectedCategory">
+              <option>All Category</option>
+              <option>Pasta</option>
+              <option>Pizza</option>
+            </select>
+            <select v-model="selectedMenu">
+              <option>All Menu</option>
+              <option>Menu 1</option>
+              <option>Menu 2</option>
+            </select>
+          </div>
+
+          <!-- Review List -->
+          <div class="review-list">
+            <div
+              class="review-item"
+              v-for="(review, index) in reviews"
+              :key="index"
+            >
+              <img
+                :src="getImageUrl(review.image)"
+                alt="Dish Image"
+                class="dish-image"
+              />
+
+              <div class="review-content">
+                <h3>{{ review.title }}</h3>
+                <div class="review-rating">
+                  <span class="stars">
+                    <i
+                      v-for="star in 5"
+                      :key="star"
+                      class="fas fa-star"
+                      :class="{ active: star <= review.rating }"
+                    ></i>
+                  </span>
+                  <span>{{ review.rating }}/5</span>
+                </div>
+                <span class="review-date">{{ formatDate(review.created_at) }}</span>
+                <p>{{ review.description }}</p>
+                <span class="review-author">{{ review.author }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="pagination">
+            <span>Showing {{ currentPage }} out of {{ totalPages }}</span>
+            <button @click="prevPage" :disabled="currentPage === 1">
+              Previous
+            </button>
+            <button @click="nextPage" :disabled="currentPage === totalPages">
+              Next
+            </button>
           </div>
         </div>
       </div>
-
-      <!-- Pagination -->
-      <div class="pagination">
-        <span>Showing {{ currentPage }} out of {{ totalPages }}</span>
-        <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-        <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
-      </div>
     </div>
   </div>
-  </div>
-  </div>
-
 </template>
 
 <script>
-
+import axios from 'axios';
 import star from '@/assets/icons/star1.png';
-import cake from '@/assets/food/cake.png';
 import Sidebar from '@/components/admin/Sidebar.vue';
 
 export default {
-    components:{
-        Sidebar
-    },
+  components: {
+    Sidebar,
+  },
   data() {
     return {
-      // Overall rating summary
       starImage: star,
       overallRating: 4.7,
-      reviewCount: 3078,
+      reviewCount: 0,
 
-      // Rating breakdown
       ratingDetails: {
-        "Food Quality": 96,
+        'Food Quality': 96,
         Service: 89,
         Cleanliness: 85,
         Price: 75,
         Ambiance: 80,
       },
 
-      // Filter state
-      selectedRating: "All Rating",
-      selectedCategory: "All Category",
-      selectedMenu: "All Menu",
+      selectedRating: 'All Rating',
+      selectedCategory: 'All Category',
+      selectedMenu: 'All Menu',
 
-      // Reviews (demo data)
-      reviews: [
-        {
-          title: "Classic Italian Penne",
-          rating: 5,
-          date: "Oct 20 2024",
-          description:
-            "A delightful dish with perfectly cooked penne pasta and a rich, savory tomato sauce. This flavor was well-balanced and satisfying. I will order it again!",
-          author: "Sonita Yakorn",
-          image: cake,
-        },
-        {
-          title: "Classic Italian Penne",
-          rating: 5,
-          date: "Oct 20 2024",
-          description:
-            "A delightful dish with perfectly cooked penne pasta and a rich, savory tomato sauce. This flavor was well-balanced and satisfying. I will order it again!",
-          author: "Sonita Yakorn",
-          image: cake,
-        },
-        {
-          title: "Classic Italian Penne",
-          rating: 5,
-          date: "Oct 20 2024",
-          description:
-            "A delightful dish with perfectly cooked penne pasta and a rich, savory tomato sauce. This flavor was well-balanced and satisfying. I will order it again!",
-          author: "Sonita Yakorn",
-          image: cake,
-        },
-      ],
+      reviews: [],
 
-      // Pagination
       currentPage: 1,
-      totalPages: 4,
+      totalPages: 1,
     };
   },
   methods: {
+    fetchReviews() {
+      axios
+        .get('http://localhost:8300/api/reviews')
+        .then((res) => {
+          this.reviews = res.data;
+          this.reviewCount = this.reviews.length;
+          this.totalPages = 1; // Update if backend supports pagination
+        })
+        .catch((err) => {
+          console.error('Failed to fetch reviews:', err);
+        });
+    },
     prevPage() {
       if (this.currentPage > 1) this.currentPage--;
+      // Implement pagination fetch if needed
     },
     nextPage() {
       if (this.currentPage < this.totalPages) this.currentPage++;
+      // Implement pagination fetch if needed
     },
+    getImageUrl(imageName) {
+      // Adjust path to your backend storage folder
+      return `http://localhost:8300/storage/${imageName}`;
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+  },
+  mounted() {
+    this.fetchReviews();
   },
 };
 </script>
