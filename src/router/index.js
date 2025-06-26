@@ -44,7 +44,7 @@ import MaketingPage from "@/views/Admin/MaketingPage.vue";
 import OrderTracking from "@/views/Admin/OrderTracking.vue";
 import Account from "@/views/Admin/Account.vue";
 import Review from "@/views/Admin/Review.vue";
-import Inventory from "@/views/Admin/Inventory.vue";
+import Management from "@/views/Admin/Management.vue";
 import Login from "@/views/Admin/Login.vue";
 import Signup from "@/views/Admin/Signup.vue";
 import FavoritePage from "@/views/client/FavoritePage.vue";
@@ -52,6 +52,7 @@ import ProfileSettings from "@/views/client/ProfileSettings.vue";
 import OwnerHomePage from "@/views/owner/OwnerHomePage.vue";
 import FoodItemPage from "@/views/owner/FoodItemPage.vue";
 import OrderDelivery from "@/views/owner/OrderDelivery.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -371,9 +372,9 @@ const router = createRouter({
       component: Review,
     },
     {
-      path: "/admin/inventory",
-      name: "Inventory",
-      component: Inventory,
+      path: "/admin/management",
+      name: "Management",
+      component: Management,
     },
     {
       path: "/admin/login",
