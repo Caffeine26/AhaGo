@@ -99,14 +99,14 @@ export default {
 </script>
 
 <style scoped>
-//.chart {
-//  background-color: white;
-//  padding: 24px;
-//  border-radius: 20px;
-//  width: 100%;
-//  max-width: 750px;
-//  margin: 0 auto;
-//}
+/* .chart {
+  background-color: white;
+  padding: 24px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto;
+} */
 .bar-chart-wrapper {
   width: 100%;
   height: 300px;
