@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <Sidebar />
 
-    <!-- Main Content (full width after sidebar) -->
+    <!-- Main Content -->
     <div class="main-content">
       <!-- Main Body -->
       <section class="content-container">

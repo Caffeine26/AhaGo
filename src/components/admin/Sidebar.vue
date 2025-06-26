@@ -26,7 +26,7 @@ export default {
         { name: 'Order', path: '/admin/orders', icon: 'fas fa-receipt' },
         { name: 'Message', path: '/admin/messages', icon: 'fas fa-envelope' },
         { name: 'Menu', path: '/admin/menus', icon: 'fas fa-utensils' },
-        { name: 'Inventory', path: '/admin/inventory', icon: 'fas fa-boxes' },
+        { name: 'Management', path: '/admin/management', icon: 'fas fa-boxes' },
         { name: 'Account', path: '/admin/account', icon: 'fas fa-user' },
         { name: 'Review', path: '/admin/review', icon: 'fas fa-star' },
         { name: 'Marketing', path: '/admin/marketing', icon: 'fas fa-bullhorn' }
