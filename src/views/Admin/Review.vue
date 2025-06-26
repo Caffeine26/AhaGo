@@ -6,16 +6,7 @@
     <!-- Main Content -->
     <div class="main-content">
       <!-- Top Bar: Header -->
-      <header class="header">
-        <h2 class="text-2xl font-bold">Dashboard</h2>
-        <div class="header-right">
-          <input type="text" placeholder="Search..." class="search-input" />
-          <div class="user-info">
-            <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>Sarawat Jae</span>
-          </div>
-        </div>
-      </header>
+      
       <div class="main-container">
         <!-- Rating Summary Panel -->
         <div class="rating-summary-panel">

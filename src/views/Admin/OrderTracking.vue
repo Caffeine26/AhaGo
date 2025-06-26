@@ -2,16 +2,8 @@
   <div class="dashboard-wrapper">
     <Sidebar />
     <div class="main-wrapper">
-      <header class="header">
-        <h2 class="text-2xl font-bold">Dashboard</h2>
-        <div class="header-right">
-          <input type="text" placeholder="Search..." class="search-input" />
-          <div class="user-info">
-            <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>{{ order?.customer?.name || 'Unknown User' }}</span>
-          </div>
-        </div>
-      </header>
+      
+      
 
       <div class="app-container">
         <div class="order-header">

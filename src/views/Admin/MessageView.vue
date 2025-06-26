@@ -3,16 +3,7 @@
     <Sidebar class="sidebar" />
 
     <div class="main-content">
-      <header class="header">
-        <h2 class="text-2xl font-bold">Chat</h2>
-        <div class="header-right">
-          <input type="text" placeholder="Search..." class="search-input" />
-          <div class="user-info">
-            <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>Sarawat Jae</span>
-          </div>
-        </div>
-      </header>
+      
 
       <div class="message-container">
         <!-- Contacts Sidebar -->

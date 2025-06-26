@@ -16,104 +16,112 @@
           </div>
         </div>
       </header>
-  <div class="container">
-    <!-- Left Column: Product Card with Inline Editing -->
-    <div class="card">
-      <img
-        :src="form.image || placeholderImage"
-        alt="Product Image"
-        class="product-image"
-      />
 
-      <!-- Product Info showing name, price, and total stats with icons -->
-      <div class="product-info">
-        <div class="name-price-row">
-          <!-- Inline Editable Name -->
-          <h3 class="product-name">
-            <template v-if="isEditing">
-              <input v-model="form.name" class="inline-input" placeholder="Enter the product title" />
-            </template>
-            <template v-else>
-              {{ form.name || 'No Name' }}
-            </template>
-          </h3>
+      <div class="container">
+        <!-- Left Column: Product Card with Inline Editing -->
+        <div class="card">
+          <img
+            :src="form.image || placeholderImage"
+            alt="Product Image"
+            class="product-image"
+          />
 
-          <!-- Inline Editable Price -->
-          <p class="product-price">
-            <template v-if="isEditing">
-              $<input v-model.number="form.price" type="number" step="0.01" class="inline-input price-input" />
-            </template>
-            <template v-else>
-              {{ form.price || '0.00' }}
-            </template>
-          </p>
+          <!-- Product Info showing name, price, and total stats with icons -->
+          <div class="product-info">
+            <div class="name-price-row">
+              <!-- Inline Editable Name -->
+              <h3 class="product-name">
+                <template v-if="isEditing">
+                  <input
+                    v-model="form.name"
+                    class="inline-input"
+                    placeholder="Enter the product title"
+                  />
+                </template>
+                <template v-else>
+                  {{ form.name || 'No Name' }}
+                </template>
+              </h3>
+
+              <!-- Inline Editable Price -->
+              <p class="product-price">
+                <template v-if="isEditing">
+                  $<input
+                    v-model.number="form.price"
+                    type="number"
+                    step="0.01"
+                    class="inline-input price-input"
+                  />
+                </template>
+                <template v-else>
+                  {{ form.price || '0.00' }}
+                </template>
+              </p>
+            </div>
+
+            <div class="product-stats">
+              <div class="stat-item" title="Total Orders">
+                <img :src="icons.cart" alt="Total Orders" class="icon" />
+                <p>Orders</p>
+                <span class="stat-number">{{ form.totalOrder || 0 }}</span>
+              </div>
+
+              <div class="stat-item" title="Total Rating">
+                <img :src="icons.star" alt="Total Rating" class="icon" />
+                <p>Rating</p>
+                <span class="stat-number">{{ form.totalRating || 0 }}</span>
+              </div>
+
+              <div class="stat-item" title="Total Favorite">
+                <img :src="icons.heart" alt="Total Favorite" class="icon" />
+                <p>Favorites</p>
+                <span class="stat-number">{{ form.totalFavorite || 0 }}</span>
+              </div>
+            </div>
+
+            <!-- Inline Editable Description -->
+            <div class="product-description" v-if="form.description !== '' || isEditing">
+              <h2>Description</h2>
+              <template v-if="isEditing">
+                <textarea
+                  v-model="form.description"
+                  class="inline-textarea"
+                  placeholder="Enter product description"
+                ></textarea>
+              </template>
+              <template v-else>
+                <p>{{ form.description }}</p>
+              </template>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="button-group">
+            <button v-if="!isEditing" @click="toggleEdit" class="btn btn-edit">Edit</button>
+            <button v-else @click="saveChanges" class="btn btn-save">Save</button>
+            <button v-if="isEditing" @click="cancelEdit" class="btn btn-cancel">Cancel</button>
+          </div>
+
+          <!-- Review Section -->
+          <ReviewSection :reviews="reviews" />
         </div>
 
-        <div class="product-stats">
-          <div class="stat-item" title="Total Orders">
-            <img :src="icons.cart" alt="Total Orders" class="icon" />
-            <p>Orders</p>
-            <span class="stat-number">{{ form.totalOrder || 0 }}</span>
-          </div>
-
-          <div class="stat-item" title="Total Rating">
-            <img :src="icons.star" alt="Total Rating" class="icon" />
-            <p>Rating</p>
-            <span class="stat-number">{{ form.totalRating || 0 }}</span>
-          </div>
-
-          <div class="stat-item" title="Total Favorite">
-            <img :src="icons.heart" alt="Total Favorite" class="icon" />
-            <p>Favorites</p>
-            <span class="stat-number">{{ form.totalFavorite || 0 }}</span>
-          </div>
-        </div>
-
-        <!-- Inline Editable Description -->
-        <div class="product-description" v-if="form.description !== '' || isEditing">
-          <h2>Description</h2>
-          <template v-if="isEditing">
-            <textarea
-              v-model="form.description"
-              class="inline-textarea"
-              placeholder="Enter product description"
-            ></textarea>
-          </template>
-          <template v-else>
-            <p>{{ form.description }}</p>
-          </template>
+        <!-- Bar Chart and Item Grid -->
+        <div class="chart-container">
+          <BarChart class="chart" />
+          <ItemGrid class="item-grid-section" :items="cakes" :starImg="starImg" />
         </div>
       </div>
-
-      <!-- Buttons -->
-      <div class="button-group">
-        <button v-if="!isEditing" @click="toggleEdit" class="btn btn-edit">Edit</button>
-        <button v-else @click="saveChanges" class="btn btn-save">Save</button>
-        <button v-if="isEditing" @click="cancelEdit" class="btn btn-cancel">Cancel</button>
-      </div>
-
-      <!-- Review Section -->
-      <ReviewSection class="review-section" :reviews="reviews" />
     </div>
-
-    <!-- Bar Chart and Item Grid -->
-    <div class="chart-container">
-      <BarChart class="chart" />
-      <ItemGrid class="item-grid-section" :items="cakes" :starImg="starImg" />
-    </div>
-  </div>
-  </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import ItemGrid from '@/components/admin/ItemGrid.vue';
 import ReviewSection from '@/components/ReviewSection.vue';
 import BarChart from '@/components/admin/BarChart.vue';
 import Sidebar from '@/components/admin/Sidebar.vue';
-import salad from '@/assets/food/salad.png';
-import cake from '@/assets/food/cake.png';
-import star from '@/assets/icons/star1.png';
 
 import cartIcon from '@/assets/icons/orders.png';
 import starIcon from '@/assets/icons/star1.png';
@@ -125,7 +133,7 @@ export default {
     ItemGrid,
     ReviewSection,
     BarChart,
-    Sidebar
+    Sidebar,
   },
   data() {
     return {
@@ -142,47 +150,75 @@ export default {
       },
       originalForm: {},
       placeholderImage: 'https://via.placeholder.com/600x360?text=No+Image',
-      starImg: star,
       icons: {
         cart: cartIcon,
         star: starIcon,
         heart: heartIcon,
       },
-      cakes: [
-        { id: 1, name: 'Mango Cake', image: cake, price: '3.99', rating: 4 },
-        { id: 2, name: 'Strawberry Cake', image: salad, price: '3.99', rating: 5 },
-        { id: 3, name: 'Blueberry Cake', image: cake, price: '3.99', rating: 3 },
-        { id: 4, name: 'Matcha Cake', image: salad, price: '3.99', rating: 2 },
-        { id: 5, name: 'Mango Cake', image: cake, price: '3.99', rating: 4 },
-        { id: 6, name: 'Strawberry Cake', image: salad, price: '3.99', rating: 5 },
-        { id: 7, name: 'Blueberry Cake', image: cake, price: '3.99', rating: 3 },
-        { id: 8, name: 'Matcha Cake', image: salad, price: '3.99', rating: 2 },
-      ],
-      reviews: [
-        {
-          name: 'Sophanary',
-          date: '20-01-2025',
-          text: 'Absolutely delicious! This burger and cheese combo together is well, perfect balancing.',
-        },
-        {
-          name: 'Sokly',
-          date: '18-01-2025',
-          text: 'Tasty and fresh! My favorite spot for cake.',
-        },
-      ],
+      reviews: [],
+      cakes: [], // If you want to fill this later
+      starImg: starIcon,
     };
   },
-  created() {
-    const itemId = parseInt(this.$route.params.id);
-    const allItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-    this.item = allItems.find((item) => item.id === itemId) || null;
-
-    if (this.item) {
-      this.form = { ...this.item };
-      this.originalForm = { ...this.item };
-    }
+  watch: {
+    '$route.params.id': {
+      immediate: true,
+      handler(newId) {
+        this.fetchItem(newId);
+        this.fetchReviews(newId);
+      },
+    },
   },
   methods: {
+    fetchItem(id) {
+      const itemId = Number(id);
+      if (!itemId) {
+        alert('Invalid item ID');
+        return;
+      }
+      axios
+        .get(`http://localhost:8300/api/foodItems/${itemId}`)
+        .then((response) => {
+          const itemData = response.data.data;
+          if (!itemData) {
+            alert('Food item not found.');
+            return;
+          }
+          this.item = itemData;
+
+          this.form = {
+            name: itemData.name,
+            price: itemData.price,
+            image: itemData.img_url || this.placeholderImage,
+            description: itemData.description || '',
+            totalOrder: itemData.sold || 0,
+            totalRating: itemData.rating || 0,
+            totalFavorite: itemData.favourite ? 1 : 0,
+          };
+
+          this.originalForm = { ...this.form };
+        })
+        .catch((error) => {
+          console.error('Failed to fetch food item:', error);
+          alert('Failed to load food item details.');
+        });
+    },
+    fetchReviews(foodItemId) {
+      const id = Number(foodItemId);
+      if (!id) {
+        this.reviews = [];
+        return;
+      }
+      axios
+        .get(`http://localhost:8300/api/foodItem_reviews/${id}`)
+        .then((response) => {
+          this.reviews = response.data || [];
+        })
+        .catch((error) => {
+          console.error('Failed to fetch reviews:', error);
+          this.reviews = [];
+        });
+    },
     toggleEdit() {
       this.isEditing = true;
     },
@@ -196,22 +232,31 @@ export default {
         return;
       }
 
-      const allItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-      const index = allItems.findIndex((i) => i.id === this.item.id);
-      if (index !== -1) {
-        allItems[index] = { ...this.form };
-        localStorage.setItem('menuItems', JSON.stringify(allItems));
-        this.originalForm = { ...this.form };
-        this.isEditing = false;
-        alert('Changes saved!');
-      } else {
-        alert('Item not found!');
-      }
+      const itemId = this.item.id;
+      axios
+        .patch(`http://localhost:8300/api/foodItems/${itemId}`, {
+          name: this.form.name,
+          price: this.form.price,
+          description: this.form.description,
+          img_url: this.form.image,
+        })
+        .then(() => {
+          this.originalForm = { ...this.form };
+          this.isEditing = false;
+          alert('Changes saved!');
+        })
+        .catch((error) => {
+          console.error('Failed to save changes:', error);
+          alert('Failed to save changes.');
+        });
     },
   },
 };
 </script>
 
+<style scoped>
+/* ...Your existing styles from the code you provided before... */
+</style>
 
 
 

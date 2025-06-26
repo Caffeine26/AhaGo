@@ -1,99 +1,107 @@
 <template>
-  <div class="chart">
-    <Bar :data="chartData" :options="chartOptions" />
+  <div class="bar-chart-wrapper">
+    <canvas ref="barChartCanvas"></canvas>
   </div>
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-} from 'chart.js'
+import { Chart, registerables } from 'chart.js';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+Chart.register(...registerables);
 
 export default {
   name: 'BarChart',
-  components: { Bar },
   props: {
-    ordersData: Object
+    chartData: {
+      type: Object,
+      default: () => ({
+        dates: [],
+        values: []
+      })
+    },
+    chartLabel: {
+      type: String,
+      default: 'Orders Over Time'
+    }
   },
   data() {
     return {
-      staticData: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-        values: [12, 19, 3, 5, 2, 3]
+      chartInstance: null
+    };
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.renderChart();
       }
     }
   },
-  computed: {
-    chartData() {
-      return {
-        labels: this.ordersData.dates,
-        datasets: [{
-          label: 'Orders',
-          data: this.ordersData.orders,
-          backgroundColor: '#FF0000',
-          borderRadius: 12,
-          barThickness: 40
-        }]
-      }
-    },
-    chartOptions() {
-      return {
-        responsive: true,
-        plugins: {
-          legend: {
-            display: false
-          },
-          title: {
-            display: true,
-            text: 'Orders Overview',
-            align: 'start',
-            color: 'black',
-            font: {
-              family: 'Raleway',
-              size: 20,
-              weight: 'bold'
-            },
-            padding: {
-              top: 10,
-              bottom: 32
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: 'black'
-            }
-          },
-          y: {
-            ticks: {
-              color: 'black'
-            },
-            beginAtZero: true
-          }
+  methods: {
+    renderChart() {
+      this.$nextTick(() => {
+        const canvas = this.$refs.barChartCanvas;
+        if (!canvas) {
+          console.error("Canvas not found");
+          return;
         }
-      }
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          console.error("Canvas context not available");
+          return;
+        }
+
+        if (this.chartInstance) {
+          this.chartInstance.destroy();
+        }
+
+        this.chartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: this.chartData?.dates || [],
+            datasets: [
+              {
+                label: this.chartLabel,
+                data: this.chartData?.values || [],
+                backgroundColor: '#3b82f6',
+                borderRadius: 6,
+                borderSkipped: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top'
+              }
+            }
+          }
+        });
+      });
+    }
+  },
+  beforeDestroy() {
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.chart {
-  background-color: #ffffff;
-  padding: 24px;
-  border-radius: 20px;
+.bar-chart-wrapper {
   width: 100%;
-  max-width: 750px;
-  margin: 0 auto;
+  height: 300px;
+  position: relative;
 }
 </style>
