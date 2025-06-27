@@ -17,4 +17,13 @@ export default defineConfig({
       plugins: [require("@tailwindcss/postcss"), require("autoprefixer")],
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8300',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      }
+    }
+  },
 });

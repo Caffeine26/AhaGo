@@ -1,242 +1,204 @@
 <template>
-    <div class="stock-graph-container">
-      <h2>Stock Level Overview</h2>
-      <h3>Total In Stock: {{ totalInStockCount }} Products</h3>
-      <!-- Stock Graph -->
-      <div class="stock-graph">
-        <div class="graph">
-          <span
-            v-for="(bar, index) in stockGraph"
-            :key="index"
-            :class="bar.class"
-          >|</span>
-        </div>
-        
-      </div>
-      
-      <!-- Total In Stock Count -->
-      <div class="total-in-stock">
-        
-      </div>
-  
-      <!-- Stock Notes with Matching Colors -->
-      <div class="stock-notes">
-        <div class="note">
-          <h3 class="in-stock-title">In Stock</h3>
-          <p class="in-stock-count">{{ inStockCount }} Products</p>
-        </div>
-        <!-- <div class="note">
-          <h3 class="low-stock-title">Low Stock</h3>
-          <p class="low-stock-count">{{ lowStockCount }} Products</p>
-        </div> -->
-        <div class="note">
-          <h3 class="out-of-stock-title">Out of Stock</h3>
-          <p class="out-of-stock-count">{{ outOfStockCount }} Products</p>
-        </div>
+  <div class="stock-graph-container">
+    <h2>Stock Level Overview</h2>
+    <h3>Total Products: {{ totalFoodItems }}</h3>
+    
+    <!-- Stock Graph -->
+    <div class="stock-graph">
+      <div class="graph">
+        <span
+          v-for="(bar, index) in stockGraph"
+          :key="index"
+          :class="bar.class"
+        >|</span>
       </div>
     </div>
-  </template>
-  
+    
+    <!-- Stock Notes with Matching Colors -->
+    <div class="stock-notes">
+      <div class="note">
+        <h3 class="in-stock-title">In Stock</h3>
+        <p class="in-stock-count">{{ inStock }} Products</p>
+      </div>
+      <div class="note">
+        <h3 class="out-of-stock-title">Out of Stock</h3>
+        <p class="out-of-stock-count">{{ outOfStock }} Products</p>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 export default {
   name: "StockGraph",
   props: {
-    totalFoodItems: Number,
-    inStock: Number,
-    outOfStock: Number,
-  },
-  created() {
-    this.totalInStockCount = this.totalFoodItems
-    this.inStockCount = this.inStock
-    this.outOfStockCount = this.outOfStock
-  },
-  data() {
-    return {
-      totalInStockCount: 0,
-      inStockCount: 0,
-      outOfStockCount: 0,
-      // products: [
-      //   { name: "Product A", stock: 20 },
-      //   { name: "Product B", stock: 90 },
-      //   { name: "Product C", stock: 0 },
-      //   { name: "Product D", stock: 5 },
-      //   { name: "Product E", stock: 10 },
-      // ],
-    };
+    totalFoodItems: {
+      type: Number,
+      default: 1 // Default to 1 to prevent division by zero
+    },
+    inStock: {
+      type: Number,
+      default: 0
+    },
+    outOfStock: {
+      type: Number,
+      default: 0
+    }
   },
   computed: {
-    // totalInStockCount() {
-    //   return this.inStockProducts.reduce((sum, product) => sum + product.stock, 0);
-    // },
-    // inStockCount() {
-    //   return this.inStockProducts.length;
-    // },
-    // lowStockCount() {
-    //   return this.lowStockProducts.length;
-    // },
-    // outOfStockCount() {
-    //   return this.outOfStockProducts.length;
-    // },
-    // inStockProducts() {
-    //   return this.products.filter((p) => p.stock > 50);
-    // },
-    // lowStockProducts() {
-    //   return this.products.filter((p) => p.stock <= 50 && p.stock > 0);
-    // },
-    // outOfStockProducts() {
-    //   return this.products.filter((p) => p.stock === 0);
-    // },
     stockGraph() {
       const totalBars = 50;
-      const total = this.totalFoodItems;
+      const total = Math.max(1, this.totalFoodItems); // Ensure at least 1 to prevent division by zero
 
-      const inStockBars = Math.round((this.inStockCount / total) * totalBars);
-      // const lowStockBars = Math.round((this.lowStockCount / total) * totalBars);
-      const outOfStockBars = Math.round((this.outOfStockCount / total) * totalBars);
+      // Calculate bar counts with safeguards
+      const inStockBars = Math.min(
+        totalBars,
+        Math.max(0, Math.round((this.inStock / total) * totalBars))
+      );
+      
+      const outOfStockBars = Math.min(
+        totalBars - inStockBars,
+        Math.max(0, Math.round((this.outOfStock / total) * totalBars))
+      );
 
       return [
         ...Array(inStockBars).fill({ class: "in-stock" }),
-        // ...Array(lowStockBars).fill({ class: "low-stock" }),
-        ...Array(outOfStockBars).fill({ class: "out-of-stock" }),
+        ...Array(outOfStockBars).fill({ class: "out-of-stock" })
       ];
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-/* Base styles for larger screens */
 .stock-graph-container {
   padding: 20px;
   border: 1px solid #ccc;
   background: #fff;
-  max-width: 800px; /* Set max width for the container */
+  max-width: 800px;
   height: 300px;
   margin: 20px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 20px;
+  font-weight: normal;
 }
 
 .graph {
   display: flex;
   margin-bottom: 20px;
-  width: 70%; /* Full width of the container */
-  justify-content: flex-start;
+  width: 100%;
+  height: 100px;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
 }
 
 .graph span {
-  margin-right: 2px; /* Adjusted margin for better spacing */
   text-align: center;
-  display: inline-block;
-  font-size: 50px;
-  width: calc(100% / 50); /* Ensures bars take full width and are responsive */
-  max-width: 20px; /* Limits maximum width */
+  font-size: 24px;
+  width: 10px;
   line-height: 1;
+  transition: all 0.3s ease;
 }
 
 /* Stock Colors for Graph Bars */
 .in-stock {
-  color: green;
-}
-
-.low-stock {
-  color: orange;
+  color: #2ecc71;
+  height: 100%;
 }
 
 .out-of-stock {
-  color: red;
-}
-
-/* Total In Stock Count */
-.total-in-stock {
-  margin-bottom: 20px;
-}
-
-.total-in-stock h3 {
-  font-size: 20px;
-  color: #333;
+  color: #e74c3c;
+  height: 30%;
 }
 
 /* Notes Section */
 .stock-notes {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 20px;
+  margin-top: 30px;
 }
 
 .note {
   flex: 1;
   background: #f9f9f9;
-  padding: 10px;
+  padding: 15px;
   border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Titles and Counts Styling */
 .in-stock-title {
-  color: green;
-  margin-bottom: 10px;
-}
-
-.low-stock-title {
-  color: orange;
+  color: #2ecc71;
   margin-bottom: 10px;
 }
 
 .out-of-stock-title {
-  color: red;
+  color: #e74c3c;
   margin-bottom: 10px;
 }
 
-.in-stock-count, .low-stock-count, .out-of-stock-count {
-  font-size: 16px;
+.in-stock-count,
+.out-of-stock-count {
+  font-size: 18px;
+  font-weight: bold;
   margin-top: 5px;
 }
 
-/* Responsive Design: For smaller screens */
+/* Responsive Design */
 @media (max-width: 768px) {
   .stock-graph-container {
-    padding: 10px; /* Reduced padding */
-    max-width: 90%; /* Ensure it takes full width */
+    padding: 15px;
+    height: auto;
   }
 
   .graph {
-    font-size: 30px; /* Smaller font size for bars */
+    height: 80px;
   }
 
   .graph span {
-    width: calc(100% / 40); /* Adjust bar width for smaller screens */
+    font-size: 18px;
+    width: 8px;
   }
 
   .stock-notes {
-    flex-direction: column; /* Stack notes vertically */
-    align-items: center; /* Center align */
-  }
-
-  .note {
-    flex: 0; /* Disable flexible width */
-    margin-bottom: 20px; /* Space between notes */
-    width: 90%; /* Full width within container */
-  }
-
-  .total-in-stock h3 {
-    font-size: 18px; /* Smaller font size for smaller screens */
+    flex-direction: column;
+    gap: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .stock-graph-container {
-    padding: 10px; /* Less padding for very small screens */
+    padding: 10px;
   }
 
   .graph {
-    font-size: 25px; /* Even smaller font size for very small screens */
+    height: 60px;
   }
 
   .graph span {
-    width: calc(100% / 30); /* Adjust the bar width for very small screens */
+    font-size: 16px;
+    width: 6px;
   }
 
-  .total-in-stock h3 {
-    font-size: 16px; /* Smaller font size for very small screens */
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1rem;
   }
 }
 </style>
-  

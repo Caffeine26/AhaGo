@@ -5,15 +5,11 @@
 
     <!-- Main Content -->
     <div class="main-content">
-      <!-- Top Bar: Header -->
-      
       <div class="main-container">
         <!-- Rating Summary Panel -->
         <div class="rating-summary-panel">
           <div class="rating-summary">
             <h2>Rating</h2>
-
-            <!-- Overall Rating and Stars -->
             <div class="overall-rating">
               <span class="rating-value">{{ overallRating }}</span>
               <span class="stars">
@@ -28,8 +24,6 @@
               </span>
               <span class="review-count">{{ reviewCount }} reviews</span>
             </div>
-
-            <!-- Individual Rating Details -->
             <div class="rating-details">
               <div
                 class="rating-item"
@@ -72,7 +66,7 @@
           <div class="review-list">
             <div
               class="review-item"
-              v-for="(review, index) in reviews"
+              v-for="(review, index) in paginatedReviews"
               :key="index"
             >
               <img
@@ -80,7 +74,6 @@
                 alt="Dish Image"
                 class="dish-image"
               />
-
               <div class="review-content">
                 <h3>{{ review.title }}</h3>
                 <div class="review-rating">
@@ -123,15 +116,12 @@ import star from '@/assets/icons/star1.png';
 import Sidebar from '@/components/admin/Sidebar.vue';
 
 export default {
-  components: {
-    Sidebar,
-  },
+  components: { Sidebar },
   data() {
     return {
       starImage: star,
       overallRating: 4.7,
       reviewCount: 0,
-
       ratingDetails: {
         'Food Quality': 96,
         Service: 89,
@@ -139,47 +129,73 @@ export default {
         Price: 75,
         Ambiance: 80,
       },
-
       selectedRating: 'All Rating',
       selectedCategory: 'All Category',
       selectedMenu: 'All Menu',
-
-      reviews: [],
-
+      allReviews: [],
       currentPage: 1,
-      totalPages: 1,
+      reviewsPerPage: 5,
     };
+  },
+  computed: {
+    filteredReviews() {
+      let reviews = [...this.allReviews];
+
+      if (this.selectedRating !== 'All Rating') {
+        const rate = parseInt(this.selectedRating);
+        reviews = reviews.filter((r) => r.rating === rate);
+      }
+
+      if (this.selectedCategory !== 'All Category') {
+        reviews = reviews.filter((r) => r.title.toLowerCase().includes(this.selectedCategory.toLowerCase()));
+      }
+
+      return reviews;
+    },
+    totalPages() {
+      return Math.ceil(this.filteredReviews.length / this.reviewsPerPage) || 1;
+    },
+    paginatedReviews() {
+      const start = (this.currentPage - 1) * this.reviewsPerPage;
+      return this.filteredReviews.slice(start, start + this.reviewsPerPage);
+    },
   },
   methods: {
     fetchReviews() {
-      axios
-        .get('http://localhost:8300/api/reviews')
+      axios.get('http://localhost:8300/api/foodItem_reviews')
         .then((res) => {
-          this.reviews = res.data;
-          this.reviewCount = this.reviews.length;
-          this.totalPages = 1; // Update if backend supports pagination
+          this.allReviews = res.data.map((r) => ({
+            ...r,
+            title: `Food Item #${r.food_item_id}`,
+            description: r.comment,
+            author: `Customer #${r.customer_id}`,
+            image: 'default.jpg'
+          }));
+          this.reviewCount = this.allReviews.length;
         })
-        .catch((err) => {
-          console.error('Failed to fetch reviews:', err);
-        });
+        .catch((err) => console.error('Error fetching reviews:', err));
     },
     prevPage() {
       if (this.currentPage > 1) this.currentPage--;
-      // Implement pagination fetch if needed
     },
     nextPage() {
       if (this.currentPage < this.totalPages) this.currentPage++;
-      // Implement pagination fetch if needed
     },
-    getImageUrl(imageName) {
-      // Adjust path to your backend storage folder
-      return `http://localhost:8300/storage/${imageName}`;
+    getImageUrl(img) {
+      return `http://localhost:8300/storage/${img || 'default.jpg'}`;
     },
-    formatDate(dateString) {
-      if (!dateString) return '';
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+    formatDate(date) {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     },
+  },
+  watch: {
+    selectedRating() { this.currentPage = 1; },
+    selectedCategory() { this.currentPage = 1; },
+    selectedMenu() { this.currentPage = 1; },
   },
   mounted() {
     this.fetchReviews();
