@@ -1,13 +1,4 @@
 <template>
-<Header></Header>
-<Header2
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Menu"
-it4="Analytics"
-it5="Profile"
-></Header2>
 
 <CreateMenuBanner
 title="Invoice"
@@ -46,10 +37,6 @@ title="Invoice"
     </div>
 </div>
 
-
-
-
-<AppFooter></AppFooter>
 </template>
 
 <script>
@@ -74,9 +61,12 @@ export default {
     },
     created() {
         const invoice = useTransactionStore()
+        // invoice.fetchTransactions(2)
         this.orderId = parseInt(this.$route.params.orderId);
         // get order for invoice
         this.order = invoice.transactions.find( item => item.order_id === this.orderId );
+        console.log('orderss=', invoice.transactions)
+        console.log('iddddd=', this.orderId)
         console.log('invoice order=', this.order)
         
         this.orderId = this.order.order_id;

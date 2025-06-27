@@ -35,19 +35,18 @@
           <DashboardStats :stats="stats" />
         </section>
 
-        <!-- Row 2: Charts -->
-        <section class="charts-section">
-          <div class="left-charts">
-            <div class="chart-card">
-              <StockGraph 
-                :total-food-items="totalItems"
-                :in-stock="instock"
-                :out-of-stock="outstock"
-              />
-            </div>
-            <div class="chart-card">
-              <BarChart :orders-data="recentOrdersData" />
-            </div>
+      <!-- Row 2: StockGraph + (PieChart & OrderTypeGraph) -->
+      <section class="section row-grid">
+        <div class="chart-container">
+          <!-- <StockGraph class="stock"
+          :total-food-items="totalItems"
+          :in-stock="instock"
+          :out-of-stock="outstock"
+          ></StockGraph> -->
+          <div class="bar-chart-wrapper">
+            <BarChart
+            :orders-data="recentOrdersData"
+            ></BarChart>
           </div>
           <div class="right-charts">
             <div class="chart-card">
@@ -124,34 +123,86 @@ export default {
     ItemGrid,
     ButtonFilter
   },
-  setup() {
-    const orderStore = useOrdersStore();
-    const transactionStore = useTransactionStore();
-    const foodItemStore = useCategoryStore();
-    const customerStore = useCustomerStore();
+  created() {
+    const orderStore = useOrdersStore()
+    const transactionStore = useTransactionStore()
+    const foodItemStore = useCategoryStore()
+    const customerStore = useCustomerStore()
 
-    // Reactive state
-    const loading = ref(true);
-    const error = ref(false);
-    const stats = ref([
-      { label: 'Total Orders', value: 0, trend: 3, icon: 'fas fa-shopping-cart' },
-      { label: 'Total Customers', value: 0, trend: 5, icon: 'fas fa-users' },
-      { label: 'Total Revenue', value: '$0', trend: 2, icon: 'fas fa-dollar-sign' }
-    ]);
+    // get length of all orders
+    orderStore.fetchAllOrdersCount()
+    this.totalOrders = orderStore.ordersCount
+    this.stats[0].value = orderStore.ordersCount
 
-    // Data properties
-    const totalOrders = ref(0);
-    const recentOrdersData = ref(null);
-    const topCategories = ref({ categories: [], quantities: [] });
-    const instock = ref(0);
-    const outstock = ref(0);
-    const totalItems = ref(0);
-    const orderTypes = ref(null);
-    const topSellers = ref([]);
-    const selectedFilter = ref('this-week');
+    // get customers count
+    customerStore.fetchTotalCustomers()
+    this.stats[1].value = customerStore.totalCustomers
 
-    // Sample data (fallback)
-    const orders = ref([
+    // getAllGeneratedRevenue
+    transactionStore.getAllGeneratedRevenue()
+    this.stats[2].value = `\$ ${transactionStore.adminRevenue}`
+
+    // get #fooditems and stock levels
+    foodItemStore.getStock()
+    foodItemStore.getFoodItemsCount()
+    this.instock = foodItemStore.stock[0]
+    this.outstock = foodItemStore.stock[1]
+    this.totalItems = foodItemStore.foodItemsCount
+
+    // get orderTypes and their amount
+    orderStore.getOrderTypes()
+    this.orderTypes = orderStore.orderTypes
+
+    // get data of amount of orders of the last 7 days for restaurant id 2
+    orderStore.fetchRecentOrders(2)
+    this.recentOrdersData = orderStore.recentOrders
+
+    // get data of the top 3 sold food items
+    foodItemStore.getTopSolds()
+    this.topsolds = foodItemStore.topSellers
+
+    // fetch data of transactions of the last 7 days for restaurant id 2
+    transactionStore.getRecentTransactions(2)
+    this.recentTransactions = transactionStore.recentTransactions
+
+    // fetch data of top categories
+    orderStore.fetchTopCategories()
+    this.topCategories = orderStore.topCategories
+
+    // get top sellers
+    foodItemStore.getTopSolds()
+    this.topSellers = foodItemStore.topSellers
+  },
+  data() {
+    return {
+      totalOrders: 0,
+      totalCustomers: 0,
+      recentOrdersData: null,
+      topsolds: null,
+      recentTransactions: null,
+      topCategories: null,
+      instock: 0,
+      outstock: 0,
+      totalItems: 0,
+      orderTypes: null,
+      recentOrders: [],
+      topSellers: null,
+
+      starImg,
+      stats: [
+        { label: 'Total Orders', value: 0, trend: 3, icon: 'fas fa-shopping-cart' },
+        { label: 'Total Customers', value: 0, trend: 5, icon: 'fas fa-users' },
+        { label: 'Total Revenue', value: 0, trend: 2, icon: 'fas fa-dollar-sign' }
+      ],
+      menus: [
+        { id: 1, name: 'Pizza', price: 9.99, image: cakeImg },
+        { id: 2, name: 'Burger', price: 6.49, image: saladImg },
+        { id: 3, name: 'Sushi', price: 11.25, image: cucumberImg },
+        { id: 4, name: 'koo', price: 9.99, image: cakeImg },
+        { id: 5, name: 'Burger', price: 6.49, image: saladImg },
+        { id: 6, name: 'Sushi', price: 11.25, image: cucumberImg }
+      ],
+      orders: [
       {
         id: 1,
         photo: cakeImg,

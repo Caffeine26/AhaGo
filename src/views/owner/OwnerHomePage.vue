@@ -1,5 +1,5 @@
 <template>
-<Header></Header>
+<!-- <Header></Header>
 
 <OwnerHeader
 title="Restaurant"
@@ -8,7 +8,7 @@ it2="Orders"
 it3="Transactions"
 it4="Menu"
 it5="Profile"
-></OwnerHeader>
+></OwnerHeader> -->
 
 <CategoryBannerV2
 title-header= "Dashboard"
@@ -16,6 +16,7 @@ title-header= "Dashboard"
 @toggle-category="toggleCategoryData"
 :add-category="false"
 ></CategoryBannerV2>
+<div>HELLO {{ restId }}</div>
 
 
   <!-- Analytics -->
@@ -188,10 +189,6 @@ title-header= "Dashboard"
       </OwnerReviews>
     </div>
   </div>
-
-
-
-<AppFooter></AppFooter>
 </template>
 
 <script>
@@ -220,6 +217,7 @@ import order from '@/assets/owner/svg/order.svg';
 import cash from '@/assets/owner/svg/cash.svg';
 import food from '@/assets/owner/svg/food.svg';
 import OwnerReviews from '@/components/OwnerReviews.vue';
+import { useAuthStore } from '@/stores/authenticationStore';
 
 export default {
     components: {
@@ -244,12 +242,20 @@ export default {
     created() {
         const orderStore = useOrdersStore()
         const transactionStore = useTransactionStore()
-        const foodItemSore = useCategoryStore()
+        const foodItemStore = useCategoryStore()
         const restStore = useRestStore() 
+        const authStore = useAuthStore()
+
+        // if (authStore.user) {
+        //   this.restId = authStore.user.id
+        // }
+        
 
         this.tOrders = orderStore.orders.length
         this.revenue = transactionStore.getRevenue()
-        this.mostSold = foodItemSore.getMostSold().name
+
+        foodItemStore.fetchFoodItemsByRest(2)
+        this.mostSold = foodItemStore.getMostSold()
 
         // fetch notifications
         restStore.fetchOwnerNotifications(2)
@@ -264,8 +270,8 @@ export default {
         this.recentOrdersData = orderStore.recentOrders
 
         // get data of the top 3 sold food items
-        foodItemSore.getTopSoldsOfRest(2)
-        this.topsolds = foodItemSore.topSellersOfRest
+        foodItemStore.getTopSoldsOfRest(2)
+        this.topsolds = foodItemStore.topSellersOfRest
 
         // fetch data of transactions of the last 7 days for restaurant id 2
         transactionStore.getRecentTransactions(2)
@@ -310,6 +316,7 @@ export default {
     },
     data() {
         return {
+            restId: null,
             index: 0,
             orderItems: null,
             orders: null,

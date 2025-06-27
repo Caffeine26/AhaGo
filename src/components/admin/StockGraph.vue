@@ -32,18 +32,28 @@
 export default {
   name: "StockGraph",
   props: {
-    totalFoodItems: {
-      type: Number,
-      default: 1 // Default to 1 to prevent division by zero
-    },
-    inStock: {
-      type: Number,
-      default: 0
-    },
-    outOfStock: {
-      type: Number,
-      default: 0
-    }
+    totalFoodItems: Number,
+    inStock: Array,
+    outOfStock: Array,
+  },
+  created() {
+    this.totalInStockCount = this.totalFoodItems
+    this.inStockCount = this.inStock.total
+    this.outOfStockCount = this.outOfStock.total
+  },
+  data() {
+    return {
+      totalInStockCount: 0,
+      inStockCount: 0,
+      outOfStockCount: 0,
+      // products: [
+      //   { name: "Product A", stock: 20 },
+      //   { name: "Product B", stock: 90 },
+      //   { name: "Product C", stock: 0 },
+      //   { name: "Product D", stock: 5 },
+      //   { name: "Product E", stock: 10 },
+      // ],
+    };
   },
   computed: {
     stockGraph() {

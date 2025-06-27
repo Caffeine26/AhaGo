@@ -1,14 +1,4 @@
 <template>
-<Header></Header>
-
-<OwnerHeader
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Transactions"
-it4="Menu"
-it5="Profile"
-></OwnerHeader>
 
 <div class="menuContainer">
 
@@ -67,9 +57,6 @@ it5="Profile"
 </RouterLink>
 
 
-<AppFooter></AppFooter>
-
-
 </template>
 
 <script>
@@ -95,17 +82,17 @@ export default {
     created() {
         // this.selectedPlates = this.plates
         const route = useRoute()
-        this.categoryStore = useCategoryStore()
+        const categoryStore = useCategoryStore()
         this.restId = parseInt(route.params.restId)
 
-        this.plates = this.categoryStore.foodItems
-        this.selectedPlates = this.plates
+        this.plates = categoryStore.foodItems.data
+        this.selectedPlates = categoryStore.foodItems.data
 
-        console.log('In menu page, categories=', this.categoryStore.categories)
-        console.log('In menu page, plates=', this.plates)
+        console.log('In menu page, categories=', categoryStore.categories)
+        console.log('In menu page, seleced plates=', this.selectedPlates)
 
         this.categories.push('All')
-        this.categoryStore.categories.forEach(element => {
+        categoryStore.categories.forEach(element => {
             if (element.restaurant_id === this.restId) {
                 this.categories.push(element.name)
             }
@@ -120,6 +107,7 @@ export default {
         },
         filteredProducts() {
             // filter by search
+            // console.log('In meHELLOOOOOnu page, seleced plates=', this.selectedPlates)
             const filtered = this.selectedPlates.filter(product =>
                                 product.name.toLowerCase().includes(this.searchQuery.toLowerCase()))
 
@@ -150,6 +138,7 @@ export default {
     },
     data() {
         return {
+            selectedPlates: [],
             searchQuery: '',
             sortOrder: 'asc',
             categoryStore: null,

@@ -1,14 +1,4 @@
 <template>
-<Header></Header>
-
-<Header2
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Menu"
-it4="Analytics"
-it5="Profile"
-></Header2>
 
 <CategoryBannerV2
 :title-header= "`${rest} Menu`"
@@ -50,11 +40,6 @@ banner-btn="Add Category"
         
     </div>
 </div>
-
-
-
-
-<AppFooter></AppFooter>
 </template>
 
 <script>

@@ -1,28 +1,9 @@
 <template>
-<Header></Header>
-<OwnerHeader
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Transactions"
-it4="Menu"
-it5="Profile"
-></OwnerHeader>
 
 <CategoryBannerV2
 title-header= "Transactions Records"
 :add-category="false"
 ></CategoryBannerV2>
-
-<!-- <div class="records">
-    <TransactionBox
-    v-for="item in transactions"
-    :client-name="item.clientName"
-    :pay-method="item.payMethod"
-    :order-id="item.orderId"
-    :money="item.money"
-    ></TransactionBox>
-</div> -->
 
 <div class="table-container">
 <div class="theader">
@@ -68,10 +49,6 @@ title-header= "Transactions Records"
     </tbody>
 </table>
 </div>
-
-
-
-<AppFooter></AppFooter>
 </template>
 
 <script>

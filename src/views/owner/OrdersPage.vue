@@ -1,13 +1,4 @@
 <template>
-<Header></Header>
-<OwnerHeader
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Transactions"
-it4="Menu"
-it5="Profile"
-></OwnerHeader>
 
 <CategoryBannerV2
 title-header= "Order Management"
@@ -32,8 +23,6 @@ title-header= "Order Management"
     
 </div>
 
-<AppFooter></AppFooter>
-
 </template>
 
 <script>
@@ -43,6 +32,7 @@ import CategoryBannerV2 from '@/components/CategoryBannerV2.vue';
 import OrderCard from '@/components/OrderCard.vue';
 import OrderCard02 from '@/components/OrderCard02.vue';
 import OwnerHeader from '@/components/OwnerHeader.vue';
+import { useAuthStore } from '@/stores/authenticationStore';
 import { useOrdersStore } from '@/stores/ordersStore';
 
 export default {
@@ -56,6 +46,9 @@ export default {
     },
     created() {
         this.ordersStore = useOrdersStore()
+        const authStore = useAuthStore()
+        this.index = authStore.user
+
         
         this.restId = parseInt(this.$route.params.restId)
 
@@ -91,6 +84,7 @@ export default {
     data() {
         return {
             ordersStore: null,
+            index: null,
             orders: [],
             restId: null,
             filteredOrders: [],
