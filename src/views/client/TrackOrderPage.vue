@@ -1,89 +1,101 @@
 <template>
   <div class="track-order-page">
-    <div class="map-section">
-      <Map :useGeolocation="false" />
+    <div class="map-section" v-if="orderStore.currentOrder">
+      <Map
+        :useGeolocation="false"
+        :route-points="routePoints"
+        :driverProfilePicUrl="driverImg"
+      />
     </div>
-    <div class="delivery-status-card">
+
+    <div class="delivery-status-card" v-if="orderStore.currentOrder">
       <div class="delivery-status-header">
-        <span class="delivery-status-title">Delivery overtime <span class="chevron">&gt;</span></span>
+        <span class="delivery-status-title">
+          Delivery in Progress <span class="chevron">&gt;</span>
+        </span>
       </div>
       <div class="delivery-status-info">
-        Timed out <span class="highlight">32</span> minutes, originally scheduled <span class="highlight">16:43</span> Delivered
-      </div>
-      <div class="delivery-status-progress">
-        <span class="status-icon">🍔</span>
-        <span class="status-line"></span>
-        <span class="status-icon">🥤</span>
-        <span class="status-line"></span>
-        <span class="status-icon">🛵</span>
-        <span class="status-line"></span>
-        <span class="status-icon">🏠</span>
+        <!-- Estimated arrival at <span class="highlight">{{ estimatedTime }}</span> -->
       </div>
     </div>
-    <div class="order-detail-card">
-      <div class="order-item-row">
-        <img class="order-item-img" src="@/assets/client/pizza_company.png" alt="Pizza Company" />
+
+    <div class="order-detail-card" v-if="orderStore.currentOrder">
+      <div
+        class="order-item-row"
+        v-for="(item, index) in orderStore.currentOrder.orderItems"
+        :key="index"
+      >
+        <img
+          class="order-item-img"
+          :src="item.img_url"
+          alt="Food Image"
+        />
         <div class="order-item-info">
-          <div class="order-item-title">1x Pepperoni Pizza (Large)</div>
-          <div class="order-item-desc">Thin crust, Extra cheese, No onions</div>
+          <div class="order-item-title">{{ item.name }}</div>
+          <div class="order-item-desc">No description</div>
           <div class="order-item-qty-price">
-            <span>x1</span>
-            <span class="order-item-old-price">$12.00</span>
-            <span class="order-item-price">$8.99</span>
+            <span>x{{ item.quantity }}</span>
+            <span class="order-item-price">${{ item.price.toFixed(2) }}</span>
           </div>
         </div>
       </div>
+
       <div class="order-fee-row">
         <span>Delivery Fee <span class="info-icon">?</span></span>
         <span>$0.75</span>
       </div>
+
       <div class="order-total-row">
         <div class="order-total-label">Total</div>
-        <div class="order-total-amount">$9.74</div>
+        <div class="order-total-amount">${{ totalPrice.toFixed(2) }}</div>
       </div>
+
       <div class="order-currency-row">
-        <span>1USD=4008.00KHR</span>
-        <span class="order-total-khr">៛39,048.00</span>
+        <span>1 USD = 4008.00 KHR</span>
+        <span class="order-total-khr">៛{{ (totalPrice * 4008).toLocaleString() }}</span>
       </div>
+
       <div class="section-card">
         <div class="section-title">
           <span class="section-icon">📦</span> Delivery Information
         </div>
         <div class="section-row">
           <span class="section-label">Delivery Address</span>
-          <span class="section-value">Saint 253  Khan Tuol Kouk Phnom Penh Phnom Penh Cambodia<br/>សង្កាត់,855099916946</span>
+          <span class="section-value">{{ orderStore.currentOrder.details.clientAddress }}</span>
         </div>
         <div class="section-row">
-          <span class="section-label">Estimated time to arrived at</span>
-          <span class="section-value">21/06/2025 16:43</span>
+          <span class="section-label">Estimated time to arrive at</span>
+          <span class="section-value">{{ estimatedTime }}</span>
         </div>
         <div class="section-row">
           <span class="section-label">Note</span>
-          <span class="section-value">No chili flakes, please.</span>
+          <span class="section-value">{{ orderStore.currentOrder.remark || 'No note' }}</span>
         </div>
         <div class="section-row">
           <span class="section-label">Delivery man</span>
-          <span class="section-value">N-T1-WE-Da Ravuth (凌)</span>
+          <span class="section-value">{{ driverName }}</span>
         </div>
       </div>
+
       <div class="section-card">
         <div class="section-title">
           <span class="section-icon">📄</span> Order Information
         </div>
         <div class="section-row">
           <span class="section-label">Order Number</span>
-          <span class="section-value">1936350949814362112</span>
+          <span class="section-value">{{ orderStore.currentOrder.id }}</span>
         </div>
         <div class="section-row">
-          <span class="section-label">Payment method</span>
-          <span class="section-value">Online Payment</span>
+          <span class="section-label">Payment status</span>
+          <span class="section-value">{{ orderStore.currentOrder.payment_status || 'Unknown' }}</span>
         </div>
         <div class="section-row">
           <span class="section-label">Order Time</span>
-          <span class="section-value">21/06/2025 16:10</span>
+          <span class="section-value">{{ formatDate(orderStore.currentOrder.createdAt) }}</span>
         </div>
       </div>
     </div>
+
     <footer class="track-order-footer">
       Thank you for ordering with us!
     </footer>
@@ -91,8 +103,55 @@
 </template>
 
 <script setup>
-import Map from '@/components/delivery/map.vue';
-// Static page for design purposes. No dynamic logic needed yet.
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useOrderStore } from "@/stores/orderStore";
+import Map from "@/components/delivery/map.vue";
+
+const route = useRoute();
+const orderStore = useOrderStore();
+
+const estimatedTime = ref("16:43"); // Replace with real ETA logic
+
+const driverImg = computed(() => {
+  return orderStore.currentOrder?.driver?.img_src || "";
+});
+
+const driverName = computed(() => {
+  if (!orderStore.currentOrder?.driver) return "";
+  return `${orderStore.currentOrder.driver.first_name || ""} ${orderStore.currentOrder.driver.last_name || ""}`.trim();
+});
+
+const totalPrice = computed(() => {
+  if (!orderStore.currentOrder) return 0;
+  const itemsSum = orderStore.currentOrder.orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return itemsSum + 0.75; // add delivery fee
+});
+
+const routePoints = computed(() => {
+  if (!orderStore.currentOrder) return [];
+  const driverLat = parseFloat(orderStore.currentOrder.driver?.latitude) || 11.5610;
+  const driverLng = parseFloat(orderStore.currentOrder.driver?.longitude) || 104.8887;
+  const restaurant = orderStore.currentOrder.details.restaurantLocation;
+  const client = orderStore.currentOrder.details.clientLocation;
+
+  return [
+    { lat: driverLat, lng: driverLng },
+    { lat: restaurant.lat, lng: restaurant.lng },
+    { lat: client.lat, lng: client.lng },
+  ];
+});
+
+function formatDate(datetime) {
+  return new Date(datetime).toLocaleString();
+}
+
+onMounted(async () => {
+  const orderId = route.params.orderId; // <-- fixed here
+  if (orderId) {
+    await orderStore.fetchOrderById(orderId);
+  }
+});
 </script>
 
 <style scoped>

@@ -169,9 +169,8 @@ export default {
     const router = useRouter();
     const authStore = useAuthStore();
     const orderStore = useOrderStore();
-
-    const brandName = route.params.brandName;
-    const cartItems = ref(JSON.parse(route.params.cartItems || "[]"));
+const brandName = route.params.brandName;
+const cartItems = JSON.parse(decodeURIComponent(route.params.cartItems));
     const remarks = ref("");
 
     const storeAddress = ref(
@@ -179,12 +178,13 @@ export default {
     );
     const storeContact = ref("+855 12 345 678");
 
-    const cartTotal = computed(() => {
-      return cartItems.value.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-    });
+const cartTotal = computed(() => {
+  return cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+});
+
 
     const finalTotal = computed(() => cartTotal.value + 0.45);
 
@@ -236,44 +236,59 @@ export default {
     });
 
     const placeOrder = async () => {
-      try {
-        const { data: driversData } = await axios.get("http://localhost:8300/api/drivers");
-        const driverIds = Array.isArray(driversData) && driversData.length > 0
-          ? driversData.map(driver => driver.id)
-          : [];
-        const assignedDriverId = driverIds.length > 0
-          ? driverIds[Math.floor(Math.random() * driverIds.length)]
-          : 1;
+  try {
+    // Fetch available drivers
+    const { data: driversData } = await axios.get("http://localhost:8300/api/drivers");
+    const driverIds = Array.isArray(driversData) && driversData.length > 0
+      ? driversData.map(driver => driver.id)
+      : [];
+    const assignedDriverId = driverIds.length > 0
+      ? driverIds[Math.floor(Math.random() * driverIds.length)]
+      : 1;
 
-        const orderType = route.params.orderType || "delivery";
+    // Get order type from route or default to 'delivery'
+    const orderType = route.params.orderType || "delivery";
 
-        const orderPayload = {
-          restaurant_id: cartItems.value.length > 0 ? cartItems.value[0].restaurant_id : null,
-          customer_id: authStore.user?.customer_id,
-          driver_id: orderType === "delivery" ? assignedDriverId : null,
-          status: "pending",
-          total_amount: finalTotal.value,
-          payment_status: selectedPayment.value === "card" ? "paid" : "unpaid",
-          remark: remarks.value,
-          order_type: orderType,
-          items: cartItems.value.map(item => ({
-            food_item_id: item.id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        };
-
-        const { data: orderResponse } = await axios.post(
-          "http://localhost:8300/api/orders",
-          orderPayload
-        );
-
-        console.log("Order created successfully:", orderResponse);
-
-      } catch (err) {
-        console.error("Failed to create order:", err.response?.data || err.message);
-      }
+    // Build order payload
+    const orderPayload = {
+      restaurant_id: cartItems.length > 0 ? cartItems[0].restaurant_id : null,
+      customer_id: authStore.user?.customer_id,
+      driver_id: orderType === "delivery" ? assignedDriverId : null,
+      status: "pending",
+      total_amount: finalTotal.value,
+      payment_status: selectedPayment.value === "card" ? "paid" : "unpaid",
+      remark: remarks.value,
+      order_type: orderType,
+      items: cartItems.map(item => ({
+        food_item_id: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
     };
+
+    // Create order via API
+    const { data: orderResponse } = await axios.post(
+      "http://localhost:8300/api/orders",
+      orderPayload
+    );
+
+    console.log("Order created successfully:", orderResponse);
+
+    // Extract new order ID (adjust depending on response structure)
+    const orderId = orderResponse.data?.id || orderResponse.id;
+
+    if (!orderId) {
+      throw new Error("Order ID not found in response");
+    }
+
+    // Navigate to TrackOrder page with orderId param
+    router.push({ name: 'TrackOrder', params: { orderId } });
+
+  } catch (err) {
+    console.error("Failed to create order:", err.response?.data || err.message);
+  }
+};
+
 
     const goToAddLocation = () => {
       router.push({ name: "AddLocation" });

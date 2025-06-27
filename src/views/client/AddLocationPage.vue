@@ -146,7 +146,12 @@ async function saveLocation() {
 
       await authStore.saveUserProfile();
 
-      router.back();
+
+// Use your actual data here
+const brandName = authStore.selectedBrandName || "LuckyBurger"; // Replace with your dynamic brand name
+const cartItems = encodeURIComponent(JSON.stringify(authStore.cartItems || [])); // Ensure this is an array or object
+
+router.push(`/checkout/${brandName}/${cartItems}`);
     } else {
       alert("Failed to convert address to coordinates. Please check the address.");
       console.error("Geocoding failed:", data.status);

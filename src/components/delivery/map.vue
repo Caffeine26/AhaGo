@@ -43,18 +43,21 @@ function initMap(google, coords) {
     zoom: 16,
   });
 
-  driverMarker = new google.maps.Marker({
-    position: coords,
-    map,
-    icon: {
-      url:
-        props.driverProfilePicUrl ||
-        "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-      scaledSize: new google.maps.Size(40, 40),
-      origin: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(20, 20),
-    },
-  });
+  // Only create the driver marker if useGeolocation is true
+  if (props.useGeolocation) {
+    driverMarker = new google.maps.Marker({
+      position: coords,
+      map,
+      icon: {
+        url:
+          props.driverProfilePicUrl ||
+          "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+        scaledSize: new google.maps.Size(40, 40),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(20, 20),
+      },
+    });
+  }
 
   if (props.enableClickSelection) {
     map.addListener("click", (e) => {
@@ -96,8 +99,10 @@ function updateDriverLocation(position) {
     lat: position.coords.latitude,
     lng: position.coords.longitude,
   };
-  if (driverMarker) driverMarker.setPosition(coords);
-  if (map) map.panTo(coords);
+  if (driverMarker) {
+    driverMarker.setPosition(coords);
+    if (map) map.panTo(coords);
+  }
 
   emit("location-updated", coords);
 }

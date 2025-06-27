@@ -149,7 +149,7 @@ const router = createRouter({
       component: () => import('@/views/client/ReviewPage.vue')
     },
     {
-      path: '/track-order/',
+      path: '/track-order/:orderId',
       name: 'TrackOrder',
       component: () => import('@/views/client/TrackOrderPage.vue'),
       props: true
