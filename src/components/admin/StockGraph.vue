@@ -42,13 +42,13 @@ export default {
   name: "StockGraph",
   props: {
     totalFoodItems: Number,
-    inStock: Number,
-    outOfStock: Number,
+    inStock: Array,
+    outOfStock: Array,
   },
   created() {
     this.totalInStockCount = this.totalFoodItems
-    this.inStockCount = this.inStock
-    this.outOfStockCount = this.outOfStock
+    this.inStockCount = this.inStock.total
+    this.outOfStockCount = this.outOfStock.total
   },
   data() {
     return {

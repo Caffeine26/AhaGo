@@ -25,11 +25,11 @@
       <!-- Row 2: StockGraph + (PieChart & OrderTypeGraph) -->
       <section class="section row-grid">
         <div class="chart-container">
-          <StockGraph class="stock"
+          <!-- <StockGraph class="stock"
           :total-food-items="totalItems"
           :in-stock="instock"
           :out-of-stock="outstock"
-          ></StockGraph>
+          ></StockGraph> -->
           <div class="bar-chart-wrapper">
             <BarChart
             :orders-data="recentOrdersData"
@@ -121,8 +121,8 @@ export default {
     // get #fooditems and stock levels
     foodItemStore.getStock()
     foodItemStore.getFoodItemsCount()
-    this.instock = foodItemStore.stock[0].total
-    this.outstock = foodItemStore.stock[1].total
+    this.instock = foodItemStore.stock[0]
+    this.outstock = foodItemStore.stock[1]
     this.totalItems = foodItemStore.foodItemsCount
 
     // get orderTypes and their amount

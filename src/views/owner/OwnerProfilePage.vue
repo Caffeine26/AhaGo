@@ -1,14 +1,4 @@
 <template>
-<Header></Header>
-
-<OwnerHeader
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Transactions"
-it4="Menu"
-it5="Profile"
-></OwnerHeader>
 
 <CategoryBannerV2
 title-header="Malis Restaurant"
@@ -41,7 +31,6 @@ banner-btn="Edit Profile"
     <div>{{ tele }}</div>
 </div>
 
-<AppFooter></AppFooter>
 </template>
 
 <script>

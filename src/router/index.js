@@ -52,6 +52,7 @@ import ProfileSettings from "@/views/client/ProfileSettings.vue";
 import OwnerHomePage from "@/views/owner/OwnerHomePage.vue";
 import FoodItemPage from "@/views/owner/FoodItemPage.vue";
 import OrderDelivery from "@/views/owner/OrderDelivery.vue";
+import OwnerLayout from "@/views/owner/OwnerLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -250,58 +251,78 @@ const router = createRouter({
         },
       ],
     },
+
     {
       path: "/owner",
-      component: OwnerLandingPage,
+      name: "LandingPage",
+      component: OwnerLandingPage
     },
     {
-      path: "/owner/:restId/menu",
-      component: MenuPage
+      path: "/owner",
+      component: OwnerLayout,
+      children: [
+        
+        {
+          path: "home",
+          name: "HomePage",
+          component: OwnerHomePage
+        },
+        {
+          path: ":restId/orders",
+          name: "OrdersPage",
+          component: OrdersPage
+        },
+        {
+          path: ":restId/transactions",
+          component: TransactionPage
+        },
+        {
+          path: "orders/details/:orderId",
+          component: OrderDetailPage,
+        },
+        {
+          path: "order/invoice/:orderId",
+          component: InvoicePage,
+        },
+        {
+          path: ":restId/menu",
+          component: MenuPage,
+        },
+        {
+          path: ":restId/menu/:foodItemId",
+          component: FoodItemPage
+        },
+        {
+          path: ":restId/menu/addCategory",
+          component: MenuNewCategory
+        },
+        {
+          path: ":restId/menu/createItem",
+          component: MenuCreatePage
+        },
+        {
+          path: ":restId/menu/edit/:itemId",
+          component: MenuEditPage
+        },
+        {
+          path: "order/delivery",
+          component: OrderDelivery,
+        },
+        {
+          path: "profile/:restId",
+          component: OwnerProfilePage,
+        },
+        {
+          path: "profile/:restId/edit",
+          component: OwnerProfileEdit,
+        },
+      ],
     },
-    {
-      path: "/owner/:restId/menu/:foodItemId",
-      component: FoodItemPage
-    },
-    {
-      path: "/owner/:restId/menu/addCategory",
-      component: MenuNewCategory
-    },
-    {
-      path: "/owner/:restId/menu/createItem",
-      component: MenuCreatePage
-    },
-    {
-      path: "/owner/:restId/menu/edit/:itemId",
-      component: MenuEditPage
-    },
-    {
-      path: "/owner/:restId/orders",
-      component: OrdersPage,
-    },
-    {
-      path: "/owner/order/details/:orderId",
-      component: OrderDetailPage,
-    },
-    {
-      path: "/owner/order/delivery",
-      component: OrderDelivery,
-    },
-    {
-      path: "/owner/order/invoice/:orderId",
-      component: InvoicePage,
-    },
-    {
-      path: "/owner/:restId/transactions",
-      component: TransactionPage
-    },
-    {
-      path: "/owner/profile/:restId",
-      component: OwnerProfilePage,
-    },
-    {
-      path: "/owner/profile/:restId/edit",
-      component: OwnerProfileEdit,
-    },
+    
+    
+    
+    
+    
     {
       path: "/owner/profile/:restId/trackings",
       component: OwnerTrackings,
@@ -314,10 +335,9 @@ const router = createRouter({
       path: "/owner/signup",
       component: OwnerSignup,
     },
-    {
-      path: "/owner/home",
-      component: OwnerHomePage,
-    },
+
+
+
     {
       path: "/admin/dashboard",
       name: "Dashboard",

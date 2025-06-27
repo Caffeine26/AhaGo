@@ -24,7 +24,7 @@ export const useAuthStore = defineStore("auth", () => {
       case "driver":
         return "/delivery/overview";
       case "restaurant":
-        return "/owner";
+        return "/owner/home";
       case "customer":
         return "/";
       default:
@@ -145,6 +145,8 @@ export const useAuthStore = defineStore("auth", () => {
           img_src: currentUser.img_src,
           restaurant_id: currentUser.restaurant_profile?.id,
         };
+        console.log('user value for rest=', user.value.restaurant_id)
+        return  user.value.restaurant_id
       } else if (userRole === "customer") {
         user.value = {
           id: currentUser.id,

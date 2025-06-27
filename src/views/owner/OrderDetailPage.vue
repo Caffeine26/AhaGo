@@ -1,14 +1,4 @@
 <template>
-<Header></Header>
-<Header2
-title="Restaurant"
-it1="Home"
-it2="Orders"
-it3="Menu"
-it4="Analytics"
-it5="Profile"
-></Header2>
-
 <CategoryBannerV2
 title-header= "Order Management"
 :titles="buttons"
@@ -25,8 +15,6 @@ v-if="selectedOrder"
 :amount="selectedOrder.total_amount"
 :remark="selectedOrder.remark"
 ></OrderDetails>
-
-<AppFooter></AppFooter>
 
 </template>
 

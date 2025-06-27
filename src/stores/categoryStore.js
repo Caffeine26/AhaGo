@@ -54,7 +54,12 @@ export const useCategoryStore = defineStore('category', {
         },
         // returns the name of most sold food item of restaurant
         getMostSold() {
-            if (this.foodItems.length === 0) return -1;
+            if (this.foodItems.length === 0) {
+                console.log('food items empty');
+                return -1;
+            }
+            console.log('THIS FOOD ITEMS=', this.foodItems)
+                
 
             let index = 0;
             for (let i = 1; i < this.foodItems.length; i++) {

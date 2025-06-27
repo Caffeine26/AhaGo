@@ -1,6 +1,6 @@
 <template>
 <div class="orderContainer">
-    <RouterLink :to="'/owner/order/details/' + orderId">
+    <RouterLink :to="'/owner/orders/details/' + orderId">
         <div class="orderHeader">
             <div>#{{ orderIndex }}</div>
             <StatusAction

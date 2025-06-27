@@ -112,13 +112,15 @@ export default {
         const transactionStore = useTransactionStore()
         const authStore = useAuthStore()
         const isLoggedIn = computed(() => !!authStore.user);
+        const invoice = useTransactionStore()
 
+        invoice.fetchTransactions(2)
         restStore.fetchRests()
         userStore.fetchUsers()
         categoryStore.fetchCategories()
         categoryStore.fetchFoodItemsByRest(2)
         ordersStore.fetchOrders(2)
-        ordersStore.fetchOrdersItems()
+        // ordersStore.fetchOrdersItems()
         transactionStore.fetchTransactions(2)
 
         return { 

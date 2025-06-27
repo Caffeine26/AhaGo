@@ -12,8 +12,8 @@
       </div>
       <div
         class="nav-item"
-        :class="{ active: isRouteActive(['/owner/' + restId + '/orders']) }"
-        @click="handleClick(it2, '/owner/' + restId + '/orders')"
+        :class="{ active: isRouteActive(['/owner/2/orders']) }"
+        @click="handleClick(it2, '/owner/2/orders')"
       >
         {{ it2 }}
       </div>
@@ -28,7 +28,7 @@
       <div
         class="nav-item"
         :class="{ active: activeItem === it4 }"
-        @click="handleClick(it4, '/owner/' + restId + '/menu')"
+        @click="handleClick(it4, '/owner/2/menu')"
       >
         {{ it4 }}
       </div>
@@ -36,7 +36,7 @@
       <div
         class="nav-item"
         :class="{ active: activeItem === it5 }"
-        @click="handleClick(it5, '/owner/profile/' + restId)"
+        @click="handleClick(it5, '/owner/profile/2')"
       >
         {{ it5 }}
       </div>
