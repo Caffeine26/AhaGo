@@ -23,7 +23,7 @@ export default {
     return {
       menuItems: [
         { name: 'Dashboard', path: '/admin/dashboard', icon: 'fas fa-tachometer-alt' },
-        { name: 'Order', path: '/admin/orders', icon: 'fas fa-receipt' },
+        { name: 'Order Dashboard', path: '/admin/orders', icon: 'fas fa-receipt' },
         { name: 'Message', path: '/admin/messages', icon: 'fas fa-envelope' },
         { name: 'Menu', path: '/admin/menus', icon: 'fas fa-utensils' },
         { name: 'Management', path: '/admin/management', icon: 'fas fa-boxes' },
@@ -40,7 +40,7 @@ export default {
 .sidebar {
   width: 100%;
   height: 100%;
-  background-color: #2d2d2d;
+  background-color: black;
   color: white;
   padding: 20px 0;
   display: flex;
@@ -83,7 +83,7 @@ export default {
 }
 
 .menu a:hover {
-  background-color: #444;
+  background-color: black;
 }
 
 .menu a i {
@@ -93,7 +93,7 @@ export default {
 }
 
 .menu a.router-link-exact-active {
-  background-color: #444;
+  background-color: black;
   border-left: 4px solid #f39c12;
   padding-left: 16px;
 }

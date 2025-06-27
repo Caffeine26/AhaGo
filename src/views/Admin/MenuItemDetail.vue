@@ -5,18 +5,6 @@
 
     <!-- Main Content -->
     <div class="main-content">
-      <!-- Top Bar: Header -->
-      <header class="header">
-        <h2 class="text-2xl font-bold">MenuItemDetail</h2>
-        <div class="header-right">
-          <input type="text" placeholder="Search..." class="search-input" />
-          <div class="user-info">
-            <img src="@/assets/Kuromi.jpg" alt="user" class="user-img" />
-            <span>Sarawat Jae</span>
-          </div>
-        </div>
-      </header>
-
       <div class="container">
         <!-- Left Column: Product Card with Inline Editing -->
         <div class="card">
@@ -106,10 +94,37 @@
           <ReviewSection :reviews="reviews" />
         </div>
 
-        <!-- Bar Chart and Item Grid -->
+        <!-- Bar Chart and Trending Menu -->
         <div class="chart-container">
-          <BarChart class="chart" />
-          <ItemGrid class="item-grid-section" :items="cakes" :starImg="starImg" />
+          <BarChart 
+            class="chart" 
+            :dates="orderSummary.dates" 
+            :values="orderSummary.values" 
+          />
+          
+          <!-- Trending Menu Section -->
+          <div class="trending-section">
+            <h2>Trending Menu</h2>
+            <div class="trending-filters">
+              <button 
+                @click="setTrendingFilter('orders')" 
+                :class="{ active: trendingFilter === 'orders' }"
+              >
+                Top Orders
+              </button>
+              <button 
+                @click="setTrendingFilter('rating')" 
+                :class="{ active: trendingFilter === 'rating' }"
+              >
+                Top Rated
+              </button>
+            </div>
+            <ItemGrid 
+              class="item-grid-section" 
+              :items="trendingItems" 
+              :starImg="starImg" 
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -156,9 +171,24 @@ export default {
         heart: heartIcon,
       },
       reviews: [],
-      cakes: [], // If you want to fill this later
+      allMenuItems: [],
+      trendingFilter: 'orders',
       starImg: starIcon,
+      orderSummary: {
+        dates: [],
+        values: []
+      }
     };
+  },
+  computed: {
+    trendingItems() {
+      const sorted = [...this.allMenuItems];
+      if (this.trendingFilter === 'orders') {
+        return sorted.sort((a, b) => b.sold - a.sold).slice(0, 4);
+      } else {
+        return sorted.sort((a, b) => b.rating - a.rating).slice(0, 4);
+      }
+    }
   },
   watch: {
     '$route.params.id': {
@@ -168,6 +198,10 @@ export default {
         this.fetchReviews(newId);
       },
     },
+  },
+  mounted() {
+    this.fetchOrderSummary();
+    this.fetchAllMenuItems();
   },
   methods: {
     fetchItem(id) {
@@ -219,6 +253,15 @@ export default {
           this.reviews = [];
         });
     },
+    fetchAllMenuItems() {
+      axios.get('http://localhost:8300/api/foodItems')
+        .then(response => {
+          this.allMenuItems = response.data.data || [];
+        })
+        .catch(error => {
+          console.error('Failed to fetch menu items:', error);
+        });
+    },
     toggleEdit() {
       this.isEditing = true;
     },
@@ -250,15 +293,23 @@ export default {
           alert('Failed to save changes.');
         });
     },
+    fetchOrderSummary() {
+      axios.get('http://localhost:8300/api/orders/summary')
+        .then(response => {
+          const data = response.data.data;
+          this.orderSummary.dates = data.dates;
+          this.orderSummary.values = data.values;
+        })
+        .catch(error => {
+          console.error('Failed to fetch order summary:', error);
+        });
+    },
+    setTrendingFilter(filter) {
+      this.trendingFilter = filter;
+    }
   },
 };
 </script>
-
-<style scoped>
-/* ...Your existing styles from the code you provided before... */
-</style>
-
-
 
 <style scoped>
 .dashboard-wrapper {
@@ -282,7 +333,6 @@ export default {
   background-color: #f9fafb;
   overflow-y: auto;
   padding: 24px;
-  
 }
 
 /* Header styles */
@@ -341,23 +391,21 @@ export default {
 .card {
   grid-area: card;
   background-color: white;
-  padding: 1rem 1.5rem 1rem 1.5rem; /* top right bottom left */
+  padding: 1rem 1.5rem 1rem 1.5rem;
   border-radius: 0.5rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   width: 90%;
-
-  
-  
 }
+
 .name-price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
   width: 100%;
-  gap: 1rem; /* spacing between inputs */
+  gap: 1rem;
 }
 .product-price {
   font-size: 1.25rem;
@@ -365,13 +413,12 @@ export default {
   color: orange;
   margin: 0;
 }
-/* Align product name to left and allow it to grow */
 .product-name {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0;
   flex-grow: 1;
-  text-align: left; /* <-- This aligns the text to left */
+  text-align: left;
 }
 .product-description {
   font-size: 1rem;
@@ -393,7 +440,7 @@ export default {
 }
 .product-info {
   width: 100%;
-  text-align: left; /* Align all text inside product info left */
+  text-align: left;
 }
 .product-stats {
   display: flex;
@@ -458,7 +505,6 @@ export default {
 .btn-cancel:hover {
   background-color: #dc2626;
 }
-/* Inline input styling */
 .inline-input {
   font-size: 1.25rem;
   padding: 0.9rem 0.5rem;
@@ -479,10 +525,8 @@ export default {
   border: 1px solid #ccc;
   resize: vertical;
 }
-/* Chart, Review, and Grid sections */
 .chart-container {
   grid-area: chart;
-
   padding: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -490,26 +534,55 @@ export default {
 }
 .review-section {
   grid-area: review;
-  
   padding: 1rem;
-
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   width: 90%;
-  
-  
 }
 .item-grid-section {
-   grid-area: grid;
+  grid-area: grid;
   background-color: #ffffff;
   padding: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   margin-top:100px;
   width: 95%;
-
 }
 .chart{
   width:90%;
-
+}
+.trending-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+.trending-section h2 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.5rem;
+}
+.trending-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.trending-filters button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.trending-filters button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+.trending-filters button:hover {
+  background-color: #d1d5db;
+}
+.trending-filters button.active:hover {
+  background-color: #2563eb;
 }
 </style>

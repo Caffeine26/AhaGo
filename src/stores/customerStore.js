@@ -1,19 +1,19 @@
-import CustomerService from "@/services/CustomerService";
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia';
+import CustomerService from '@/services/CustomerService';
 
 export const useCustomerStore = defineStore('customer', {
-    state: () => ({
-        totalCustomers: 0,
-    }),
-    actions: {
-        async fetchTotalCustomers() {
-            try {
-                const response = await CustomerService.getAllCount();
-                this.totalCustomers = response.data;
-            } catch (err) {
-                console.log(err)
-            }
-        },
-    },
-    persist: true
-})
+  state: () => ({
+    totalCustomers: 0
+  }),
+  actions: {
+    async fetchTotalCustomers() {
+      try {
+        const response = await CustomerService.getAllCount();
+        this.totalCustomers = response.count || 0;
+      } catch (error) {
+        console.error('Failed to fetch customer count:', error);
+        this.totalCustomers = 0;
+      }
+    }
+  }
+});
